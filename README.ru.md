@@ -1,3 +1,5 @@
+[![Английский](https://custom-icon-badges.demolab.com/badge/-Английский-green?style=for-the-badge)](README.md) [![Русский](https://custom-icon-badges.demolab.com/badge/-Русский-gray?style=for-the-badge)](README.ru.md)
+
 # Что делает этот мод?
 Данный мод позволяет владельцам серверов [BDS](https://www.minecraft.net/ru-ru/download/server/bedrock) под управлением [LeviLamina](https://github.com/LiteLDev/LeviLamina) создавать ранги (привилегии), с помощью которых можно определить игроку доступные ему команды. Также он обеспечивает форматирование игрового чата и *скортэга* игрока.
 # Управление модом
