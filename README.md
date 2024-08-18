@@ -1,3 +1,5 @@
+[![English](https://custom-icon-badges.demolab.com/badge/-English-gray?style=for-the-badge)](README.md) [![Russian](https://custom-icon-badges.demolab.com/badge/-Russian-green?style=for-the-badge)](README.ru.md)
+
 # What does this mod do?
 This mod allows owners of [BDS](https://www.minecraft.net/en-us/download/server/bedrock) managed by [LeviLamina](https://github.com/LiteLDev/LeviLamina) create ranks (privileges) with which you can determine the commands available to the player. It also provides formatting for the player's game chat and *scoretag*.
 # Mod Management
