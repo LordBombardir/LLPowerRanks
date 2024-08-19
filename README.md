@@ -16,8 +16,8 @@ For each rank, you can make your own player's *scoretag* format. To do this, you
 And under the hood we have:
 * Optimized and high-speed code in *C++*
 * Language Configuration Manager (used by [i18n](https://github.com/LiteLDev/LeviLamina/blob/develop/src/ll/api/i18n)). Folder with languages - *languages*
-* *YAML* type rank configuration manager. The name of the configuration file is *ranks.yml*
-* Manager of the main configuration of the *YAML* type mod. The name of the configuration file is *main.yml*
+* *JSON* type rank configuration manager. The name of the configuration file is *ranks.json*
+* Manager of the main configuration of the *JSON* type mod. The name of the configuration file is *main.json*
 * Database management manager of the *SQLite3* type. It stores player data, namely, the player's nickname, his XUID and PlayFabId, as well as his rank
 * The main manager of the mod, registering the `addrank` and `setrank` commands, as well as managing the issue of rank to the player
 * Hooks, one of which modifies the contents of the `AvailableCommandsPacket` when it is sent
