@@ -18,6 +18,6 @@ And under the hood we have:
 * Language Configuration Manager (used by [i18n](https://github.com/LiteLDev/LeviLamina/blob/develop/src/ll/api/i18n)). Folder with languages - *languages*
 * *JSON* type rank configuration manager. The name of the configuration file is *ranks.json*
 * Manager of the main configuration of the *JSON* type mod. The name of the configuration file is *config.json*
-* Database management manager of the *SQLite3* type. It stores player data, namely, the player's nickname, his XUID and PlayFabId, as well as his rank
+* Database management manager of the *SQLite3* type. It stores player data, namely, the player's nickname his XUID and rank
 * The main manager of the mod, registering the `addrank` and `setrank` commands, as well as managing the issue of rank to the player
 * Hooks, one of which modifies the contents of the `AvailableCommandsPacket` when it is sent
