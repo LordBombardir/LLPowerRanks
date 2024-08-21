@@ -1,25 +1,27 @@
 {
     "format_version": 2,
-    "tooth": "my-mod",
-    "version": "0.0.0",
+    "tooth": "github.com/LordBombardir/LLPowerRanks",
+    "version": "1.0.0",
     "info": {
-        "name": "My Mod Name",
-        "description": "My Mod Description",
-        "author": "My Name",
+        "name": "PowerRanks",
+        "description": "A mod that adds a rank (privilege) system to the game",
+        "author": "LordBombardir",
         "tags": [
             "levilamina",
-            "mod"
+            "mod",
+            "ranks",
+            "privileges"
         ]
     },
-    "asset_url": "My Asset Url",
+    "asset_url": "",
     "prerequisites": {
-        "github.com/LiteLDev/LeviLamina": "My LeviLamina Dependency Version"
+        "github.com/LiteLDev/LeviLamina": ">=0.13.5"
     },
     "files": {
         "place": [
             {
-                "src": "my-mod/*",
-                "dest": "plugins/my-mod/"
+                "src": "PowerRanks/*",
+                "dest": "plugins/PowerRanks/"
             }
         ]
     }

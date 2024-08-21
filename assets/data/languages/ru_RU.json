@@ -1,0 +1,18 @@
+{
+    "languageName": "Русский (Россия)",
+    "commandAddRankDescription": "Создать новый ранг.",
+    "commandSetRankDescription": "Установить игроку новый ранг.",
+    "commandRemoveRankDescription": "Удалить ранг.",
+    "commandEditRankDescription": "Изменить ранг.",
+    "commandSetRankUsing": "§r(Ранги) Использование: /setrank <player: target> <rankName: string>",
+    "commandSetRankUndefinedPlayer": "§r(Ранги) Не удалось получить игрока!",
+    "commandSetRankUndefinedRank": "§r(Ранги) Неизвестный ранг {rankName}! Доступные ранги: {ranks}.",
+    "commandSetRankSuperRank": "§r(Ранги) Данный ранг можно устанавливать только с консоли!",
+    "commandSetRankSuperPlayer": "§r(Ранги) Игроку {playerName} можно устанавливать ранг только с консоли!",
+    "commandSetRankUndefinedError": "§r(Ранги) К сожалению, произошла неизвестная ошибка..",
+    "commandSetRankSuccess": "§r(Ранги) Вы успешно установили игроку {playerName} ранг {rankName}!",
+    "commandSetRankSuccessMultiply": "§r(Ранги) Вы успешно установили игрокам {playerNames} ранг {rankName}!",
+    "formSetRankTitle": "Установка игроку нового ранга",
+    "formSetRankDropdownPlayers": "Выберите игрока из списка, которому хотите установить новый ранг:",
+    "formSetRankDropdownRanks": "Выберите ранг из списка, который хотите установить игроку:"
+}

@@ -1,0 +1,12 @@
+{
+    "version": 1,
+    "defaultLocaleName": "en_US",
+    "defaultRankName": "Default",
+    "superRanks": [
+        "Helper",
+        "Administrator"
+    ],
+    "superPlayers": [
+        "LordBombardir"
+    ]
+}

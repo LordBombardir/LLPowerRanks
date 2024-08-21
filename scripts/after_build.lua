@@ -104,6 +104,20 @@ function pack_mod(target,mod_define)
 
         formattedmanifest = string_formatter(manifest, mod_define)
         io.writefile(manifestfile,formattedmanifest)
+
+        local libDirectory = path.join(bindir, "lib")
+        local includeDirectory = path.join(bindir, "include")
+        local objectDirectory = path.join(includeDirectory, "object")
+
+        os.mkdir(libDirectory)
+        os.mkdir(includeDirectory)
+        os.mkdir(objectDirectory)
+
+        os.cp(path.join(target:targetdir(), "PowerRanks.lib"), libDirectory)
+        os.cp(path.join(os.projectdir(), "src", "mod", "Api.h"), includeDirectory)
+        os.cp(path.join(os.projectdir(), "src", "mod", "object", "Rank.h"), objectDirectory)
+        os.cp(path.join(os.projectdir(), "assets", "data"), outputdir)
+
         cprint("${bright green}[mod Packer]: ${reset}mod already generated to " .. outputdir)
     else
         cprint("${bright yellow}warn: ${reset}not found manifest.json in root dir!")

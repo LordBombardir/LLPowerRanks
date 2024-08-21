@@ -1,0 +1,18 @@
+{
+    "languageName": "English (United Kingdom)",
+    "commandAddRankDescription": "Create a new rank.",
+    "commandSetRankDescription": "Set a new rank for the player.",
+    "commandRemoveRankDescription": "Remove rank.",
+    "commandEditRankDescription": "Change rank.",
+    "commandSetRankUsing": "§r(Ranks) Usage: /setrank <player: target> <rankName: string>",
+    "commandSetRankUndefinedPlayer": "§r(Ranks) Failed to get a player!",
+    "commandSetRankUndefinedRank": "§r(Ranks) Unknown rank {rankName}! Available ranks: {ranks}.",
+    "commandSetRankSuperRank": "§r(Ranks) This rank can only be set from the console!",
+    "commandSetRankSuperPlayer": "§r(Ranks) Player {playerName} can only be set from the console!",
+    "commandSetRankUndefinedError": "§r(Ranks) Unfortunately, an unknown error has occurred..",
+    "commandSetRankSuccess": "§r(Ranks) You have successfully set the {playerName} player's {rankName} rank!",
+    "commandSetRankSuccessMultiply": "§r(Ranks) You have successfully set the players {playerNames} rank {rankName}!",
+    "formSetRankTitle": "Setting a new rank for the player",
+    "formSetRankDropdownPlayers": "Select the player from the list to whom you want to set a new rank:",
+    "formSetRankDropdownRanks": "Select the rank from the list that you want to set for the player:"
+}
