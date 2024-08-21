@@ -9,7 +9,6 @@ For each rank, you can make your own format for sending a message by the player 
 - Rank prefix: *{prefix}*
 - Player's nickname: *{playerName}*
 - A message sent by the player to the chat: *{message}*
-- The dimension in which the player is located: *{dimension}* (you can change the display name of the dimension in the language configuration)
 ## Formatting of the player's *scoretag*
 For each rank, you can make your own player's *scoretag* format. To do this, you need to change the *scoreTag* field of the desired rank. The value (text) of this field supports only one variable *{prefix}* (rank prefix)
 # What's under the hood?
