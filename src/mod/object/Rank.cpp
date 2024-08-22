@@ -7,6 +7,9 @@ void Rank::setPrefix(const std::string& prefix) { this->prefix = prefix; }
 void Rank::setChatFormat(const std::string& chatFormat) { this->chatFormat = chatFormat; }
 void Rank::setInheritanceRank(const Rank* inheritanceRank) { this->inheritanceRank = inheritanceRank; }
 void Rank::setScoreTagFormat(const std::string& scoreTagFormat) { this->scoreTagFormat = scoreTagFormat; }
+void Rank::setAvailableCommands(const std::vector<std::string>& availableCommands) {
+    this->availableCommands = availableCommands;
+}
 
 bool Rank::isCommandAvailable(const std::string& name) const {
     auto iterator = std::find(availableCommands.begin(), availableCommands.end(), name);
@@ -35,6 +38,8 @@ void Rank::removeAvailableCommand(const std::string& name) {
 
     availableCommands.erase(iterator);
 }
+
+void Rank::removeInheritanceRank() { inheritanceRank = std::nullopt; }
 
 bool Rank::operator<(const Rank& other) { return priority < other.priority; }
 bool Rank::operator<=(const Rank& other) { return priority <= other.priority; }

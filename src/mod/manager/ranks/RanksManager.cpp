@@ -1,6 +1,7 @@
 #include "RanksManager.h"
 #include "../../Utils.hpp"
 #include "../config/ConfigManager.h"
+#include "../command/CommandManager.h"
 #include <ll/api/Config.h>
 #include <stdexcept>
 
@@ -66,13 +67,20 @@ void RanksManager::addRank(
 
     ranks[name] = new object::Rank(currentPriority++, name, prefix, chatFormat, scoreTagFormat, inheritanceRank);
     ll::config::saveConfig(config, pathToConfig);
+
+    manager::CommandManager::addRankNameToSoftEnum(name);
 }
 
 void RanksManager::removeRank(const object::Rank& rank) {
-    config.ranks.erase(rank.getName());
+    std::string rankName = rank.getName();
+
+    config.ranks.erase(rankName);
     ll::config::saveConfig(config, pathToConfig);
 
-    delete ranks[rank.getName()];
+    delete ranks[rankName];
+    ranks.erase(rankName);
+
+    manager::CommandManager::removeRankNameFromSoftEnum(rankName);
 }
 
 void RanksManager::saveChangesRank(const object::Rank& rank) {

@@ -8,26 +8,24 @@
 #include <mc/server/commands/CommandOrigin.h>
 #include <mc/server/commands/CommandOutput.h>
 #include <mc/server/commands/CommandPermissionLevel.h>
-#include <mc/server/commands/CommandSelector.h>
-#include <mc/world/actor/player/Player.h>
+#include <mc/world/level/Command.h>
 
 namespace power_ranks::commands {
 
-class SetRankCommand {
+class RemoveRankCommand {
 public:
     struct Parameter {
-        CommandSelector<Player>                                   player;
         ll::command::SoftEnum<manager::CommandManager::RankNames> rankName;
     };
 
-    static std::string getName() { return "setrank"; };
+    static std::string getName() { return "removerank"; };
     static std::string getDescription() {
-        return manager::LanguageManager::getInstance()->getTranslate("commandSetRankDescription");
+        return manager::LanguageManager::getInstance()->getTranslate("commandRemoveRankDescription");
     };
     static CommandPermissionLevel getRequirement() { return CommandPermissionLevel::GameDirectors; };
     static CommandFlag            getFlag() { return CommandFlagValue::NotCheat; };
 
-    static std::vector<std::string> getAliases() { return {"set-rank"}; };
+    static std::vector<std::string> getAliases() { return {"remove-rank"}; };
 
     static void
     execute(const CommandOrigin& origin, CommandOutput& output, const Parameter& parameter, const Command& command);

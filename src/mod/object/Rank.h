@@ -38,10 +38,13 @@ public:
     void setChatFormat(const std::string& chatFormat);
     void setInheritanceRank(const Rank* inheritanceRank);
     void setScoreTagFormat(const std::string& scoreTagFormat);
+    void setAvailableCommands(const std::vector<std::string>& availableCommands);
 
     bool isCommandAvailable(const std::string& name) const;
     void addAvailableCommand(const std::string& name);
     void removeAvailableCommand(const std::string& name);
+
+    void removeInheritanceRank();
 
     bool operator<(const Rank& other);
     bool operator<=(const Rank& other);

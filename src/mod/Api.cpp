@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <utility>
 
-
 std::unordered_map<std::string, const power_ranks::object::Rank*> getRanks() {
     std::unordered_map<std::string, power_ranks::object::Rank*> originalMap =
         power_ranks::manager::RanksManager::getRanks();

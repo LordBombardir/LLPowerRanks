@@ -28,10 +28,6 @@ void SetRankForm::init(Player& player) {
 
     std::vector<std::string> rankNames = {};
     for (std::pair<std::string, object::Rank*> pair : manager::RanksManager::getRanks()) {
-        if (Utils::isValueInVector(manager::ConfigManager::getConfig().superRanks, pair.first)) {
-            continue;
-        }
-
         rankNames.push_back(pair.first + " - " + pair.second->getPrefix());
     }
 
@@ -54,16 +50,17 @@ void SetRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
 
     try {
         playerName = *std::get_if<std::string>(&result->at("playerName"));
-        rankName   = *std::get_if<std::string>(&result->at("rankName"));
+        rankName   = Utils::strSplit(*std::get_if<std::string>(&result->at("rankName")), " - ")[0];
     } catch (...) {
-        player.sendMessage(manager::LanguageManager::getInstance()
-                               ->getTranslate("commandSetRankUndefinedError", player.getLocaleName()));
+        player.sendMessage(
+            manager::LanguageManager::getInstance()->getTranslate("undefinedError", player.getLocaleName())
+        );
         return;
     }
 
     if (Utils::isValueInVector(manager::ConfigManager::getConfig().superPlayers, playerName)) {
         player.sendMessage(Utils::strReplace(
-            manager::LanguageManager::getInstance()->getTranslate("commandSetRankSuperPlayer", player.getLocaleName()),
+            manager::LanguageManager::getInstance()->getTranslate("setRankSuperPlayer", player.getLocaleName()),
             "{playerName}",
             playerName
         ));
@@ -72,15 +69,16 @@ void SetRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
 
     if (Utils::isValueInVector(manager::ConfigManager::getConfig().superRanks, rankName)) {
         player.sendMessage(
-            manager::LanguageManager::getInstance()->getTranslate("commandSetRankSuperRank", player.getLocaleName())
+            manager::LanguageManager::getInstance()->getTranslate("setRankSuperRank", player.getLocaleName())
         );
         return;
     }
 
     std::optional<object::Rank*> rank = manager::RanksManager::getRank(rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
-        player.sendMessage(manager::LanguageManager::getInstance()
-                               ->getTranslate("commandSetRankUndefinedError", player.getLocaleName()));
+        player.sendMessage(
+            manager::LanguageManager::getInstance()->getTranslate("undefinedError", player.getLocaleName())
+        );
         return;
     }
 
@@ -91,7 +89,7 @@ void SetRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
     }
 
     player.sendMessage(Utils::strReplace(
-        manager::LanguageManager::getInstance()->getTranslate("commandSetRankSuccess", player.getLocaleName()),
+        manager::LanguageManager::getInstance()->getTranslate("setRankSuccess", player.getLocaleName()),
         {"{playerName}", "{rankName}"},
         {playerName, rankName}
     ));

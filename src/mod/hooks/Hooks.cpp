@@ -1,13 +1,14 @@
 #include "Hooks.h"
 #include "../Utils.hpp"
 #include "../manager/MainManager.h"
-#include "ll/api/service/Bedrock.h"
+#include "../manager/command/CommandManager.h"
 #include <ll/api/memory/Hook.h>
-#include <mc/network/NetworkSystem.h>
+#include <mc/network/PacketSender.h>
 #include <mc/network/ServerNetworkHandler.h>
 #include <mc/network/packet/TextPacket.h>
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/level/Command.h>
+#include <mc/world/level/Level.h>
 
 namespace power_ranks::hooks {
 
@@ -60,7 +61,7 @@ LL_TYPE_INSTANCE_HOOK(
 
     const object::Rank&        rank = manager::MainManager::getPlayerRankOrSetDefault(player);
     std::optional<std::string> lastWrittedCommand =
-        manager::MainManager::getAndRemoveLastWrittedCommand(player.getRealName());
+        manager::CommandManager::getAndRemoveLastWrittedCommand(player.getRealName());
 
     if (!lastWrittedCommand.has_value()) {
         return origin(commandOrigin, flags, permissionLevel);
@@ -87,28 +88,30 @@ LL_TYPE_INSTANCE_HOOK(
     }
 
     ServerPlayer& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
-    manager::MainManager::setLastWrittedCommand(player.getRealName(), getCommandName());
+    manager::CommandManager::setLastWrittedCommand(player.getRealName(), getCommandName());
 
     origin(commandOrigin, output);
 }
 
 LL_TYPE_INSTANCE_HOOK(
     PlayerSendMessageHook,
-    HookPriority::Normal,
+    HookPriority::High,
     ServerNetworkHandler,
-    "?handle@ServerNetworkHandler@@UEAAXAEBVNetworkIdentifier@@AEBVTextPacket@@@Z",
+    &ServerNetworkHandler::handle,
     void,
     const NetworkIdentifier& identifier,
-    TextPacket&              packet
+    const TextPacket&        packet
 ) {
     if (optional_ref<ServerPlayer> player = getServerPlayer(identifier, packet.mClientSubId); player != nullptr) {
-        const object::Rank& rank = manager::MainManager::getPlayerRankOrSetDefault(player);
-
-        packet = TextPacket::createRawMessage(Utils::strReplace(
+        const object::Rank& rank        = manager::MainManager::getPlayerRankOrSetDefault(player);
+        TextPacket          otherPacket = TextPacket::createRawMessage(Utils::strReplace(
             rank.getChatFormat(),
             {"{prefix}", "{playerName}", "{message}"},
             {rank.getPrefix(), player->getRealName(), packet.mMessage}
         ));
+
+        player->getLevel().getPacketSender()->sendBroadcast(otherPacket);
+        return;
     }
 
     origin(identifier, packet);

@@ -24,9 +24,9 @@ void SetRankCommand::execute(
         return;
     }
 
-    if (!isOriginServer && Utils::isValueInVector(manager::ConfigManager::getConfig().superRanks, parameter.rankName)) {
+    if (!isOriginServer && Utils::isValueInVector(manager::ConfigManager::getConfig().superRanks, std::string{parameter.rankName})) {
         // clang-format on
-        output.error(manager::LanguageManager::getInstance()->getTranslate("commandSetRankSuperRank", localeName));
+        output.error(manager::LanguageManager::getInstance()->getTranslate("setRankSuperRank", localeName));
         return;
     }
 
@@ -43,7 +43,7 @@ void SetRankCommand::execute(
         }
 
         output.error(Utils::strReplace(
-            manager::LanguageManager::getInstance()->getTranslate("commandSetRankUndefinedRank", localeName),
+            manager::LanguageManager::getInstance()->getTranslate("undefinedRank", localeName),
             {"{rankName}", "{ranks}"},
             {parameter.rankName, ranks}
         ));
@@ -56,7 +56,7 @@ void SetRankCommand::execute(
         if (!isOriginServer && Utils::isValueInVector(manager::ConfigManager::getConfig().superPlayers, player->getRealName())) {
             // clang-format on
             output.error(Utils::strReplace(
-                manager::LanguageManager::getInstance()->getTranslate("commandSetRankSuperPlayer", localeName),
+                manager::LanguageManager::getInstance()->getTranslate("setRankSuperPlayer", localeName),
                 "{playerName}",
                 player->getRealName()
             ));
@@ -72,13 +72,13 @@ void SetRankCommand::execute(
             return;
         }
 
-        output.error(manager::LanguageManager::getInstance()->getTranslate("commandSetRankUndefinedError", localeName));
+        output.error(manager::LanguageManager::getInstance()->getTranslate("undefinedError", localeName));
         return;
     }
 
     if (playerNames.size() == 1) {
         output.success(Utils::strReplace(
-            manager::LanguageManager::getInstance()->getTranslate("commandSetRankSuccess", localeName),
+            manager::LanguageManager::getInstance()->getTranslate("setRankSuccess", localeName),
             {"{playerName}", "{rankName}"},
             {playerNames[0], parameter.rankName}
         ));

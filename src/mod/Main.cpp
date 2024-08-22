@@ -1,6 +1,7 @@
 #include "Main.h"
 #include "hooks/Hooks.h"
 #include "manager/MainManager.h"
+#include "manager/command/CommandManager.h"
 #include "manager/lang/LanguageManager.h"
 #include <ll/api/mod/RegisterHelper.h>
 #include <memory>
@@ -28,7 +29,7 @@ bool Main::load() {
 bool Main::enable() {
     getSelf().getLogger().info("The mod is enabling...");
 
-    if (!manager::MainManager::registerCommands()) {
+    if (!manager::CommandManager::registerCommands()) {
         getSelf().getLogger().info("Failed to enable the mod!");
         return false;
     }

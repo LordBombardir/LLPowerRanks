@@ -1,18 +1,14 @@
 #include "MainManager.h"
 #include "../Utils.hpp"
-#include "../commands/SetRankCommand.h"
 #include "base/BaseManager.h"
 #include "config/ConfigManager.h"
 #include "lang/LanguageManager.h"
 #include "ranks/RanksManager.h"
-#include <ll/api/command/CommandHandle.h>
-#include <ll/api/command/CommandRegistrar.h>
 #include <ll/api/service/Bedrock.h>
+#include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/level/Level.h>
 
 namespace power_ranks::manager {
-
-std::unordered_map<std::string, std::string> MainManager::lastWrittedCommandsByPlayers = {};
 
 bool MainManager::initManagers(ll::mod::NativeMod& mod) {
     try {
@@ -31,47 +27,6 @@ void MainManager::disposeManagers() {
     BaseManager::dispose();
     LanguageManager::dispose();
     RanksManager::dispose();
-}
-
-bool MainManager::registerCommands() {
-    optional_ref<CommandRegistry> commandRegistry = ll::service::getCommandRegistry();
-    if (!commandRegistry) {
-        return false;
-    }
-
-    ll::command::CommandHandle& setRankCommand = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
-        commands::SetRankCommand::getName(),
-        commands::SetRankCommand::getDescription(),
-        commands::SetRankCommand::getRequirement(),
-        commands::SetRankCommand::getFlag()
-    );
-
-    for (std::string alias : commands::SetRankCommand::getAliases()) {
-        setRankCommand.alias(alias);
-    }
-
-    setRankCommand.overload<commands::SetRankCommand::Parameter>()
-        .required("player")
-        .required("rankName")
-        .execute(&commands::SetRankCommand::execute);
-
-    setRankCommand.overload().execute(&commands::SetRankCommand::executeWithoutParameter);
-    return true;
-}
-
-void MainManager::setLastWrittedCommand(const std::string& playerName, const std::string& commandName) {
-    lastWrittedCommandsByPlayers[Utils::strToLower(playerName)] = commandName;
-}
-
-std::optional<std::string> MainManager::getAndRemoveLastWrittedCommand(const std::string& playerName) {
-    if (!lastWrittedCommandsByPlayers.contains(Utils::strToLower(playerName))) {
-        return std::nullopt;
-    }
-
-    std::optional<std::string> result = lastWrittedCommandsByPlayers[Utils::strToLower(playerName)];
-
-    lastWrittedCommandsByPlayers.erase(Utils::strToLower(playerName));
-    return result;
 }
 
 const object::Rank& MainManager::getPlayerRankOrSetDefault(Player& player) {

@@ -49,6 +49,50 @@ public:
         auto iterator = std::find(vector.begin(), vector.end(), value);
         return iterator != vector.end();
     }
+
+    static std::vector<std::string> strSplit(const std::string& str, const std::string& separator) {
+        if (separator == "") {
+            return {};
+        }
+
+        std::vector<std::string> strings;
+        size_t                   start = 0;
+        size_t                   end   = 0;
+
+        while ((end = str.find(separator, start)) != std::string::npos) {
+            strings.push_back(trim_copy(str.substr(start, end - start)));
+            start = end + separator.length();
+        }
+
+        strings.push_back(trim_copy(str.substr(start)));
+        return strings;
+    }
+
+private:
+    // Оригинал кода, написанного ниже: https://stackoverflow.com/questions/216823/how-to-trim-a-stdstring
+
+    static inline void ltrim(std::string& str) {
+        str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](unsigned char ch) {
+                      return !std::isspace(ch);
+                  }));
+    }
+
+    static inline void rtrim(std::string& str) {
+        str.erase(
+            std::find_if(str.rbegin(), str.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(),
+            str.end()
+        );
+    }
+
+    static inline void trim(std::string& str) {
+        rtrim(str);
+        ltrim(str);
+    }
+
+    static inline std::string trim_copy(std::string str) {
+        trim(str);
+        return str;
+    }
 };
 
 } // namespace power_ranks
