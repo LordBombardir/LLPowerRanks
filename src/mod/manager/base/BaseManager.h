@@ -16,11 +16,7 @@ public:
     std::optional<std::string> getPlayerRankByName(const std::string& playerName);
     std::optional<std::string> getPlayerRankByXuid(const std::string& xuid);
 
-    bool setPlayerRank(
-        const std::string& playerName,
-        const std::string& xuid,
-        const std::string& rankName
-    );
+    bool setPlayerRank(const std::string& playerName, const std::string& xuid, const std::string& rankName);
 
     bool updatePlayerNameByXuid(const std::string& xuid, const std::string& playerName);
     bool updateXuidByPlayerName(const std::string& playerName, const std::string& xuid);
@@ -32,7 +28,7 @@ public:
 private:
     BaseManager(ll::mod::NativeMod& mod);
     ~BaseManager() = default;
-    
+
     static std::unique_ptr<base::pool::ConnectionPool> connectionPool;
     static BaseManager*                                instance;
 };

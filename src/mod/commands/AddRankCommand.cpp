@@ -7,17 +7,17 @@
 namespace power_ranks::commands {
 
 void AddRankCommand::execute(
-    const CommandOrigin& origin,
-    CommandOutput&       output,
-    const Parameter&     parameter,
-    const Command&       _
+    const CommandOrigin&            origin,
+    CommandOutput&                  output,
+    const Parameter&                parameter,
+    [[maybe_unused]] const Command& _
 ) {
-    std::string localeName = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)
-                               ? manager::ConfigManager::getConfig().defaultLocaleName
-                               : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleName();
+    std::string localeCode = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)
+                               ? manager::ConfigManager::getConfig().defaultLocaleCode
+                               : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
 
     if (manager::RanksManager::getRank(parameter.rankName).has_value()) {
-        output.error(manager::LanguageManager::getInstance()->getTranslate("addRankAlreadyExists", localeName));
+        output.error(manager::LanguageManager::getTranslate("addRankAlreadyExists", localeCode));
         return;
     }
 
@@ -33,11 +33,13 @@ void AddRankCommand::execute(
             ranks += ", " + pair.first;
         }
 
-        output.error(Utils::strReplace(
-            manager::LanguageManager::getInstance()->getTranslate("undefinedRank", localeName),
-            {"{rankName}", "{ranks}"},
-            {parameter.rankName, ranks}
-        ));
+        output.error(
+            Utils::strReplace(
+                manager::LanguageManager::getTranslate("undefinedRank", localeCode),
+                {"{rankName}", "{ranks}"},
+                {parameter.rankName, ranks}
+            )
+        );
         return;
     }
 
@@ -48,16 +50,18 @@ void AddRankCommand::execute(
         parameter.scoreTagFormat,
         inheritanceRank
     );
-    output.success(Utils::strReplace(
-        manager::LanguageManager::getInstance()->getTranslate("addRankSuccess", localeName),
-        "{rankName}",
-        parameter.rankName
-    ));
+    output.success(
+        Utils::strReplace(
+            manager::LanguageManager::getTranslate("addRankSuccess", localeCode),
+            "{rankName}",
+            parameter.rankName
+        )
+    );
 }
 
 void AddRankCommand::executeWithoutParameter(const CommandOrigin& origin, CommandOutput& output) {
     if (origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)) {
-        output.error(manager::LanguageManager::getInstance()->getTranslate("commandAddRankUsing"));
+        output.error(manager::LanguageManager::getTranslate("commandAddRankUsing"));
         return;
     }
 

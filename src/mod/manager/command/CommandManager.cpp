@@ -1,9 +1,9 @@
 #include "CommandManager.h"
 #include "../../Utils.hpp"
 #include "../../commands/AddRankCommand.h"
+#include "../../commands/EditRankCommand.h"
 #include "../../commands/RemoveRankCommand.h"
 #include "../../commands/SetRankCommand.h"
-#include "../../commands/EditRankCommand.h"
 #include "../ranks/RanksManager.h"
 #include <ll/api/command/CommandHandle.h>
 #include <ll/api/command/CommandRegistrar.h>
@@ -32,7 +32,7 @@ bool CommandManager::registerCommands() {
         commands::AddRankCommand::getFlag()
     );
 
-    for (std::string alias : commands::AddRankCommand::getAliases()) {
+    for (const std::string& alias : commands::AddRankCommand::getAliases()) {
         addRankCommand.alias(alias);
     }
 
@@ -53,7 +53,7 @@ bool CommandManager::registerCommands() {
         commands::SetRankCommand::getFlag()
     );
 
-    for (std::string alias : commands::SetRankCommand::getAliases()) {
+    for (const std::string& alias : commands::SetRankCommand::getAliases()) {
         setRankCommand.alias(alias);
     }
 
@@ -71,7 +71,7 @@ bool CommandManager::registerCommands() {
         commands::RemoveRankCommand::getFlag()
     );
 
-    for (std::string alias : commands::RemoveRankCommand::getAliases()) {
+    for (const std::string& alias : commands::RemoveRankCommand::getAliases()) {
         removeRankCommand.alias(alias);
     }
 
@@ -88,7 +88,7 @@ bool CommandManager::registerCommands() {
         commands::EditRankCommand::getFlag()
     );
 
-    for (std::string alias : commands::EditRankCommand::getAliases()) {
+    for (const std::string& alias : commands::EditRankCommand::getAliases()) {
         editRankCommand.alias(alias);
     }
 

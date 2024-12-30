@@ -4,6 +4,7 @@
 #include "../manager/lang/LanguageManager.h"
 #include <fmt/std.h>
 #include <ll/api/command/SoftEnum.h>
+#include <mc/server/commands/Command.h>
 #include <mc/server/commands/CommandFlag.h>
 #include <mc/server/commands/CommandOrigin.h>
 #include <mc/server/commands/CommandOutput.h>
@@ -21,16 +22,18 @@ public:
     };
 
     static std::string getName() { return "setrank"; };
-    static std::string getDescription() {
-        return manager::LanguageManager::getInstance()->getTranslate("commandSetRankDescription");
-    };
+    static std::string getDescription() { return manager::LanguageManager::getTranslate("commandSetRankDescription"); };
     static CommandPermissionLevel getRequirement() { return CommandPermissionLevel::GameDirectors; };
     static CommandFlag            getFlag() { return CommandFlagValue::NotCheat; };
 
     static std::vector<std::string> getAliases() { return {"set-rank"}; };
 
-    static void
-    execute(const CommandOrigin& origin, CommandOutput& output, const Parameter& parameter, const Command& command);
+    static void execute(
+        const CommandOrigin&                             origin,
+        CommandOutput&                                   output,
+        const Parameter&                                 parameter,
+        [[maybe_unused]] const Command& command
+    );
     static void executeWithoutParameter(const CommandOrigin& origin, CommandOutput& output);
 };
 

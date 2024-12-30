@@ -6,8 +6,9 @@
 #include <mc/network/PacketSender.h>
 #include <mc/network/ServerNetworkHandler.h>
 #include <mc/network/packet/TextPacket.h>
+#include <mc/server/ServerPlayer.h>
+#include <mc/server/commands/Command.h>
 #include <mc/server/commands/CommandRegistry.h>
-#include <mc/world/level/Command.h>
 #include <mc/world/level/Level.h>
 
 namespace power_ranks::hooks {
@@ -57,7 +58,7 @@ LL_TYPE_INSTANCE_HOOK(
         return origin(commandOrigin, flags, permissionLevel);
     }
 
-    ServerPlayer& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
+    auto& player = dynamic_cast<ServerPlayer&>(*commandOrigin.getEntity());
 
     const object::Rank&        rank = manager::MainManager::getPlayerRankOrSetDefault(player);
     std::optional<std::string> lastWrittedCommand =
@@ -87,7 +88,7 @@ LL_TYPE_INSTANCE_HOOK(
         return origin(commandOrigin, output);
     }
 
-    ServerPlayer& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
+    auto& player = dynamic_cast<ServerPlayer&>(*commandOrigin.getEntity());
     manager::CommandManager::setLastWrittedCommand(player.getRealName(), getCommandName());
 
     origin(commandOrigin, output);
@@ -102,13 +103,15 @@ LL_TYPE_INSTANCE_HOOK(
     const NetworkIdentifier& identifier,
     const TextPacket&        packet
 ) {
-    if (optional_ref<ServerPlayer> player = getServerPlayer(identifier, packet.mClientSubId); player != nullptr) {
+    if (optional_ref<ServerPlayer> player = _getServerPlayer(identifier, packet.mClientSubId); player != nullptr) {
         const object::Rank& rank        = manager::MainManager::getPlayerRankOrSetDefault(player);
-        TextPacket          otherPacket = TextPacket::createRawMessage(Utils::strReplace(
-            rank.getChatFormat(),
-            {"{prefix}", "{playerName}", "{message}"},
-            {rank.getPrefix(), player->getRealName(), packet.mMessage}
-        ));
+        TextPacket          otherPacket = TextPacket::createRawMessage(
+            Utils::strReplace(
+                rank.getChatFormat(),
+                {"{prefix}", "{playerName}", "{message}"},
+                {rank.getPrefix(), player->getRealName(), packet.mMessage}
+            )
+        );
 
         player->getLevel().getPacketSender()->sendBroadcast(otherPacket);
         return;

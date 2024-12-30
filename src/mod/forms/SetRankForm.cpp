@@ -4,25 +4,23 @@
 #include "../manager/lang/LanguageManager.h"
 #include "../manager/ranks/RanksManager.h"
 #include <ll/api/form/CustomForm.h>
-#include <mc/network/packet/PlayerListEntry.h>
+#include <mc/world/actor/player/PlayerListEntry.h>
 #include <mc/world/level/Level.h>
 #include <variant>
 
 namespace power_ranks::forms {
 
 void SetRankForm::init(Player& player) {
-    ll::form::CustomForm form(
-        manager::LanguageManager::getInstance()->getTranslate("formSetRankTitle", player.getLocaleName())
-    );
+    ll::form::CustomForm form(manager::LanguageManager::getTranslate("formSetRankTitle", player.getLocaleCode()));
 
     std::vector<std::string> playerNames = {};
     for (const std::pair<mce::UUID, PlayerListEntry> pair : player.getLevel().getPlayerList()) {
-        playerNames.push_back(pair.second.mName);
+        playerNames.push_back(pair.second.mName.get());
     }
 
     form.appendDropdown(
         "playerName",
-        manager::LanguageManager::getInstance()->getTranslate("formSetRankDropdownPlayers", player.getLocaleName()),
+        manager::LanguageManager::getTranslate("formSetRankDropdownPlayers", player.getLocaleCode()),
         playerNames
     );
 
@@ -33,7 +31,7 @@ void SetRankForm::init(Player& player) {
 
     form.appendDropdown(
         "rankName",
-        manager::LanguageManager::getInstance()->getTranslate("formSetRankDropdownRanks", player.getLocaleName()),
+        manager::LanguageManager::getTranslate("formSetRankDropdownRanks", player.getLocaleCode()),
         rankNames
     );
 
@@ -52,33 +50,29 @@ void SetRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
         playerName = *std::get_if<std::string>(&result->at("playerName"));
         rankName   = Utils::strSplit(*std::get_if<std::string>(&result->at("rankName")), " - ")[0];
     } catch (...) {
-        player.sendMessage(
-            manager::LanguageManager::getInstance()->getTranslate("undefinedError", player.getLocaleName())
-        );
+        player.sendMessage(manager::LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
         return;
     }
 
     if (Utils::isValueInVector(manager::ConfigManager::getConfig().superPlayers, playerName)) {
-        player.sendMessage(Utils::strReplace(
-            manager::LanguageManager::getInstance()->getTranslate("setRankSuperPlayer", player.getLocaleName()),
-            "{playerName}",
-            playerName
-        ));
+        player.sendMessage(
+            Utils::strReplace(
+                manager::LanguageManager::getTranslate("setRankSuperPlayer", player.getLocaleCode()),
+                "{playerName}",
+                playerName
+            )
+        );
         return;
     }
 
     if (Utils::isValueInVector(manager::ConfigManager::getConfig().superRanks, rankName)) {
-        player.sendMessage(
-            manager::LanguageManager::getInstance()->getTranslate("setRankSuperRank", player.getLocaleName())
-        );
+        player.sendMessage(manager::LanguageManager::getTranslate("setRankSuperRank", player.getLocaleCode()));
         return;
     }
 
     std::optional<object::Rank*> rank = manager::RanksManager::getRank(rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
-        player.sendMessage(
-            manager::LanguageManager::getInstance()->getTranslate("undefinedError", player.getLocaleName())
-        );
+        player.sendMessage(manager::LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
         return;
     }
 
@@ -88,11 +82,13 @@ void SetRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
         manager::MainManager::setPlayerRankByName(playerName, *rank.value());
     }
 
-    player.sendMessage(Utils::strReplace(
-        manager::LanguageManager::getInstance()->getTranslate("setRankSuccess", player.getLocaleName()),
-        {"{playerName}", "{rankName}"},
-        {playerName, rankName}
-    ));
+    player.sendMessage(
+        Utils::strReplace(
+            manager::LanguageManager::getTranslate("setRankSuccess", player.getLocaleCode()),
+            {"{playerName}", "{rankName}"},
+            {playerName, rankName}
+        )
+    );
 }
 
 } // namespace power_ranks::forms

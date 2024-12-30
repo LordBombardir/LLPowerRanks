@@ -12,7 +12,7 @@ static std::unique_ptr<Main> instance;
 
 Main& Main::getInstance() { return *instance; }
 
-bool Main::load() {
+[[maybe_unused]] bool Main::load() {
     getSelf().getLogger().info("The mod is loading...");
 
     if (!manager::MainManager::initManagers(getSelf())) {
@@ -26,7 +26,7 @@ bool Main::load() {
     return true;
 }
 
-bool Main::enable() {
+[[maybe_unused]] bool Main::enable() {
     getSelf().getLogger().info("The mod is enabling...");
 
     if (!manager::CommandManager::registerCommands()) {
@@ -43,7 +43,7 @@ bool Main::enable() {
     return true;
 }
 
-bool Main::disable() {
+[[maybe_unused]] bool Main::disable() {
     getSelf().getLogger().info("The mod is disabling...");
 
     manager::MainManager::disposeManagers();

@@ -15,7 +15,7 @@ std::unordered_map<std::string, const power_ranks::object::Rank*> getRanks() {
 
     return newMap;
 }
-const std::optional<const power_ranks::object::Rank*> getRank(const std::string& name) {
+std::optional<const power_ranks::object::Rank*> getRank(const std::string& name) {
     return power_ranks::manager::RanksManager::getRank(name);
 }
 

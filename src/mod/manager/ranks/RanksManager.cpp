@@ -1,6 +1,5 @@
 #include "RanksManager.h"
 #include "../../Utils.hpp"
-#include "../config/ConfigManager.h"
 #include "../command/CommandManager.h"
 #include <ll/api/Config.h>
 #include <stdexcept>
@@ -9,8 +8,8 @@ namespace power_ranks::manager {
 
 int                                            RanksManager::currentPriority = 0;
 RanksManager::Config                           RanksManager::config;
-std::string                                    RanksManager::pathToConfig = "";
-std::unordered_map<std::string, object::Rank*> RanksManager::ranks        = {};
+std::string                                    RanksManager::pathToConfig;
+std::unordered_map<std::string, object::Rank*> RanksManager::ranks = {};
 
 bool RanksManager::init(ll::mod::NativeMod& mod) {
     pathToConfig = Utils::fixPath(mod.getDataDir().string() + "/ranks.json");
@@ -30,8 +29,6 @@ bool RanksManager::init(ll::mod::NativeMod& mod) {
     } catch (...) {
         return false;
     }
-
-    return false;
 }
 
 void RanksManager::dispose() {

@@ -9,21 +9,17 @@ namespace power_ranks::manager {
 class LanguageManager final {
 public:
     static void init(ll::mod::NativeMod& mod);
-    static void dispose();
 
-    std::string getTranslate(
+    static std::string getTranslate(
         const std::string_view& key,
-        const std::string_view& localeName = ConfigManager::getConfig().defaultLocaleName
+        const std::string_view& localeCode = ConfigManager::getConfig().defaultLocaleCode
     );
 
-    static LanguageManager* getInstance();
-
 private:
-    LanguageManager(ll::mod::NativeMod& mod);
+    LanguageManager()  = default;
     ~LanguageManager() = default;
 
-    static std::unique_ptr<ll::i18n::I18N> i18n;
-    static LanguageManager*                instance;
+    static std::unique_ptr<ll::i18n::I18n> i18n;
 };
 
 } // namespace power_ranks::manager

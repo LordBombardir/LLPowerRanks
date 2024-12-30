@@ -40,10 +40,10 @@ public:
     static std::optional<object::Rank*>                   getRank(const std::string& name);
 
     static void addRank(
-        const std::string&                name,
-        const std::string&                prefix,
-        const std::string&                chatFormat,
-        const std::string&                scoreTagFormat,
+        const std::string&                        name,
+        const std::string&                        prefix,
+        const std::string&                        chatFormat,
+        const std::string&                        scoreTagFormat,
         const std::optional<const object::Rank*>& inheritanceRank = std::nullopt
     );
     static void removeRank(const object::Rank& rank);

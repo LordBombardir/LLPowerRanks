@@ -18,8 +18,6 @@ bool ConfigManager::init(ll::mod::NativeMod& mod) {
     } catch (...) {
         return false;
     }
-
-    return false;
 }
 
 const ConfigManager::MainConfig& ConfigManager::getConfig() { return config; }

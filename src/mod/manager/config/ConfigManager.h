@@ -9,8 +9,8 @@ namespace power_ranks::manager {
 class ConfigManager final {
 public:
     struct MainConfig {
-        int                      version           = 1;
-        std::string              defaultLocaleName = "en_US";
+        int                      version           = 2;
+        std::string              defaultLocaleCode = "en_US";
         std::string              defaultRankName   = "Default";
         std::vector<std::string> superRanks        = {"Helper", "Administrator"};
         std::vector<std::string> superPlayers      = {"LordBombardir"};

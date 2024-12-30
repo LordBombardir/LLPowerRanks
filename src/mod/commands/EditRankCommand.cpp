@@ -1,24 +1,24 @@
 #include "EditRankCommand.h"
-#include "../forms/EditRankForm.h"
 #include "../Utils.hpp"
+#include "../forms/EditRankForm.h"
 #include "../manager/ranks/RanksManager.h"
 #include <mc/server/ServerPlayer.h>
 
 namespace power_ranks::commands {
 
 void EditRankCommand::execute(
-    const CommandOrigin& origin,
-    CommandOutput&       output,
-    const Parameter&     parameter,
-    const Command&       _
+    const CommandOrigin&            origin,
+    CommandOutput&                  output,
+    const Parameter&                parameter,
+    [[maybe_unused]] const Command& _
 ) {
     // clang-format off
     bool isOriginServer = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player);
-    std::string localeName = isOriginServer ? manager::ConfigManager::getConfig().defaultLocaleName : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleName();
+    std::string localeCode = isOriginServer ? manager::ConfigManager::getConfig().defaultLocaleCode : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
 
     if (!isOriginServer && Utils::isValueInVector(manager::ConfigManager::getConfig().superRanks, std::string{parameter.rankName})) {
         // clang-format on
-        output.error(manager::LanguageManager::getInstance()->getTranslate("editRankSuperRank", localeName));
+        output.error(manager::LanguageManager::getTranslate("editRankSuperRank", localeCode));
         return;
     }
 
@@ -34,11 +34,13 @@ void EditRankCommand::execute(
             ranks += ", " + pair.first;
         }
 
-        output.error(Utils::strReplace(
-            manager::LanguageManager::getInstance()->getTranslate("undefinedRank", localeName),
-            {"{rankName}", "{ranks}"},
-            {parameter.rankName, ranks}
-        ));
+        output.error(
+            Utils::strReplace(
+                manager::LanguageManager::getTranslate("undefinedRank", localeCode),
+                {"{rankName}", "{ranks}"},
+                {parameter.rankName, ranks}
+            )
+        );
         return;
     }
 
@@ -54,19 +56,19 @@ void EditRankCommand::execute(
             ranks += ", " + pair.first;
         }
 
-        output.error(Utils::strReplace(
-            manager::LanguageManager::getInstance()->getTranslate("undefinedRank", localeName),
-            {"{rankName}", "{ranks}"},
-            {parameter.rankName, ranks}
-        ));
+        output.error(
+            Utils::strReplace(
+                manager::LanguageManager::getTranslate("undefinedRank", localeCode),
+                {"{rankName}", "{ranks}"},
+                {parameter.rankName, ranks}
+            )
+        );
         return;
     }
 
     std::vector<std::string> availableCommands = Utils::strSplit(parameter.availableCommands, ";");
     if (parameter.availableCommands != "null" && availableCommands.empty()) {
-        output.error(
-            manager::LanguageManager::getInstance()->getTranslate("editRankInvalidFormatAvailableCommands", localeName)
-        );
+        output.error(manager::LanguageManager::getTranslate("editRankInvalidFormatAvailableCommands", localeCode));
         return;
     }
 
@@ -82,16 +84,18 @@ void EditRankCommand::execute(
     }
 
     manager::RanksManager::saveChangesRank(*rank.value());
-    output.success(Utils::strReplace(
-        manager::LanguageManager::getInstance()->getTranslate("editRankSuccess", localeName),
-        "{rankName}",
-        parameter.rankName
-    ));
+    output.success(
+        Utils::strReplace(
+            manager::LanguageManager::getTranslate("editRankSuccess", localeCode),
+            "{rankName}",
+            parameter.rankName
+        )
+    );
 }
 
 void EditRankCommand::executeWithoutParameter(const CommandOrigin& origin, CommandOutput& output) {
     if (origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)) {
-        output.error(manager::LanguageManager::getInstance()->getTranslate("commandEditRankUsing"));
+        output.error(manager::LanguageManager::getTranslate("commandEditRankUsing"));
         return;
     }
 

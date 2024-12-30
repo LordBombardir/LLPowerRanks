@@ -76,4 +76,4 @@ sqlite3* ConnectionPool::openConnection() {
 
 void ConnectionPool::closeConnection(sqlite3* db) { sqlite3_close(db); }
 
-} // namespace regions::base::pool
+} // namespace power_ranks::manager::base::pool

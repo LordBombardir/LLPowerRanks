@@ -25,7 +25,6 @@ bool MainManager::initManagers(ll::mod::NativeMod& mod) {
 
 void MainManager::disposeManagers() {
     BaseManager::dispose();
-    LanguageManager::dispose();
     RanksManager::dispose();
 }
 
@@ -121,37 +120,24 @@ void MainManager::updatePlayerRank(Player& player) {
 
 AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
     AvailableCommandsPacket packet = ll::service::getCommandRegistry()->serializeAvailableCommands();
-    for (AvailableCommandsPacket::CommandData& command : packet.mCommands) {
-        if (rank.isCommandAvailable(command.name)) {
-            command.perm = CommandPermissionLevel::Any;
+    for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
+        std::string commandName = command.name.get();
+        if (rank.isCommandAvailable(commandName)) {
+            command.permission = CommandPermissionLevel::Any;
         }
 
-        if (command.name == "addrank") {
-            command.description = manager::LanguageManager::getInstance()->getTranslate(
-                "commandAddRankDescription",
-                player.getLocaleName()
-            );
-        }
-
-        if (command.name == "setrank") {
-            command.description = manager::LanguageManager::getInstance()->getTranslate(
-                "commandSetRankDescription",
-                player.getLocaleName()
-            );
-        }
-
-        if (command.name == "removerank") {
-            command.description = manager::LanguageManager::getInstance()->getTranslate(
-                "commandRemoveRankDescription",
-                player.getLocaleName()
-            );
-        }
-
-        if (command.name == "editrank") {
-            command.description = manager::LanguageManager::getInstance()->getTranslate(
-                "commandEditRankDescription",
-                player.getLocaleName()
-            );
+        if (commandName == "addrank") {
+            command.description =
+                manager::LanguageManager::getTranslate("commandAddRankDescription", player.getLocaleCode());
+        } else if (commandName == "setrank") {
+            command.description =
+                manager::LanguageManager::getTranslate("commandSetRankDescription", player.getLocaleCode());
+        } else if (commandName == "removerank") {
+            command.description =
+                manager::LanguageManager::getTranslate("commandRemoveRankDescription", player.getLocaleCode());
+        } else if (commandName == "editrank") {
+            command.description =
+                manager::LanguageManager::getTranslate("commandEditRankDescription", player.getLocaleCode());
         }
     }
 

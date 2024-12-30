@@ -13,9 +13,9 @@ public:
 
     [[nodiscard]] ll::mod::NativeMod& getSelf() const { return mSelf; }
 
-    bool load();
-    bool enable();
-    bool disable();
+    [[maybe_unused]] bool load();
+    [[maybe_unused]] bool enable();
+    [[maybe_unused]] bool disable();
 
 private:
     ll::mod::NativeMod& mSelf;

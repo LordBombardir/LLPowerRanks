@@ -13,7 +13,7 @@
 extern "C++" {
 
 POWERRANKS_API std::unordered_map<std::string, const power_ranks::object::Rank*> getRanks();
-POWERRANKS_API const std::optional<const power_ranks::object::Rank*> getRank(const std::string& name);
+POWERRANKS_API std::optional<const power_ranks::object::Rank*> getRank(const std::string& name);
 
 POWERRANKS_API const power_ranks::object::Rank& getPlayerRankOrSetDefault(Player& player);
 POWERRANKS_API const power_ranks::object::Rank& getPlayerRankOrSetDefault(const std::string& playerName);

@@ -8,7 +8,6 @@ namespace power_ranks::object {
 
 class Rank {
 public:
-    Rank();
     Rank(
         const int                         priority,
         const std::string&                name,
@@ -52,6 +51,8 @@ public:
     bool operator>=(const Rank& other);
 
 private:
+    Rank() = delete;
+
     const int                  priority;
     const std::string          name;
     std::string                prefix;
