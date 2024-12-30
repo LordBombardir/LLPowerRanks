@@ -1,10 +1,11 @@
 {
     "format_version": 2,
     "tooth": "github.com/LordBombardir/LLPowerRanks",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "info": {
         "name": "PowerRanks",
         "description": "A mod that adds a rank (privilege) system to the game",
+        "source": "github.com/LordBombardir/LLPowerRanks",
         "author": "LordBombardir",
         "tags": [
             "levilamina",
@@ -13,10 +14,7 @@
             "privileges"
         ]
     },
-    "asset_url": "",
-    "prerequisites": {
-        "github.com/LiteLDev/LeviLamina": ">=0.13.5"
-    },
+    "asset_url": "https://github.com/LordBombardir/LLPowerRanks/releases/download/v1.0.1/LLPowerRanks-windows-x64.zip",
     "files": {
         "place": [
             {
