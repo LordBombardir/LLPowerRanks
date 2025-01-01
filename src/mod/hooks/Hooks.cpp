@@ -98,13 +98,13 @@ LL_TYPE_INSTANCE_HOOK(
     PlayerSendMessageHook,
     HookPriority::High,
     ServerNetworkHandler,
-    &ServerNetworkHandler::handle,
+    &ServerNetworkHandler::$handle,
     void,
     const NetworkIdentifier& identifier,
     const TextPacket&        packet
 ) {
-    if (optional_ref<ServerPlayer> player = _getServerPlayer(identifier, packet.mClientSubId); player != nullptr) {
-        const object::Rank& rank        = manager::MainManager::getPlayerRankOrSetDefault(player);
+    if (ServerPlayer* player = _getServerPlayer(identifier, packet.mClientSubId); player != nullptr) {
+        const object::Rank& rank        = manager::MainManager::getPlayerRankOrSetDefault(*player);
         TextPacket          otherPacket = TextPacket::createRawMessage(
             Utils::strReplace(
                 rank.getChatFormat(),
