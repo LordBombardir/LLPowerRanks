@@ -13,6 +13,9 @@ if not has_config("vs_runtime") then
 end
 
 target("PowerRanks") -- Change this to your mod name.
+    add_rules("@levibuildscript/linkrule")
+    add_rules("@levibuildscript/modpacker")
+    
     add_cxflags(
         "/EHa",
         "/utf-8",
@@ -29,7 +32,6 @@ target("PowerRanks") -- Change this to your mod name.
     add_includedirs("src")
     add_packages("levilamina")
     add_packages("sqlitecpp")
-    add_shflags("/DELAYLOAD:bedrock_runtime.dll")
     set_exceptions("none") -- To avoid conflicts with /EHa.
     set_kind("shared")
     set_languages("c++20")

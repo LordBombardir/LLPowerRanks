@@ -9,7 +9,7 @@ class Main {
 public:
     static Main& getInstance();
 
-    Main(ll::mod::NativeMod& self) : mSelf(self) {}
+    Main() : mSelf(*ll::mod::NativeMod::current()) {}
 
     [[nodiscard]] ll::mod::NativeMod& getSelf() const { return mSelf; }
 

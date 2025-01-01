@@ -4,13 +4,13 @@
 #include "manager/command/CommandManager.h"
 #include "manager/lang/LanguageManager.h"
 #include <ll/api/mod/RegisterHelper.h>
-#include <memory>
 
 namespace power_ranks {
 
-static std::unique_ptr<Main> instance;
-
-Main& Main::getInstance() { return *instance; }
+Main& Main::getInstance() {
+    static Main instance;
+    return instance;
+}
 
 bool Main::load() {
     getSelf().getLogger().info("The mod is loading...");
@@ -54,4 +54,4 @@ bool Main::disable() {
 
 } // namespace power_ranks
 
-LL_REGISTER_MOD(power_ranks::Main, *power_ranks::instance);
+LL_REGISTER_MOD(power_ranks::Main, power_ranks::Main::getInstance());
