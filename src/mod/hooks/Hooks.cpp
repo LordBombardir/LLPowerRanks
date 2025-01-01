@@ -58,7 +58,7 @@ LL_TYPE_INSTANCE_HOOK(
         return origin(commandOrigin, flags, permissionLevel);
     }
 
-    auto& player = dynamic_cast<ServerPlayer&>(*commandOrigin.getEntity());
+    auto& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
 
     const object::Rank&        rank = manager::MainManager::getPlayerRankOrSetDefault(player);
     std::optional<std::string> lastWrittedCommand =
@@ -88,7 +88,7 @@ LL_TYPE_INSTANCE_HOOK(
         return origin(commandOrigin, output);
     }
 
-    auto& player = dynamic_cast<ServerPlayer&>(*commandOrigin.getEntity());
+    auto& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
     manager::CommandManager::setLastWrittedCommand(player.getRealName(), getCommandName());
 
     origin(commandOrigin, output);

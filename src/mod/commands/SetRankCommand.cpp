@@ -15,7 +15,7 @@ void SetRankCommand::execute(
 ) {
     // clang-format off
     bool isOriginServer = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player);
-    std::string localeCode = isOriginServer ? manager::ConfigManager::getConfig().defaultLocaleCode : dynamic_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
+    std::string localeCode = isOriginServer ? manager::ConfigManager::getConfig().defaultLocaleCode : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
 
     CommandSelectorResults<Player> players = parameter.player.results(origin);
     if (players.empty()) {
@@ -115,7 +115,7 @@ void SetRankCommand::executeWithoutParameter(const CommandOrigin& origin, Comman
         return;
     }
 
-    forms::SetRankForm::init(dynamic_cast<ServerPlayer&>(*origin.getEntity()));
+    forms::SetRankForm::init(static_cast<ServerPlayer&>(*origin.getEntity()));
 }
 
 } // namespace power_ranks::commands

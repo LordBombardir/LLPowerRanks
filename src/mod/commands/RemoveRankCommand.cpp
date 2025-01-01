@@ -13,7 +13,7 @@ void RemoveRankCommand::execute(
 ) {
     std::string localeCode = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)
                                ? manager::ConfigManager::getConfig().defaultLocaleCode
-                               : dynamic_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
+                               : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
 
     std::optional<object::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
