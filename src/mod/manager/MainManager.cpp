@@ -115,7 +115,7 @@ void MainManager::updatePlayerRank(Player& player) {
     const object::Rank&     rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
     AvailableCommandsPacket packet = getAvailableCommandsPacket(rank, player);
 
-    packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
+    //packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
     //player.setScoreTag(Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
 }
 
@@ -132,7 +132,6 @@ AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Ra
         if (commandName == "addrank") {
             command.description =
                 manager::LanguageManager::getTranslate("commandAddRankDescription", player.getLocaleCode());
-            logger->info(command.description.get());
         } else if (commandName == "setrank") {
             command.description =
                 manager::LanguageManager::getTranslate("commandSetRankDescription", player.getLocaleCode());
@@ -145,6 +144,7 @@ AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Ra
         }
     }
 
+    logger->info("success");
     return packet;
 }
 
