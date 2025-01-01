@@ -2,6 +2,7 @@
 #include "../Utils.hpp"
 #include "../manager/MainManager.h"
 #include "../manager/command/CommandManager.h"
+#include <ll/api/io/LoggerRegistry.h>
 #include <ll/api/memory/Hook.h>
 #include <mc/network/PacketSender.h>
 #include <mc/network/ServerNetworkHandler.h>
@@ -24,6 +25,10 @@ LL_TYPE_INSTANCE_HOOK(
     ServerPlayer&            player
 ) {
     origin(source, connectionRequest, player);
+    
+    std::shared_ptr<ll::io::Logger> logger = ll::io::LoggerRegistry::getInstance().getOrCreate("TEST");
+    logger->info("Test 1...");
+
     manager::MainManager::updatePlayerRank(player);
 }
 

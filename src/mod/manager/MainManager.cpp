@@ -7,6 +7,7 @@
 #include <ll/api/service/Bedrock.h>
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/level/Level.h>
+#include <ll/api/io/LoggerRegistry.h>
 
 namespace power_ranks::manager {
 
@@ -111,11 +112,17 @@ void MainManager::setPlayerRankByXuid(const std::string& xuid, const object::Ran
 }
 
 void MainManager::updatePlayerRank(Player& player) {
-    const object::Rank&     rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
-    AvailableCommandsPacket packet = getAvailableCommandsPacket(rank, player);
+    std::shared_ptr<ll::io::Logger> logger = ll::io::LoggerRegistry::getInstance().getOrCreate("TEST");
+    logger->info("Test 2...");
 
+    const object::Rank&     rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
+    logger->info("Test 3...");
+    AvailableCommandsPacket packet = getAvailableCommandsPacket(rank, player);
+    logger->info("Test 4...");
     packet.sendTo(player);
+    logger->info("Test 5...");
     player.setScoreTag(Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
+    logger->info("Test 6...");
 }
 
 AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
