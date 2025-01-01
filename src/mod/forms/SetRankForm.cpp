@@ -14,7 +14,7 @@ void SetRankForm::init(Player& player) {
     ll::form::CustomForm form(manager::LanguageManager::getTranslate("formSetRankTitle", player.getLocaleCode()));
 
     std::vector<std::string> playerNames = {};
-    for (const std::pair<mce::UUID, PlayerListEntry> pair : player.getLevel().getPlayerList()) {
+    for (const std::pair<mce::UUID, PlayerListEntry> pair : player.getLevel().$getPlayerList()) {
         playerNames.push_back(pair.second.mName.get());
     }
 
