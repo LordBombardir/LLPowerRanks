@@ -104,7 +104,8 @@ LL_TYPE_INSTANCE_HOOK(
     const NetworkIdentifier& identifier,
     const TextPacket&        packet
 ) {
-    if (ServerPlayer* player = _getServerPlayer(identifier, packet.mClientSubId); player != nullptr) {
+    auto handle = static_cast<decltype(this)>(static_cast<NetEventCallback*>(this));
+    if (ServerPlayer* player = handle->_getServerPlayer(identifier, packet.mClientSubId); player != nullptr) {
         const object::Rank& rank        = manager::MainManager::getPlayerRankOrSetDefault(*player);
         TextPacket          otherPacket = TextPacket::createRawMessage(
             Utils::strReplace(
@@ -122,7 +123,7 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void Hooks::setupHooks() {
-    //ServerNetworkHandlerSendLoginMessageLocalHook::hook();
+    ServerNetworkHandlerSendLoginMessageLocalHook::hook();
     CommandRegistryAddEnumValueConstraintsHook::hook();
     CommandRegistryCheckOriginCommandFlagsHook::hook();
     CommandRunHook::hook();

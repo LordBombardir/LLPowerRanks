@@ -7,7 +7,6 @@
 #include <ll/api/service/Bedrock.h>
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/level/Level.h>
-#include <mc/network/PacketSender.h>
 
 namespace power_ranks::manager {
 
