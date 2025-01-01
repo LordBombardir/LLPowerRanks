@@ -7,6 +7,7 @@
 #include <ll/api/service/Bedrock.h>
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/level/Level.h>
+#include <mc/network/PacketSender.h>
 
 namespace power_ranks::manager {
 
@@ -114,7 +115,7 @@ void MainManager::updatePlayerRank(Player& player) {
     const object::Rank&     rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
     AvailableCommandsPacket packet = getAvailableCommandsPacket(rank, player);
 
-    packet.sendTo(player);
+    player.mPacketSender.send(packet);
     player.setScoreTag(Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
 }
 
