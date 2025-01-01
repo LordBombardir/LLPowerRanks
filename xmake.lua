@@ -29,7 +29,6 @@ target("PowerRanks") -- Change this to your mod name.
     add_includedirs("src")
     add_packages("levilamina")
     add_packages("sqlitecpp")
-    add_shflags("/DELAYLOAD:bedrock_server.dll") -- To use symbols provided by SymbolProvider.
     set_exceptions("none") -- To avoid conflicts with /EHa.
     set_kind("shared")
     set_languages("c++20")
