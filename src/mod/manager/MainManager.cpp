@@ -115,8 +115,8 @@ void MainManager::updatePlayerRank(Player& player) {
     const object::Rank&     rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
     AvailableCommandsPacket packet = getAvailableCommandsPacket(rank, player);
 
-    //packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
-    player.setScoreTag(Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
+    packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
+    //player.setScoreTag(Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
 }
 
 AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
@@ -125,7 +125,6 @@ AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Ra
     AvailableCommandsPacket packet = ll::service::getCommandRegistry()->serializeAvailableCommands();
     for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
         std::string commandName = command.name.get();
-        logger->info(commandName);
         if (rank.isCommandAvailable(commandName)) {
             command.permission = CommandPermissionLevel::Any;
         }
@@ -145,6 +144,7 @@ AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Ra
         }
     }
 
+    logger->info(packet.mCommands.get()[0].description.get());
     return packet;
 }
 
