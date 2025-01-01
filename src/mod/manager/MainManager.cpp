@@ -115,7 +115,7 @@ void MainManager::updatePlayerRank(Player& player) {
     const object::Rank&     rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
     AvailableCommandsPacket packet = getAvailableCommandsPacket(rank, player);
 
-    player.mPacketSender.send(packet);
+    packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
     player.setScoreTag(Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
 }
 
