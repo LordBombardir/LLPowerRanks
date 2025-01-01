@@ -1,32 +1,32 @@
 #include "Hooks.h"
-#include "../Utils.hpp"
-#include "../manager/MainManager.h"
+//#include "../Utils.hpp"
+//#include "../manager/MainManager.h"
 //#include "../manager/command/CommandManager.h"
-#include <ll/api/memory/Hook.h>
+//#include <ll/api/memory/Hook.h>
 //#include <mc/network/PacketSender.h>
-#include <mc/network/ServerNetworkHandler.h>
+//#include <mc/network/ServerNetworkHandler.h>
 //#include <mc/network/packet/TextPacket.h>
-#include <mc/server/ServerPlayer.h>
+//#include <mc/server/ServerPlayer.h>
 //#include <mc/server/commands/Command.h>
 //#include <mc/server/commands/CommandRegistry.h>
 //#include <mc/world/level/Level.h>
 
 namespace power_ranks::hooks {
 
-LL_TYPE_INSTANCE_HOOK(
-    ServerNetworkHandlerSendLoginMessageLocalHook,
-    ll::memory::HookPriority::Normal,
-    ServerNetworkHandler,
-    &ServerNetworkHandler::sendLoginMessageLocal,
-    void,
-    const NetworkIdentifier& source,
-    const ConnectionRequest& connectionRequest,
-    ServerPlayer&            player
-) {
-    origin(source, connectionRequest, player);
+// LL_TYPE_INSTANCE_HOOK(
+//     ServerNetworkHandlerSendLoginMessageLocalHook,
+//     ll::memory::HookPriority::Normal,
+//     ServerNetworkHandler,
+//     &ServerNetworkHandler::sendLoginMessageLocal,
+//     void,
+//     const NetworkIdentifier& source,
+//     const ConnectionRequest& connectionRequest,
+//     ServerPlayer&            player
+// ) {
+//     origin(source, connectionRequest, player);
 
-    manager::MainManager::updatePlayerRank(player);
-}
+//     manager::MainManager::updatePlayerRank(player);
+// }
 
 // LL_TYPE_INSTANCE_HOOK(
 //     CommandRegistryAddEnumValueConstraintsHook,
@@ -122,7 +122,7 @@ LL_TYPE_INSTANCE_HOOK(
 // }
 
 void Hooks::setupHooks() {
-    ServerNetworkHandlerSendLoginMessageLocalHook::hook();
+    //ServerNetworkHandlerSendLoginMessageLocalHook::hook();
     //CommandRegistryAddEnumValueConstraintsHook::hook();
     //CommandRegistryCheckOriginCommandFlagsHook::hook();
     //CommandRunHook::hook();
