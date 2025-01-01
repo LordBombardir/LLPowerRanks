@@ -4,7 +4,6 @@
 #include "../manager/lang/LanguageManager.h"
 #include "../manager/ranks/RanksManager.h"
 #include <ll/api/form/CustomForm.h>
-#include <mc/world/actor/player/PlayerListEntry.h>
 #include <mc/world/level/Level.h>
 #include <variant>
 
@@ -14,9 +13,10 @@ void SetRankForm::init(Player& player) {
     ll::form::CustomForm form(manager::LanguageManager::getTranslate("formSetRankTitle", player.getLocaleCode()));
 
     std::vector<std::string> playerNames = {};
-    for (const std::pair<mce::UUID, PlayerListEntry> pair : player.getLevel().$getPlayerList()) {
-        playerNames.push_back(pair.second.mName.get());
-    }
+    player.getLevel().forEachPlayer([&playerNames](Player& otherPlayer) -> bool {
+        playerNames.push_back(otherPlayer.getRealName());
+        return true;
+    });
 
     form.appendDropdown(
         "playerName",
