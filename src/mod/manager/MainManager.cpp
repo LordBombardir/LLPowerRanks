@@ -132,6 +132,7 @@ AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Ra
         if (commandName == "addrank") {
             command.description =
                 manager::LanguageManager::getTranslate("commandAddRankDescription", player.getLocaleCode());
+            logger->info(command.description.get());
         } else if (commandName == "setrank") {
             command.description =
                 manager::LanguageManager::getTranslate("commandSetRankDescription", player.getLocaleCode());
@@ -144,7 +145,6 @@ AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Ra
         }
     }
 
-    logger->info(packet.mCommands.get()[0].description.get());
     return packet;
 }
 
