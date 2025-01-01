@@ -12,7 +12,7 @@ static std::unique_ptr<Main> instance;
 
 Main& Main::getInstance() { return *instance; }
 
-[[maybe_unused]] bool Main::load() {
+bool Main::load() {
     getSelf().getLogger().info("The mod is loading...");
 
     if (!manager::MainManager::initManagers(getSelf())) {
@@ -26,7 +26,7 @@ Main& Main::getInstance() { return *instance; }
     return true;
 }
 
-[[maybe_unused]] bool Main::enable() {
+bool Main::enable() {
     getSelf().getLogger().info("The mod is enabling...");
 
     if (!manager::CommandManager::registerCommands()) {
@@ -36,14 +36,14 @@ Main& Main::getInstance() { return *instance; }
 
     getSelf().getLogger().info(
         "The mod has been successfully enabled! Choosed language: "
-        + manager::LanguageManager::getInstance()->getTranslate("languageName")
+        + manager::LanguageManager::getTranslate("languageName")
     );
 
     getSelf().getLogger().info("Author: vk.com/lordbomba");
     return true;
 }
 
-[[maybe_unused]] bool Main::disable() {
+bool Main::disable() {
     getSelf().getLogger().info("The mod is disabling...");
 
     manager::MainManager::disposeManagers();
@@ -54,4 +54,4 @@ Main& Main::getInstance() { return *instance; }
 
 } // namespace power_ranks
 
-LL_REGISTER_MOD(power_ranks::Main, power_ranks::instance);
+LL_REGISTER_MOD(power_ranks::Main, *power_ranks::instance);
