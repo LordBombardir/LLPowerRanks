@@ -1,15 +1,15 @@
 #include "Hooks.h"
 #include "../Utils.hpp"
 #include "../manager/MainManager.h"
-#include "../manager/command/CommandManager.h"
+//#include "../manager/command/CommandManager.h"
 #include <ll/api/memory/Hook.h>
-#include <mc/network/PacketSender.h>
+//#include <mc/network/PacketSender.h>
 #include <mc/network/ServerNetworkHandler.h>
-#include <mc/network/packet/TextPacket.h>
+//#include <mc/network/packet/TextPacket.h>
 #include <mc/server/ServerPlayer.h>
-#include <mc/server/commands/Command.h>
-#include <mc/server/commands/CommandRegistry.h>
-#include <mc/world/level/Level.h>
+//#include <mc/server/commands/Command.h>
+//#include <mc/server/commands/CommandRegistry.h>
+//#include <mc/world/level/Level.h>
 
 namespace power_ranks::hooks {
 
@@ -28,98 +28,98 @@ LL_TYPE_INSTANCE_HOOK(
     manager::MainManager::updatePlayerRank(player);
 }
 
-LL_TYPE_INSTANCE_HOOK(
-    CommandRegistryAddEnumValueConstraintsHook,
-    ll::memory::HookPriority::Normal,
-    CommandRegistry,
-    &CommandRegistry::addEnumValueConstraints,
-    void,
-    const std::string&              enumName,
-    const std::vector<std::string>& enumValues,
-    SemanticConstraint              constraint
-) {
-    constraint = static_cast<SemanticConstraint>(
-        static_cast<uchar>(constraint) & ~static_cast<uchar>(SemanticConstraint::RequiresElevatedPermissions)
-    );
+// LL_TYPE_INSTANCE_HOOK(
+//     CommandRegistryAddEnumValueConstraintsHook,
+//     ll::memory::HookPriority::Normal,
+//     CommandRegistry,
+//     &CommandRegistry::addEnumValueConstraints,
+//     void,
+//     const std::string&              enumName,
+//     const std::vector<std::string>& enumValues,
+//     SemanticConstraint              constraint
+// ) {
+//     constraint = static_cast<SemanticConstraint>(
+//         static_cast<uchar>(constraint) & ~static_cast<uchar>(SemanticConstraint::RequiresElevatedPermissions)
+//     );
 
-    return origin(enumName, enumValues, constraint);
-}
+//     return origin(enumName, enumValues, constraint);
+// }
 
-LL_TYPE_INSTANCE_HOOK(
-    CommandRegistryCheckOriginCommandFlagsHook,
-    ll::memory::HookPriority::Normal,
-    CommandRegistry,
-    &CommandRegistry::checkOriginCommandFlags,
-    bool,
-    const CommandOrigin&   commandOrigin,
-    CommandFlag            flags,
-    CommandPermissionLevel permissionLevel
-) {
-    if (commandOrigin.getEntity() == nullptr || !commandOrigin.getEntity()->isType(ActorType::Player)) {
-        return origin(commandOrigin, flags, permissionLevel);
-    }
+// LL_TYPE_INSTANCE_HOOK(
+//     CommandRegistryCheckOriginCommandFlagsHook,
+//     ll::memory::HookPriority::Normal,
+//     CommandRegistry,
+//     &CommandRegistry::checkOriginCommandFlags,
+//     bool,
+//     const CommandOrigin&   commandOrigin,
+//     CommandFlag            flags,
+//     CommandPermissionLevel permissionLevel
+// ) {
+//     if (commandOrigin.getEntity() == nullptr || !commandOrigin.getEntity()->isType(ActorType::Player)) {
+//         return origin(commandOrigin, flags, permissionLevel);
+//     }
 
-    auto& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
+//     auto& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
 
-    const object::Rank&        rank = manager::MainManager::getPlayerRankOrSetDefault(player);
-    std::optional<std::string> lastWrittedCommand =
-        manager::CommandManager::getAndRemoveLastWrittedCommand(player.getRealName());
+//     const object::Rank&        rank = manager::MainManager::getPlayerRankOrSetDefault(player);
+//     std::optional<std::string> lastWrittedCommand =
+//         manager::CommandManager::getAndRemoveLastWrittedCommand(player.getRealName());
 
-    if (!lastWrittedCommand.has_value()) {
-        return origin(commandOrigin, flags, permissionLevel);
-    }
+//     if (!lastWrittedCommand.has_value()) {
+//         return origin(commandOrigin, flags, permissionLevel);
+//     }
 
-    if (rank.isCommandAvailable(lastWrittedCommand.value())) {
-        return true;
-    }
+//     if (rank.isCommandAvailable(lastWrittedCommand.value())) {
+//         return true;
+//     }
 
-    return origin(commandOrigin, flags, permissionLevel);
-}
+//     return origin(commandOrigin, flags, permissionLevel);
+// }
 
-LL_TYPE_INSTANCE_HOOK(
-    CommandRunHook,
-    ll::memory::HookPriority::Normal,
-    Command,
-    &Command::run,
-    void,
-    const CommandOrigin& commandOrigin,
-    CommandOutput&       output
-) {
-    if (commandOrigin.getEntity() == nullptr || !commandOrigin.getEntity()->isType(ActorType::Player)) {
-        return origin(commandOrigin, output);
-    }
+// LL_TYPE_INSTANCE_HOOK(
+//     CommandRunHook,
+//     ll::memory::HookPriority::Normal,
+//     Command,
+//     &Command::run,
+//     void,
+//     const CommandOrigin& commandOrigin,
+//     CommandOutput&       output
+// ) {
+//     if (commandOrigin.getEntity() == nullptr || !commandOrigin.getEntity()->isType(ActorType::Player)) {
+//         return origin(commandOrigin, output);
+//     }
 
-    auto& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
-    manager::CommandManager::setLastWrittedCommand(player.getRealName(), getCommandName());
+//     auto& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
+//     manager::CommandManager::setLastWrittedCommand(player.getRealName(), getCommandName());
 
-    origin(commandOrigin, output);
-}
+//     origin(commandOrigin, output);
+// }
 
-LL_TYPE_INSTANCE_HOOK(
-    PlayerSendMessageHook,
-    HookPriority::High,
-    ServerNetworkHandler,
-    &ServerNetworkHandler::$handle,
-    void,
-    const NetworkIdentifier& identifier,
-    const TextPacket&        packet
-) {
-    if (ServerPlayer* player = _getServerPlayer(identifier, packet.mClientSubId); player != nullptr) {
-        const object::Rank& rank        = manager::MainManager::getPlayerRankOrSetDefault(*player);
-        TextPacket          otherPacket = TextPacket::createRawMessage(
-            Utils::strReplace(
-                rank.getChatFormat(),
-                {"{prefix}", "{playerName}", "{message}"},
-                {rank.getPrefix(), player->getRealName(), packet.mMessage}
-            )
-        );
+// LL_TYPE_INSTANCE_HOOK(
+//     PlayerSendMessageHook,
+//     HookPriority::High,
+//     ServerNetworkHandler,
+//     &ServerNetworkHandler::$handle,
+//     void,
+//     const NetworkIdentifier& identifier,
+//     const TextPacket&        packet
+// ) {
+//     if (ServerPlayer* player = _getServerPlayer(identifier, packet.mClientSubId); player != nullptr) {
+//         const object::Rank& rank        = manager::MainManager::getPlayerRankOrSetDefault(*player);
+//         TextPacket          otherPacket = TextPacket::createRawMessage(
+//             Utils::strReplace(
+//                 rank.getChatFormat(),
+//                 {"{prefix}", "{playerName}", "{message}"},
+//                 {rank.getPrefix(), player->getRealName(), packet.mMessage}
+//             )
+//         );
 
-        player->getLevel().getPacketSender()->sendBroadcast(otherPacket);
-        return;
-    }
+//         player->getLevel().getPacketSender()->sendBroadcast(otherPacket);
+//         return;
+//     }
 
-    origin(identifier, packet);
-}
+//     origin(identifier, packet);
+// }
 
 void Hooks::setupHooks() {
     ServerNetworkHandlerSendLoginMessageLocalHook::hook();
