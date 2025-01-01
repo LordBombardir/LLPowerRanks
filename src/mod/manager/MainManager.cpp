@@ -3,6 +3,7 @@
 #include "base/BaseManager.h"
 #include "config/ConfigManager.h"
 #include "lang/LanguageManager.h"
+#include <ll/api/io/LoggerRegistry.h>
 #include "ranks/RanksManager.h"
 #include <ll/api/service/Bedrock.h>
 #include <mc/server/commands/CommandRegistry.h>
@@ -114,14 +115,17 @@ void MainManager::updatePlayerRank(Player& player) {
     const object::Rank&     rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
     AvailableCommandsPacket packet = getAvailableCommandsPacket(rank, player);
 
-    packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
+    //packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
     player.setScoreTag(Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
 }
 
 AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
+    std::shared_ptr<ll::io::Logger> logger = ll::io::LoggerRegistry::getInstance().getOrCreate("TEST");
+    
     AvailableCommandsPacket packet = ll::service::getCommandRegistry()->serializeAvailableCommands();
     for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
         std::string commandName = command.name.get();
+        logger->info(commandName);
         if (rank.isCommandAvailable(commandName)) {
             command.permission = CommandPermissionLevel::Any;
         }
