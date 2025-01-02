@@ -113,15 +113,17 @@ void MainManager::setPlayerRankByXuid(const std::string& xuid, const object::Ran
 
 void MainManager::updatePlayerRank(Player& player) {
     const object::Rank&     rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
-    AvailableCommandsPacket packet = getAvailableCommandsPacket(rank, player);
+
+    std::shared_ptr<ll::io::Logger> logger = ll::io::LoggerRegistry::getInstance().getOrCreate("TEST");
+    logger->info(rank.getName());
+    
+    //AvailableCommandsPacket packet = getAvailableCommandsPacket(rank, player);
 
     //packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
     //player.setScoreTag(Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
 }
 
 AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
-    std::shared_ptr<ll::io::Logger> logger = ll::io::LoggerRegistry::getInstance().getOrCreate("TEST");
-    
     AvailableCommandsPacket packet = ll::service::getCommandRegistry()->serializeAvailableCommands();
     for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
         std::string commandName = command.name.get();
