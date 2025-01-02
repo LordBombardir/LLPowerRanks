@@ -144,7 +144,7 @@ AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Ra
         }
     }
 
-    logger->info("success");
+// ТУТ ВСЁ норм
     return packet;
 }
 

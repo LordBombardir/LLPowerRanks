@@ -24,7 +24,7 @@ LL_TYPE_INSTANCE_HOOK(
     ServerPlayer&            player
 ) {
     origin(source, connectionRequest, player);
-
+    // тут ошибка
     manager::MainManager::updatePlayerRank(player);
 }
 
@@ -123,7 +123,7 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void Hooks::setupHooks() {
-    ServerNetworkHandlerSendLoginMessageLocalHook::hook();
+    //ServerNetworkHandlerSendLoginMessageLocalHook::hook();
     CommandRegistryAddEnumValueConstraintsHook::hook();
     CommandRegistryCheckOriginCommandFlagsHook::hook();
     CommandRunHook::hook();
