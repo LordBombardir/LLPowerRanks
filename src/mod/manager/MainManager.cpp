@@ -111,18 +111,16 @@ void MainManager::setPlayerRankByXuid(const std::string& xuid, const object::Ran
 }
 
 void MainManager::updatePlayerRank(Player& player) {
-    const object::Rank&                      rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
-    std::shared_ptr<AvailableCommandsPacket> packet = getAvailableCommandsPacket(rank, player);
+    const object::Rank&     rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
+    AvailableCommandsPacket packet = getAvailableCommandsPacket(rank, player);
 
-    packet->sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
+    packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
     player.setScoreTag(Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
 }
 
-std::shared_ptr<AvailableCommandsPacket>
-MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
-    std::shared_ptr<AvailableCommandsPacket> packet =
-        std::make_shared<AvailableCommandsPacket>(ll::service::getCommandRegistry()->serializeAvailableCommands());
-    for (AvailableCommandsPacket::CommandData& command : packet->mCommands.get()) {
+AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
+    AvailableCommandsPacket packet = ll::service::getCommandRegistry()->serializeAvailableCommands();
+    for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
         std::string commandName = command.name.get();
         if (rank.isCommandAvailable(commandName)) {
             command.permission = CommandPermissionLevel::Any;

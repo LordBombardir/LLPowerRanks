@@ -4,7 +4,6 @@
 #include <ll/api/mod/NativeMod.h>
 #include <mc/network/packet/AvailableCommandsPacket.h>
 #include <mc/world/actor/player/Player.h>
-#include <memory>
 
 namespace power_ranks::manager {
 
@@ -23,7 +22,7 @@ public:
     static void updatePlayerRank(Player& player);
 
 private:
-    static std::shared_ptr<AvailableCommandsPacket> getAvailableCommandsPacket(const object::Rank& rank, Player& player);
+    static AvailableCommandsPacket getAvailableCommandsPacket(const object::Rank& rank, Player& player);
 };
 
 } // namespace power_ranks::manager
