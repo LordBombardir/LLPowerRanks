@@ -3,7 +3,6 @@
 #include "base/BaseManager.h"
 #include "config/ConfigManager.h"
 #include "lang/LanguageManager.h"
-#include <ll/api/io/LoggerRegistry.h>
 #include "ranks/RanksManager.h"
 #include <ll/api/service/Bedrock.h>
 #include <mc/server/commands/CommandRegistry.h>
@@ -112,20 +111,18 @@ void MainManager::setPlayerRankByXuid(const std::string& xuid, const object::Ran
 }
 
 void MainManager::updatePlayerRank(Player& player) {
-    const object::Rank&     rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
+    const object::Rank&                      rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
+    std::shared_ptr<AvailableCommandsPacket> packet = getAvailableCommandsPacket(rank, player);
 
-    std::shared_ptr<ll::io::Logger> logger = ll::io::LoggerRegistry::getInstance().getOrCreate("TEST");
-    logger->info(rank.getName());
-    
-    //AvailableCommandsPacket packet = getAvailableCommandsPacket(rank, player);
-
-    //packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
-    //player.setScoreTag(Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
+    packet->sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
+    player.setScoreTag(Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
 }
 
-AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
-    AvailableCommandsPacket packet = ll::service::getCommandRegistry()->serializeAvailableCommands();
-    for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
+std::shared_ptr<AvailableCommandsPacket>
+MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
+    std::shared_ptr<AvailableCommandsPacket> packet =
+        std::make_shared<AvailableCommandsPacket>(ll::service::getCommandRegistry()->serializeAvailableCommands());
+    for (AvailableCommandsPacket::CommandData& command : packet->mCommands.get()) {
         std::string commandName = command.name.get();
         if (rank.isCommandAvailable(commandName)) {
             command.permission = CommandPermissionLevel::Any;
@@ -146,7 +143,6 @@ AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Ra
         }
     }
 
-// ТУТ ВСЁ норм
     return packet;
 }
 
