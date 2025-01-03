@@ -103,16 +103,13 @@ LL_TYPE_INSTANCE_HOOK(
     const NetworkIdentifier& identifier,
     const TextPacket&        packet
 ) {
-    //auto handle = static_cast<decltype(this)>(static_cast<NetEventCallback*>(this));
-    if (ServerPlayer* player = /**handle->*/$_getServerPlayer(identifier, packet.mClientSubId); player != nullptr) {
+    if (auto player = thisFor<NetEventCallback>()->_getServerPlayer(identifier, packet.mClientSubId); player) {
         const object::Rank& rank        = manager::MainManager::getPlayerRankOrSetDefault(*player);
-        TextPacket          otherPacket = TextPacket::createRawMessage(
-            Utils::strReplace(
-                rank.getChatFormat(),
-                {"{prefix}", "{playerName}", "{message}"},
-                {rank.getPrefix(), player->getRealName(), packet.mMessage}
-            )
-        );
+        TextPacket          otherPacket = TextPacket::createRawMessage(Utils::strReplace(
+            rank.getChatFormat(),
+            {"{prefix}", "{playerName}", "{message}"},
+            {rank.getPrefix(), player->getRealName(), packet.mMessage}
+        ));
 
         player->getLevel().getPacketSender()->sendBroadcast(otherPacket);
         return;
