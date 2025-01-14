@@ -120,7 +120,7 @@ void MainManager::updatePlayerRank(Player& player) {
 
 AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
     AvailableCommandsPacket packet = ll::service::getCommandRegistry()->serializeAvailableCommands();
-    for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
+    for (AvailableCommandsPacket::CommandData& command : std::move(packet.mCommands.get())) {
         std::string commandName = command.name.get();
         if (rank.isCommandAvailable(commandName)) {
             command.permission = CommandPermissionLevel::Any;
