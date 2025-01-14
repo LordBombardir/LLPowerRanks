@@ -119,8 +119,8 @@ void MainManager::updatePlayerRank(Player& player) {
 }
 
 AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
-    AvailableCommandsPacket packet = ll::service::getCommandRegistry()->serializeAvailableCommands();
-    for (AvailableCommandsPacket::CommandData& command : std::move(packet.mCommands.get())) {
+    AvailableCommandsPacket&& packet = ll::service::getCommandRegistry()->serializeAvailableCommands();
+    for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
         std::string commandName = command.name.get();
         if (rank.isCommandAvailable(commandName)) {
             command.permission = CommandPermissionLevel::Any;
@@ -141,7 +141,7 @@ AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Ra
         }
     }
 
-    return packet;
+    return std::move(packet);
 }
 
 } // namespace power_ranks::manager
