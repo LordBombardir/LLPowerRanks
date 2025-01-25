@@ -16,7 +16,7 @@
     },
     "asset_url": "https://github.com/LordBombardir/LLPowerRanks/releases/download/v1.0.2/LLPowerRanks-windows-x64.zip",
     "prerequisites": {
-        "github.com/LiteLDev/LeviLamina": "1.0.0-rc.3"
+        "github.com/LiteLDev/LeviLamina": "1.0.0"
     },
     "files": {
         "place": [
