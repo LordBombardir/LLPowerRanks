@@ -8,6 +8,8 @@
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/level/Level.h>
 
+AvailableCommandsPacket::CommandData::CommandData(const CommandData&) = default;
+
 namespace power_ranks::manager {
 
 bool MainManager::initManagers(ll::mod::NativeMod& mod) {
