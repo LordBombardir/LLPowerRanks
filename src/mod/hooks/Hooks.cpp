@@ -96,7 +96,7 @@ LL_TYPE_INSTANCE_HOOK(
 
 LL_TYPE_INSTANCE_HOOK(
     PlayerSendMessageHook,
-    HookPriority::Normal,
+    HookPriority::Lowest,
     ServerNetworkHandler,
     &ServerNetworkHandler::$handle,
     void,
@@ -111,7 +111,17 @@ LL_TYPE_INSTANCE_HOOK(
             {rank.getPrefix(), player->getRealName(), packet.mMessage}
         ));
 
-        return origin(identifier, otherPacket);
+        /*
+        * Не использовать origin(identifier, packet);
+        * По-видимому, ServerNetworkHandler::handle не хочет обрабатывать сырые TextPacket,
+        * созданные при помощи TextPacket::createRawMessage
+        * Так как этот хук отвечает лишь за оформление сообщения чата, то приоритет
+        * HookPriority::Lowest является нормальным для функционирования других модов
+        * (например, на блокировку чата).
+        */
+
+        player->getLevel().getPacketSender()->sendBroadcast(otherPacket);
+        return;
     }
 
     origin(identifier, packet);
