@@ -15,7 +15,7 @@ namespace power_ranks::hooks {
 
 LL_TYPE_INSTANCE_HOOK(
     ServerNetworkHandlerSendLoginMessageLocalHook,
-    ll::memory::HookPriority::Normal,
+    HookPriority::Normal,
     ServerNetworkHandler,
     &ServerNetworkHandler::sendLoginMessageLocal,
     void,
@@ -29,7 +29,7 @@ LL_TYPE_INSTANCE_HOOK(
 
 LL_TYPE_INSTANCE_HOOK(
     CommandRegistryAddEnumValueConstraintsHook,
-    ll::memory::HookPriority::Normal,
+    HookPriority::Normal,
     CommandRegistry,
     &CommandRegistry::addEnumValueConstraints,
     void,
@@ -46,7 +46,7 @@ LL_TYPE_INSTANCE_HOOK(
 
 LL_TYPE_INSTANCE_HOOK(
     CommandRegistryCheckOriginCommandFlagsHook,
-    ll::memory::HookPriority::Normal,
+    HookPriority::Normal,
     CommandRegistry,
     &CommandRegistry::checkOriginCommandFlags,
     bool,
@@ -58,7 +58,7 @@ LL_TYPE_INSTANCE_HOOK(
         return origin(commandOrigin, flags, permissionLevel);
     }
 
-    auto& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
+    ServerPlayer& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
 
     const object::Rank&        rank = manager::MainManager::getPlayerRankOrSetDefault(player);
     std::optional<std::string> lastWrittedCommand =
@@ -77,7 +77,7 @@ LL_TYPE_INSTANCE_HOOK(
 
 LL_TYPE_INSTANCE_HOOK(
     CommandRunHook,
-    ll::memory::HookPriority::Normal,
+    HookPriority::Normal,
     Command,
     &Command::run,
     void,
@@ -88,7 +88,7 @@ LL_TYPE_INSTANCE_HOOK(
         return origin(commandOrigin, output);
     }
 
-    auto& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
+    ServerPlayer& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
     manager::CommandManager::setLastWrittedCommand(player.getRealName(), getCommandName());
 
     origin(commandOrigin, output);
@@ -96,14 +96,14 @@ LL_TYPE_INSTANCE_HOOK(
 
 LL_TYPE_INSTANCE_HOOK(
     PlayerSendMessageHook,
-    HookPriority::High,
+    HookPriority::Normal,
     ServerNetworkHandler,
     &ServerNetworkHandler::$handle,
     void,
     const NetworkIdentifier& identifier,
     const TextPacket&        packet
 ) {
-    if (auto player = thisFor<NetEventCallback>()->_getServerPlayer(identifier, packet.mClientSubId); player) {
+    if (ServerPlayer* player = thisFor<NetEventCallback>()->_getServerPlayer(identifier, packet.mClientSubId); player) {
         const object::Rank& rank        = manager::MainManager::getPlayerRankOrSetDefault(*player);
         TextPacket          otherPacket = TextPacket::createRawMessage(Utils::strReplace(
             rank.getChatFormat(),
@@ -111,8 +111,7 @@ LL_TYPE_INSTANCE_HOOK(
             {rank.getPrefix(), player->getRealName(), packet.mMessage}
         ));
 
-        player->getLevel().getPacketSender()->sendBroadcast(otherPacket);
-        return;
+        return origin(identifier, otherPacket);
     }
 
     origin(identifier, packet);
