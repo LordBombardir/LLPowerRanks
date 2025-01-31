@@ -18,6 +18,7 @@ bool MainManager::initManagers(ll::mod::NativeMod& mod) {
         BaseManager::init(mod);
         bool configInit = ConfigManager::init(mod);
         LanguageManager::init(mod);
+        LanguageManager::addTranslations();
         bool ranksInit = RanksManager::init(mod);
 
         return configInit && ranksInit;
