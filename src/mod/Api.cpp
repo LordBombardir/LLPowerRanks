@@ -1,4 +1,4 @@
-#include "Api.h"
+#include "LLPowerRanks.h"
 #include "manager/MainManager.h"
 #include "manager/ranks/RanksManager.h"
 #include <stdexcept>
@@ -39,7 +39,7 @@ void setPlayerRankByName(const std::string& playerName, const power_ranks::objec
 
 void setPlayerRankByXuid(const std::string& xuid, const power_ranks::object::Rank& rank) {
     if (xuid.empty()) {
-        throw std::invalid_argument("Parameter xuid must not be empty!");
+        throw std::invalid_argument("Parameter «xuid» must not be empty!");
     }
 
     power_ranks::manager::MainManager::setPlayerRankByXuid(xuid, rank);

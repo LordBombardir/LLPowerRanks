@@ -13,9 +13,10 @@
 
 namespace power_ranks::hooks {
 
+// Желательно оставить приоритет на HookPriority::High
 LL_TYPE_INSTANCE_HOOK(
     ServerNetworkHandlerSendLoginMessageLocalHook,
-    HookPriority::Normal,
+    HookPriority::High,
     ServerNetworkHandler,
     &ServerNetworkHandler::sendLoginMessageLocal,
     void,

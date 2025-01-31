@@ -7,6 +7,7 @@
 #include <ll/api/service/Bedrock.h>
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/level/Level.h>
+#include <LLTranslatorApi.h>
 
 AvailableCommandsPacket::CommandData::CommandData(const CommandData&) = default;
 
@@ -121,25 +122,11 @@ void MainManager::updatePlayerRank(Player& player) {
 }
 
 AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
-    AvailableCommandsPacket packet = ll::service::getCommandRegistry()->serializeAvailableCommands();
+    AvailableCommandsPacket packet = ::getAvailableCommandsPacket(player);
     for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
         std::string commandName = command.name.get();
         if (rank.isCommandAvailable(commandName)) {
             command.permission = CommandPermissionLevel::Any;
-        }
-
-        if (commandName == "addrank") {
-            command.description =
-                manager::LanguageManager::getTranslate("commandAddRankDescription", player.getLocaleCode());
-        } else if (commandName == "setrank") {
-            command.description =
-                manager::LanguageManager::getTranslate("commandSetRankDescription", player.getLocaleCode());
-        } else if (commandName == "removerank") {
-            command.description =
-                manager::LanguageManager::getTranslate("commandRemoveRankDescription", player.getLocaleCode());
-        } else if (commandName == "editrank") {
-            command.description =
-                manager::LanguageManager::getTranslate("commandEditRankDescription", player.getLocaleCode());
         }
     }
 

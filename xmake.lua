@@ -1,11 +1,13 @@
 add_rules("mode.debug", "mode.release")
 
 add_repositories("liteldev-repo https://github.com/LiteLDev/xmake-repo.git")
+add_repositories("lordbombardir-repo https://github.com/LordBombardir/xmake-repo.git")
 
 -- add_requires("levilamina x.x.x") for a specific version
 -- add_requires("levilamina develop") to use develop version
 -- please note that you should add bdslibrary yourself if using dev version
 add_requires("levilamina 1.0.0")
+add_requires("translatorapi 1.0.0")
 add_requires("sqlitecpp")
 add_requires("levibuildscript")
 
@@ -32,6 +34,7 @@ target("PowerRanks") -- Change this to your mod name.
     add_files("src/**.cpp")
     add_includedirs("src")
     add_packages("levilamina")
+    add_packages("translatorapi")
     add_packages("sqlitecpp")
     set_exceptions("none") -- To avoid conflicts with /EHa.
     set_kind("shared")
@@ -39,19 +42,18 @@ target("PowerRanks") -- Change this to your mod name.
     set_symbols("debug")
 
     after_build(function (target)
-        local mod_packer = import("scripts.after_build")
-
-        local tag = os.iorun("git describe --tags --abbrev=0 --always")
-        local major, minor, patch, suffix = tag:match("v(%d+)%.(%d+)%.(%d+)(.*)")
-        if not major then
-            print("Failed to parse version tag, using 0.0.0")
-            major, minor, patch = 0, 0, 0
-        end
-        local mod_define = {
-            modName = target:name(),
-            modFile = path.filename(target:targetfile()),
-            modVersion = major .. "." .. minor .. "." .. patch,
-        }
+        local binDirectory = path.join(os.projectdir(), "bin")
         
-        mod_packer.pack_mod(target,mod_define)
+        local libDirectory = path.join(binDirectory, "lib")
+        local includeDirectory = path.join(binDirectory, "include")
+        local objectDirectory = path.join(includeDirectory, "object")
+
+        os.mkdir(libDirectory)
+        os.mkdir(includeDirectory)
+        os.mkdir(objectDirectory)
+
+        os.cp(path.join(target:targetdir(), "PowerRanks.lib"), libDirectory)
+        os.cp(path.join(os.projectdir(), "src", "mod", "LLPowerRanks.h"), includeDirectory)
+        os.cp(path.join(os.projectdir(), "src", "mod", "object", "Rank.h"), objectDirectory)
+        os.cp(path.join(os.projectdir(), "assets", "data"), path.join(path.join(binDirectory, target:name()), "data"))
     end)

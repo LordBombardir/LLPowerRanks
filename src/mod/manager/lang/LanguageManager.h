@@ -15,6 +15,7 @@ public:
         const std::string_view& localeCode = ConfigManager::getConfig().defaultLocaleCode
     );
 
+    static void addTranslations();
 private:
     LanguageManager()  = default;
     ~LanguageManager() = default;

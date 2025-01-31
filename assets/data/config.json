@@ -1,6 +1,6 @@
 {
     "version": 2,
-    "defaultLocaleName": "en_US",
+    "defaultLocaleCode": "en_US",
     "defaultRankName": "Default",
     "superRanks": [
         "Helper",
