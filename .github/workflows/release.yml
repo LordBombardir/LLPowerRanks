@@ -73,7 +73,17 @@ jobs:
           zip -r ../${{ github.event.repository.name }}-windows-x64.zip *
         working-directory: artifact
 
+      - name: Calculate SHA256
+        id: calculate-sha256
+        run: |
+          echo release=$(sha256sum ${{ github.event.repository.name }}-windows-x64.zip | awk '{print $1}') >> $GITHUB_OUTPUT
+
       - uses: softprops/action-gh-release@v1
         with:
+          append_body: true
+          body: |
+            | File | SHA256 |
+            | ---- | ------ |
+            | ${{ github.event.repository.name }}-windows-x64.zip | ${{ steps.calculate-sha256.outputs.release }} |
           files: |
             ${{ github.event.repository.name }}-windows-x64.zip
