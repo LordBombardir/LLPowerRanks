@@ -46,7 +46,7 @@ void EditRankForm::init(Player& player) {
 
     form.appendDropdown(
         "inheritanceRankName",
-        manager::LanguageManager::getTranslate("formEditRankDropdownRanks", player.getLocaleCode()),
+        manager::LanguageManager::getTranslate("formEditRankDropdownInheritanceRanks", player.getLocaleCode()),
         rankNamesSecond
     );
     form.appendInput(
@@ -76,12 +76,14 @@ void EditRankForm::handle(Player& player, const ll::form::CustomFormResult& resu
     std::string availableCommands;
 
     try {
-        rankName            = Utils::strSplit(*std::get_if<std::string>(&result->at("rankName")), " - ")[0];
-        prefix              = *std::get_if<std::string>(&result->at("prefix"));
-        chatFormat          = *std::get_if<std::string>(&result->at("chatFormat"));
-        scoreTagFormat      = *std::get_if<std::string>(&result->at("scoreTagFormat"));
-        inheritanceRankName = Utils::strSplit(*std::get_if<std::string>(&result->at("inheritanceRankName")), " - ")[0];
-        availableCommands   = *std::get_if<std::string>(&result->at("availableCommands"));
+        rankName       = Utils::strSplit(std::get_if<std::string>(&result->at("rankName"))->data(), " - ")[0];
+        prefix         = std::get_if<std::string>(&result->at("prefix"))->data();
+        chatFormat     = std::get_if<std::string>(&result->at("chatFormat"))->data();
+        scoreTagFormat = std::get_if<std::string>(&result->at("scoreTagFormat"))->data();
+        // clang-format off
+        inheritanceRankName = Utils::strSplit(std::get_if<std::string>(&result->at("inheritanceRankName"))->data(), " - ")[0];
+        // clang-format on
+        availableCommands = std::get_if<std::string>(&result->at("availableCommands"))->data();
     } catch (...) {
         player.sendMessage(manager::LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
         return;
@@ -99,13 +101,11 @@ void EditRankForm::handle(Player& player, const ll::form::CustomFormResult& resu
 
     std::optional<object::Rank*> rank = manager::RanksManager::getRank(rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
-        player.sendMessage(
-            Utils::strReplace(
-                manager::LanguageManager::getTranslate("undefinedRank", player.getLocaleCode()),
-                {"{rankName}", "{ranks}"},
-                {rankName, definedRanks}
-            )
-        );
+        player.sendMessage(Utils::strReplace(
+            manager::LanguageManager::getTranslate("undefinedRank", player.getLocaleCode()),
+            {"{rankName}", "{ranks}"},
+            {rankName, definedRanks}
+        ));
         return;
     }
 
@@ -142,13 +142,11 @@ void EditRankForm::handle(Player& player, const ll::form::CustomFormResult& resu
     }
 
     manager::RanksManager::saveChangesRank(*rank.value());
-    player.sendMessage(
-        Utils::strReplace(
-            manager::LanguageManager::getTranslate("editRankSuccess", player.getLocaleCode()),
-            "{rankName}",
-            rankName
-        )
-    );
+    player.sendMessage(Utils::strReplace(
+        manager::LanguageManager::getTranslate("editRankSuccess", player.getLocaleCode()),
+        "{rankName}",
+        rankName
+    ));
 }
 
 } // namespace power_ranks::forms

@@ -65,11 +65,11 @@ void AddRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
     std::string inheritanceRankName;
 
     try {
-        rankName            = *std::get_if<std::string>(&result->at("rankName"));
-        prefix              = *std::get_if<std::string>(&result->at("prefix"));
-        chatFormat          = *std::get_if<std::string>(&result->at("chatFormat"));
-        scoreTagFormat      = *std::get_if<std::string>(&result->at("scoreTagFormat"));
-        inheritanceRankName = Utils::strSplit(*std::get_if<std::string>(&result->at("inheritanceRankName")), " - ")[0];
+        rankName            = std::get_if<std::string>(&result->at("rankName"))->data();
+        prefix              = std::get_if<std::string>(&result->at("prefix"))->data();
+        chatFormat          = std::get_if<std::string>(&result->at("chatFormat"))->data();
+        scoreTagFormat      = std::get_if<std::string>(&result->at("scoreTagFormat"))->data();
+        inheritanceRankName = Utils::strSplit(std::get_if<std::string>(&result->at("inheritanceRankName"))->data(), " - ")[0];
     } catch (...) {
         player.sendMessage(manager::LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
         return;
