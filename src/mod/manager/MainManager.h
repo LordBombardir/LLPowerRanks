@@ -23,6 +23,8 @@ public:
 
 private:
     static AvailableCommandsPacket getAvailableCommandsPacket(const object::Rank& rank, Player& player);
+
+    static void extraVanillaActions(Player& player, const object::Rank& rank);
 };
 
 } // namespace power_ranks::manager

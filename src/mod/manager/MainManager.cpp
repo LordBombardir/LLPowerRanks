@@ -4,10 +4,12 @@
 #include "config/ConfigManager.h"
 #include "lang/LanguageManager.h"
 #include "ranks/RanksManager.h"
+#include <LLTranslatorApi.h>
 #include <ll/api/service/Bedrock.h>
 #include <mc/server/commands/CommandRegistry.h>
+#include <mc/world/actor/player/LayeredAbilities.h>
 #include <mc/world/level/Level.h>
-#include <LLTranslatorApi.h>
+
 
 AvailableCommandsPacket::CommandData::CommandData(const CommandData&) = default;
 
@@ -120,6 +122,8 @@ void MainManager::updatePlayerRank(Player& player) {
 
     packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
     player.setScoreTag(Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
+
+    extraVanillaActions(player, rank);
 }
 
 AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
@@ -132,6 +136,15 @@ AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Ra
     }
 
     return packet;
+}
+
+void MainManager::extraVanillaActions(Player& player, const object::Rank& rank) {
+    std::vector<std::string> availableCommands = rank.getAvailableCommands();
+    if (std::find(availableCommands.begin(), availableCommands.end(), "teleport") != availableCommands.end()) {
+        player.setAbility(AbilitiesIndex::Teleport, true);
+    } else if (player.getAbilities().getAbility(AbilitiesIndex::Teleport).getBool()) {
+        player.setAbility(AbilitiesIndex::Teleport, false);
+    }
 }
 
 } // namespace power_ranks::manager
