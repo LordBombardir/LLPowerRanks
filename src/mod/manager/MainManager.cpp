@@ -142,8 +142,6 @@ void MainManager::extraVanillaActions(Player& player, const object::Rank& rank) 
     std::vector<std::string> availableCommands = rank.getAvailableCommands();
     if (std::find(availableCommands.begin(), availableCommands.end(), "teleport") != availableCommands.end()) {
         player.setAbility(AbilitiesIndex::Teleport, true);
-    } else if (player.getAbilities().getAbility(AbilitiesIndex::Teleport).getBool()) {
-        player.setAbility(AbilitiesIndex::Teleport, false);
     }
 }
 
