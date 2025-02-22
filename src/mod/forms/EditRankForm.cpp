@@ -125,7 +125,7 @@ void EditRankForm::handle(Player& player, const ll::form::CustomFormResult& resu
     std::vector<std::string> availableCommandsVector = Utils::strSplit(availableCommands, ";");
     if (availableCommands != "null" && availableCommandsVector.empty()) {
         player.sendMessage(
-            manager::LanguageManager::getTranslate("editRankInvalidFormatAvailableCommands", player.getName())
+            manager::LanguageManager::getTranslate("editRankInvalidFormatAvailableCommands", player.getLocaleCode())
         );
         return;
     }

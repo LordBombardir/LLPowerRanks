@@ -1,9 +1,9 @@
 #pragma once
 
 #include <ll/api/command/EnumName.h>
-#include <optional>
+#include <mc/server/commands/CommandFlag.h>
+#include <mc/server/commands/CommandOrigin.h>
 #include <string>
-#include <unordered_map>
 
 namespace power_ranks::manager {
 
@@ -16,11 +16,8 @@ public:
     static void addRankNameToSoftEnum(const std::string& rankName);
     static void removeRankNameFromSoftEnum(const std::string& rankName);
 
-    static void setLastWrittedCommand(const std::string& playerName, const std::string& commandName);
-    static std::optional<std::string> getAndRemoveLastWrittedCommand(const std::string& playerName);
-
-private:
-    static std::unordered_map<std::string, std::string> lastWrittedCommandsByPlayers;
+    static bool
+    isCommandAvailable(const CommandOrigin& origin, CommandFlag flags, CommandPermissionLevel permissionLevel);
 };
 
 } // namespace power_ranks::manager

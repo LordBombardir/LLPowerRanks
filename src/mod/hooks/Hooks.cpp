@@ -8,6 +8,7 @@
 #include <mc/network/packet/TextPacket.h>
 #include <mc/server/ServerPlayer.h>
 #include <mc/server/commands/Command.h>
+#include <mc/server/commands/CommandOutput.h>
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/level/Level.h>
 
@@ -46,37 +47,6 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 LL_TYPE_INSTANCE_HOOK(
-    CommandRegistryCheckOriginCommandFlagsHook,
-    HookPriority::Normal,
-    CommandRegistry,
-    &CommandRegistry::checkOriginCommandFlags,
-    bool,
-    const CommandOrigin&   commandOrigin,
-    CommandFlag            flags,
-    CommandPermissionLevel permissionLevel
-) {
-    if (commandOrigin.getEntity() == nullptr || !commandOrigin.getEntity()->isType(ActorType::Player)) {
-        return origin(commandOrigin, flags, permissionLevel);
-    }
-
-    ServerPlayer& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
-
-    const object::Rank&        rank = manager::MainManager::getPlayerRankOrSetDefault(player);
-    std::optional<std::string> lastWrittedCommand =
-        manager::CommandManager::getAndRemoveLastWrittedCommand(player.getRealName());
-
-    if (!lastWrittedCommand.has_value()) {
-        return origin(commandOrigin, flags, permissionLevel);
-    }
-
-    if (rank.isCommandAvailable(lastWrittedCommand.value())) {
-        return true;
-    }
-
-    return origin(commandOrigin, flags, permissionLevel);
-}
-
-LL_TYPE_INSTANCE_HOOK(
     CommandRunHook,
     HookPriority::Normal,
     Command,
@@ -90,9 +60,21 @@ LL_TYPE_INSTANCE_HOOK(
     }
 
     ServerPlayer& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
-    manager::CommandManager::setLastWrittedCommand(player.getRealName(), getCommandName());
 
-    origin(commandOrigin, output);
+    if (!manager::CommandManager::isCommandAvailable(commandOrigin, mFlags, mPermissionLevel)) {
+        const object::Rank& rank = manager::MainManager::getPlayerRankOrSetDefault(player);
+        if (!rank.isCommandAvailable(getCommandName())) {
+            output.addMessage(
+                "commands.generic.unknown",
+                {CommandOutputParameter({getCommandName()})},
+                CommandOutputMessageType::Error
+            );
+            return sendTelemetry(commandOrigin, output);
+        }
+    }
+
+    execute(commandOrigin, output);
+    return sendTelemetry(commandOrigin, output);
 }
 
 LL_TYPE_INSTANCE_HOOK(
@@ -113,13 +95,13 @@ LL_TYPE_INSTANCE_HOOK(
         ));
 
         /*
-        * Не использовать origin(identifier, packet);
-        * По-видимому, ServerNetworkHandler::handle не хочет обрабатывать сырые TextPacket,
-        * созданные при помощи TextPacket::createRawMessage
-        * Так как этот хук отвечает лишь за оформление сообщения чата, то приоритет
-        * HookPriority::Lowest является нормальным для функционирования других модов
-        * (например, на блокировку чата).
-        */
+         * Не использовать origin(identifier, packet);
+         * По-видимому, ServerNetworkHandler::handle не хочет обрабатывать сырые TextPacket,
+         * созданные при помощи TextPacket::createRawMessage
+         * Так как этот хук отвечает лишь за оформление сообщения чата, то приоритет
+         * HookPriority::Lowest является нормальным для функционирования других модов
+         * (например, на блокировку чата).
+         */
 
         player->getLevel().getPacketSender()->sendBroadcast(otherPacket);
         return;
@@ -131,7 +113,6 @@ LL_TYPE_INSTANCE_HOOK(
 void Hooks::setupHooks() {
     ServerNetworkHandlerSendLoginMessageLocalHook::hook();
     CommandRegistryAddEnumValueConstraintsHook::hook();
-    CommandRegistryCheckOriginCommandFlagsHook::hook();
     CommandRunHook::hook();
 
     PlayerSendMessageHook::hook();

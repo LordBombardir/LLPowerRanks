@@ -11,8 +11,6 @@
 
 namespace power_ranks::manager {
 
-std::unordered_map<std::string, std::string> CommandManager::lastWrittedCommandsByPlayers = {};
-
 bool CommandManager::registerCommands() {
     optional_ref<CommandRegistry> commandRegistry = ll::service::getCommandRegistry();
     if (!commandRegistry) {
@@ -113,18 +111,37 @@ void CommandManager::removeRankNameFromSoftEnum(const std::string& rankName) {
     ll::command::CommandRegistrar::getInstance().removeSoftEnumValues(std::string{rankEnumNames}, {rankName});
 }
 
-void CommandManager::setLastWrittedCommand(const std::string& playerName, const std::string& commandName) {
-    lastWrittedCommandsByPlayers[Utils::strToLower(playerName)] = commandName;
-}
-
-std::optional<std::string> CommandManager::getAndRemoveLastWrittedCommand(const std::string& playerName) {
-    if (!lastWrittedCommandsByPlayers.contains(Utils::strToLower(playerName))) {
-        return std::nullopt;
+bool CommandManager::isCommandAvailable(
+    const CommandOrigin&   origin,
+    CommandFlag            flags,
+    CommandPermissionLevel permissionLevel
+) {
+    if (origin.getPermissionsLevel() < permissionLevel) {
+        return false;
     }
 
-    std::optional<std::string> result = lastWrittedCommandsByPlayers[Utils::strToLower(playerName)];
+    const CommandOrigin& outputReceiver = origin.getOutputReceiver();
+    unsigned int         originType     = static_cast<unsigned int>(outputReceiver.getOriginType());
 
-    lastWrittedCommandsByPlayers.erase(Utils::strToLower(playerName));
-    return result;
+    bool firstCheck  = false;
+    bool secondCheck = false;
+
+    if (originType || (flags.value & CommandFlagValue::HiddenFromPlayerOrigin) == CommandFlagValue::None) {
+        if ((originType - 1) <= 1u
+            && (flags.value & CommandFlagValue::HiddenFromCommandBlockOrigin) != CommandFlagValue::None) {
+            secondCheck = true;
+        }
+    } else {
+        firstCheck = true;
+    }
+
+    bool result = (originType - 5) <= 1u
+               && (flags.value & CommandFlagValue::HiddenFromAutomationOrigin) != CommandFlagValue::None;
+    if (!firstCheck && !secondCheck) {
+        return !result;
+    }
+
+    return false;
 }
+
 } // namespace power_ranks::manager

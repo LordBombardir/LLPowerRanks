@@ -10,7 +10,6 @@
 #include <mc/world/actor/player/LayeredAbilities.h>
 #include <mc/world/level/Level.h>
 
-
 AvailableCommandsPacket::CommandData::CommandData(const CommandData&) = default;
 
 namespace power_ranks::manager {
@@ -120,8 +119,11 @@ void MainManager::updatePlayerRank(Player& player) {
     const object::Rank&     rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
     AvailableCommandsPacket packet = getAvailableCommandsPacket(rank, player);
 
+    Bedrock::Safety::RedactableString scoreTag = Bedrock::Safety::RedactableString();
+    scoreTag = Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix());
+
     packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
-    player.setScoreTag(Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
+    player.setRedactableNameTag(scoreTag);
 
     extraVanillaActions(player, rank);
 }
