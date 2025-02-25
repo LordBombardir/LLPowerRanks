@@ -10,6 +10,12 @@
 #include <mc/world/actor/player/LayeredAbilities.h>
 #include <mc/world/level/Level.h>
 
+// wth mojang?
+AvailableCommandsPacket::EnumData::EnumData(const EnumData&) = default;
+AvailableCommandsPacket::SoftEnumData::SoftEnumData(const SoftEnumData&) = default;
+AvailableCommandsPacket::ConstrainedValueData::ConstrainedValueData(const ConstrainedValueData&) = default;
+AvailableCommandsPacket::ParamData::ParamData(const ParamData&) = default;
+AvailableCommandsPacket::OverloadData::OverloadData(const OverloadData&) = default;
 AvailableCommandsPacket::CommandData::CommandData(const CommandData&) = default;
 
 namespace power_ranks::manager {
