@@ -22,8 +22,7 @@ public:
     static void updatePlayerRank(Player& player);
 
 private:
-    static AvailableCommandsPacket getAvailableCommandsPacket(const object::Rank& rank, Player& player);
-
+    static void extraActions(const object::Rank& rank, const Player& player);
     static void extraVanillaActions(Player& player, const object::Rank& rank);
 };
 

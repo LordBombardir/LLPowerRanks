@@ -11,12 +11,12 @@
 #include <mc/world/level/Level.h>
 
 // wth mojang?
-AvailableCommandsPacket::EnumData::EnumData(const EnumData&) = default;
-AvailableCommandsPacket::SoftEnumData::SoftEnumData(const SoftEnumData&) = default;
+AvailableCommandsPacket::EnumData::EnumData(const EnumData&)                                     = default;
+AvailableCommandsPacket::SoftEnumData::SoftEnumData(const SoftEnumData&)                         = default;
 AvailableCommandsPacket::ConstrainedValueData::ConstrainedValueData(const ConstrainedValueData&) = default;
-AvailableCommandsPacket::ParamData::ParamData(const ParamData&) = default;
-AvailableCommandsPacket::OverloadData::OverloadData(const OverloadData&) = default;
-AvailableCommandsPacket::CommandData::CommandData(const CommandData&) = default;
+AvailableCommandsPacket::ParamData::ParamData(const ParamData&)                                  = default;
+AvailableCommandsPacket::OverloadData::OverloadData(const OverloadData&)                         = default;
+AvailableCommandsPacket::CommandData::CommandData(const CommandData&)                            = default;
 
 namespace power_ranks::manager {
 
@@ -122,28 +122,32 @@ void MainManager::setPlayerRankByXuid(const std::string& xuid, const object::Ran
 }
 
 void MainManager::updatePlayerRank(Player& player) {
-    const object::Rank&     rank   = manager::MainManager::getPlayerRankOrSetDefault(player);
-    AvailableCommandsPacket packet = getAvailableCommandsPacket(rank, player);
-
+    const object::Rank&               rank     = manager::MainManager::getPlayerRankOrSetDefault(player);
     Bedrock::Safety::RedactableString scoreTag = Bedrock::Safety::RedactableString();
-    scoreTag = Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix());
 
-    packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
+    scoreTag = Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix());
     player.setRedactableNameTag(scoreTag);
 
+    extraActions(rank, player);
     extraVanillaActions(player, rank);
 }
 
-AvailableCommandsPacket MainManager::getAvailableCommandsPacket(const object::Rank& rank, Player& player) {
-    AvailableCommandsPacket packet = ::getAvailableCommandsPacket(player);
-    for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
-        std::string commandName = command.name.get();
-        if (rank.isCommandAvailable(commandName)) {
-            command.permission = CommandPermissionLevel::Any;
+void MainManager::extraActions(const object::Rank& rank, const Player& player) {
+    ::addFunctionToProcessingPacket(
+        false,
+        true,
+        player.getRealName(),
+        [&rank](AvailableCommandsPacket& packet) -> void {
+            for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
+                std::string commandName = command.name.get();
+                if (rank.isCommandAvailable(commandName)) {
+                    command.permission = CommandPermissionLevel::Any;
+                }
+            }
         }
-    }
+    );
 
-    return packet;
+    ::sendPlayerAvailableCommandsPacket(player);
 }
 
 void MainManager::extraVanillaActions(Player& player, const object::Rank& rank) {

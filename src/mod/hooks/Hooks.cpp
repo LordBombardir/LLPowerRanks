@@ -5,6 +5,7 @@
 #include <ll/api/memory/Hook.h>
 #include <mc/network/PacketSender.h>
 #include <mc/network/ServerNetworkHandler.h>
+#include <mc/network/packet/SetLocalPlayerAsInitializedPacket.h>
 #include <mc/network/packet/TextPacket.h>
 #include <mc/server/ServerPlayer.h>
 #include <mc/server/commands/Command.h>
@@ -14,19 +15,20 @@
 
 namespace power_ranks::hooks {
 
-// Желательно оставить приоритет на HookPriority::High
 LL_TYPE_INSTANCE_HOOK(
-    ServerNetworkHandlerSendLoginMessageLocalHook,
-    HookPriority::High,
+    PlayerJoinHook,
+    HookPriority::Normal,
     ServerNetworkHandler,
-    &ServerNetworkHandler::sendLoginMessageLocal,
+    &ServerNetworkHandler::$handle,
     void,
-    const NetworkIdentifier& source,
-    const ConnectionRequest& connectionRequest,
-    ServerPlayer&            player
+    const NetworkIdentifier&                 identifier,
+    const SetLocalPlayerAsInitializedPacket& packet
 ) {
-    origin(source, connectionRequest, player);
-    manager::MainManager::updatePlayerRank(player);
+    if (ServerPlayer* player = thisFor<NetEventCallback>()->_getServerPlayer(identifier, packet.mClientSubId); player) {
+        manager::MainManager::updatePlayerRank(*player);
+    }
+
+    origin(identifier, packet);
 }
 
 LL_TYPE_INSTANCE_HOOK(
@@ -111,7 +113,7 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void Hooks::setupHooks() {
-    ServerNetworkHandlerSendLoginMessageLocalHook::hook();
+    PlayerJoinHook::hook();
     CommandRegistryAddEnumValueConstraintsHook::hook();
     CommandRunHook::hook();
 
