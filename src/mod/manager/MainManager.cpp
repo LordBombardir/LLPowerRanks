@@ -133,21 +133,15 @@ void MainManager::updatePlayerRank(Player& player) {
 }
 
 void MainManager::extraActions(const object::Rank& rank, const Player& player) {
-    ::addFunctionToProcessingPacket(
-        false,
-        true,
-        player.getRealName(),
-        [&rank](AvailableCommandsPacket& packet) -> void {
-            for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
-                std::string commandName = command.name.get();
-                if (rank.isCommandAvailable(commandName)) {
-                    command.permission = CommandPermissionLevel::Any;
-                }
-            }
+    AvailableCommandsPacket packet = ::getAvailableCommandsPacket(player);
+    for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
+        std::string commandName = command.name.get();
+        if (rank.isCommandAvailable(commandName)) {
+            command.permission = CommandPermissionLevel::Any;
         }
-    );
+    }
 
-    ::sendPlayerAvailableCommandsPacket(player);
+    packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
 }
 
 void MainManager::extraVanillaActions(Player& player, const object::Rank& rank) {
