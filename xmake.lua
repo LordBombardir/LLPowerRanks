@@ -6,7 +6,7 @@ add_repositories("lordbombardir-repo https://github.com/LordBombardir/xmake-repo
 -- add_requires("levilamina x.x.x") for a specific version
 -- add_requires("levilamina develop") to use develop version
 -- please note that you should add bdslibrary yourself if using dev version
-add_requires("levilamina 1.1.1")
+add_requires("levilamina 29a2393f7356668621d77bd32b741e569f4e909d")
 add_requires("translatorapi 1.1.1")
 add_requires("sqlitecpp")
 add_requires("levibuildscript")

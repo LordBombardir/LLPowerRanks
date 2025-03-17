@@ -6,15 +6,11 @@
 #include "ranks/RanksManager.h"
 #include <LLTranslatorApi.h>
 #include <ll/api/service/Bedrock.h>
-#include <mc/entity/components/SynchedActorDataComponent.h>
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/actor/ActorDataIDs.h>
-#include <mc/world/actor/DataItem.h>
-#include <mc/world/actor/SynchedActorData.h>
 #include <mc/world/actor/SynchedActorDataEntityWrapper.h>
 #include <mc/world/actor/player/LayeredAbilities.h>
 #include <mc/world/level/Level.h>
-
 
 // wth mojang?
 AvailableCommandsPacket::EnumData::EnumData(const EnumData&)                                     = default;
@@ -130,11 +126,8 @@ void MainManager::setPlayerRankByXuid(const std::string& xuid, const object::Ran
 void MainManager::updatePlayerRank(Player& player) {
     const object::Rank& rank = manager::MainManager::getPlayerRankOrSetDefault(player);
 
-    std::string                scoreTag = Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix());
-    std::unique_ptr<DataItem>& dataScoreTag =
-        player.mEntityData->mData->mData->mItemsArray->at(static_cast<size_t>(ActorDataIDs::Score));
-
-    dataScoreTag->setData<std::string>(std::move(scoreTag));
+    std::string scoreTag = Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix());
+    player.mEntityData->set(static_cast<ushort>(ActorDataIDs::Score), scoreTag);
 
     extraActions(rank, player);
     extraVanillaActions(player, rank);
