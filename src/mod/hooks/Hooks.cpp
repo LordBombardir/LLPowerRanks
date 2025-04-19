@@ -3,6 +3,7 @@
 #include "../manager/MainManager.h"
 #include "../manager/command/CommandManager.h"
 #include <ll/api/memory/Hook.h>
+#include <mc/network/LoopbackPacketSender.h>
 #include <mc/network/PacketSender.h>
 #include <mc/network/ServerNetworkHandler.h>
 #include <mc/network/packet/TextPacket.h>
@@ -11,6 +12,7 @@
 #include <mc/server/commands/CommandOutput.h>
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/level/Level.h>
+
 
 namespace power_ranks::hooks {
 
@@ -78,7 +80,7 @@ LL_TYPE_INSTANCE_HOOK(
 
 LL_TYPE_INSTANCE_HOOK(
     PlayerSendMessageHook,
-    HookPriority::Lowest,
+    HookPriority::Normal,
     ServerNetworkHandler,
     &ServerNetworkHandler::$handle,
     void,
@@ -86,27 +88,39 @@ LL_TYPE_INSTANCE_HOOK(
     const TextPacket&        packet
 ) {
     if (ServerPlayer* player = thisFor<NetEventCallback>()->_getServerPlayer(identifier, packet.mClientSubId); player) {
-        const object::Rank& rank        = manager::MainManager::getPlayerRankOrSetDefault(*player);
-        TextPacket          otherPacket = TextPacket::createRawMessage(Utils::strReplace(
+        const object::Rank& rank         = manager::MainManager::getPlayerRankOrSetDefault(*player);
+        TextPacket&         castedPacket = const_cast<TextPacket&>(packet);
+
+        castedPacket.mMessage = Utils::strReplace(
             rank.getChatFormat(),
             {"{prefix}", "{playerName}", "{message}"},
             {rank.getPrefix(), player->getRealName(), packet.mMessage}
-        ));
+        );
 
-        /*
-         * Не использовать origin(identifier, packet);
-         * По-видимому, ServerNetworkHandler::handle не хочет обрабатывать сырые TextPacket,
-         * созданные при помощи TextPacket::createRawMessage
-         * Так как этот хук отвечает лишь за оформление сообщения чата, то приоритет
-         * HookPriority::Lowest является нормальным для функционирования других модов
-         * (например, на блокировку чата).
-         */
-
-        player->getLevel().getPacketSender()->sendBroadcast(otherPacket);
-        return;
+        return origin(identifier, castedPacket);
     }
 
     origin(identifier, packet);
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    LoopbackPacketSenderHook,
+    HookPriority::Normal,
+    LoopbackPacketSender,
+    &LoopbackPacketSender::$sendToClient,
+    void,
+    const NetworkIdentifier& identifier,
+    const Packet&            packet,
+    SubClientId              subId
+) {
+    if (packet.getId() == MinecraftPacketIds::Text) {
+        TextPacket& castedPacket = const_cast<TextPacket&>(static_cast<const TextPacket&>(packet));
+
+        castedPacket.mAuthor = "";
+        return origin(identifier, castedPacket, subId);
+    }
+
+    origin(identifier, packet, subId);
 }
 
 void Hooks::setupHooks() {
@@ -115,6 +129,7 @@ void Hooks::setupHooks() {
     CommandRunHook::hook();
 
     PlayerSendMessageHook::hook();
+    LoopbackPacketSenderHook::hook();
 }
 
 } // namespace power_ranks::hooks

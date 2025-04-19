@@ -6,7 +6,7 @@ add_repositories("lordbombardir-repo https://github.com/LordBombardir/xmake-repo
 -- add_requires("levilamina x.x.x") for a specific version
 -- add_requires("levilamina develop") to use develop version
 -- please note that you should add bdslibrary yourself if using dev version
-add_requires("levilamina 29a2393f7356668621d77bd32b741e569f4e909d")
+add_requires("levilamina a1f75c58abae6089cf2daa2fd9221609b0e590a7")
 add_requires("translatorapi 1.1.1")
 add_requires("sqlitecpp")
 add_requires("levibuildscript")
@@ -19,27 +19,21 @@ target("PowerRanks") -- Change this to your mod name.
     add_rules("@levibuildscript/linkrule")
     add_rules("@levibuildscript/modpacker")
     
-    add_cxflags(
-        "/EHa",
-        "/utf-8",
-        "/W4",
-        "/w44265",
-        "/w44289",
-        "/w44296",
-        "/w45263",
-        "/w44738",
-        "/w45204"
-    )
+    add_cxflags("/EHa", "/utf-8", "/W4", "/w44265", "/w44289", "/w44296", "/w45263", "/w44738", "/w45204")
     add_defines("NOMINMAX", "UNICODE", "_HAS_CXX23=1", "POWERRANKS_EXPORT")
-    add_files("src/**.cpp")
-    add_includedirs("src")
+
     add_packages("levilamina")
     add_packages("translatorapi")
     add_packages("sqlitecpp")
+
     set_exceptions("none") -- To avoid conflicts with /EHa.
     set_kind("shared")
     set_languages("c++20")
     set_symbols("debug")
+
+    add_headerfiles("src/**.h")
+    add_files("src/**.cpp")
+    add_includedirs("src")
 
     after_build(function (target)
         local binDirectory = path.join(os.projectdir(), "bin")
