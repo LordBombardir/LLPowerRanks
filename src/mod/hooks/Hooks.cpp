@@ -3,7 +3,7 @@
 #include "../manager/MainManager.h"
 #include "../manager/command/CommandManager.h"
 #include <ll/api/memory/Hook.h>
-#include <mc/network/LoopbackPacketSender.h>
+#include <mc/network/NetworkSystem.h>
 #include <mc/network/PacketSender.h>
 #include <mc/network/ServerNetworkHandler.h>
 #include <mc/network/packet/TextPacket.h>
@@ -104,10 +104,10 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 LL_TYPE_INSTANCE_HOOK(
-    LoopbackPacketSenderHook,
+    NetworkSystemSendHook,
     HookPriority::Normal,
-    LoopbackPacketSender,
-    &LoopbackPacketSender::$sendToClient,
+    NetworkSystem,
+    &NetworkSystem::send,
     void,
     const NetworkIdentifier& identifier,
     const Packet&            packet,
@@ -123,13 +123,33 @@ LL_TYPE_INSTANCE_HOOK(
     origin(identifier, packet, subId);
 }
 
+LL_TYPE_INSTANCE_HOOK(
+    NetworkSystemSendToMultipleHook,
+    HookPriority::Normal,
+    NetworkSystem,
+    &NetworkSystem::sendToMultiple,
+    void,
+    const std::vector<NetworkIdentifierWithSubId>& identifiers,
+    const Packet&                                  packet
+) {
+    if (packet.getId() == MinecraftPacketIds::Text) {
+        TextPacket& castedPacket = const_cast<TextPacket&>(static_cast<const TextPacket&>(packet));
+
+        castedPacket.mAuthor = "";
+        return origin(identifiers, castedPacket);
+    }
+
+    origin(identifiers, packet);
+}
+
 void Hooks::setupHooks() {
     PlayerConnectHook::hook();
     CommandRegistryAddEnumValueConstraintsHook::hook();
     CommandRunHook::hook();
 
     PlayerSendMessageHook::hook();
-    LoopbackPacketSenderHook::hook();
+    NetworkSystemSendHook::hook();
+    NetworkSystemSendToMultipleHook::hook();
 }
 
 } // namespace power_ranks::hooks
