@@ -1,4 +1,5 @@
 #include "Hooks.h"
+#include "../LLPowerRanks.h"
 #include "../Utils.hpp"
 #include "../manager/MainManager.h"
 #include "../manager/command/CommandManager.h"
@@ -12,7 +13,6 @@
 #include <mc/server/commands/CommandOutput.h>
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/level/Level.h>
-
 
 namespace power_ranks::hooks {
 
@@ -91,10 +91,15 @@ LL_TYPE_INSTANCE_HOOK(
         const object::Rank& rank         = manager::MainManager::getPlayerRankOrSetDefault(*player);
         TextPacket&         castedPacket = const_cast<TextPacket&>(packet);
 
+        std::string chatFormat      = rank.getChatFormat();
+        std::string originalMessage = packet.mMessage;
+
+        api::onPlayerSendMessage(player->getRealName(), rank, chatFormat, originalMessage);
+
         castedPacket.mMessage = Utils::strReplace(
-            rank.getChatFormat(),
+            chatFormat,
             {"{prefix}", "{playerName}", "{message}"},
-            {rank.getPrefix(), player->getRealName(), packet.mMessage}
+            {rank.getPrefix(), player->getRealName(), originalMessage}
         );
 
         return origin(identifier, castedPacket);
@@ -115,6 +120,9 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     if (packet.getId() == MinecraftPacketIds::Text) {
         TextPacket& castedPacket = const_cast<TextPacket&>(static_cast<const TextPacket&>(packet));
+        if (castedPacket.mType != TextPacketType::Chat) {
+            return origin(identifier, packet, subId);
+        }
 
         castedPacket.mAuthor = "";
         return origin(identifier, castedPacket, subId);
@@ -134,6 +142,9 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     if (packet.getId() == MinecraftPacketIds::Text) {
         TextPacket& castedPacket = const_cast<TextPacket&>(static_cast<const TextPacket&>(packet));
+        if (castedPacket.mType != TextPacketType::Chat) {
+            return origin(identifiers, packet);
+        }
 
         castedPacket.mAuthor = "";
         return origin(identifiers, castedPacket);

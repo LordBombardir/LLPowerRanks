@@ -4,43 +4,56 @@
 #include <stdexcept>
 #include <utility>
 
-std::unordered_map<std::string, const power_ranks::object::Rank*> getRanks() {
-    std::unordered_map<std::string, power_ranks::object::Rank*> originalMap =
-        power_ranks::manager::RanksManager::getRanks();
-    std::unordered_map<std::string, const power_ranks::object::Rank*> newMap;
+namespace power_ranks::api {
 
-    for (const std::pair<std::string, power_ranks::object::Rank*> pair : originalMap) {
+std::unordered_map<std::string, const object::Rank*> getRanks() {
+    std::unordered_map<std::string, object::Rank*>       originalMap = manager::RanksManager::getRanks();
+    std::unordered_map<std::string, const object::Rank*> newMap;
+
+    for (const std::pair<std::string, object::Rank*> pair : originalMap) {
         newMap.emplace(pair);
     }
 
     return newMap;
 }
-std::optional<const power_ranks::object::Rank*> getRank(const std::string& name) {
-    return power_ranks::manager::RanksManager::getRank(name);
+
+std::optional<const object::Rank*> getRank(const std::string& name) { return manager::RanksManager::getRank(name); }
+
+const object::Rank& getPlayerRankOrSetDefault(Player& player) {
+    return manager::MainManager::getPlayerRankOrSetDefault(player);
 }
 
-const power_ranks::object::Rank& getPlayerRankOrSetDefault(Player& player) {
-    return power_ranks::manager::MainManager::getPlayerRankOrSetDefault(player);
-}
-const power_ranks::object::Rank& getPlayerRankOrSetDefault(const std::string& playerName) {
-    return power_ranks::manager::MainManager::getPlayerRankOrSetDefault(playerName);
+const object::Rank& getPlayerRankOrSetDefault(const std::string& playerName) {
+    return manager::MainManager::getPlayerRankOrSetDefault(playerName);
 }
 
-void setPlayerRank(Player& player, const power_ranks::object::Rank& rank) {
-    power_ranks::manager::MainManager::setPlayerRank(player, rank);
-}
-void setPlayerRankByName(const std::string& playerName, const power_ranks::object::Rank& rank) {
+void setPlayerRank(Player& player, const object::Rank& rank) { manager::MainManager::setPlayerRank(player, rank); }
+
+void setPlayerRankByName(const std::string& playerName, const object::Rank& rank) {
     if (playerName.empty()) {
         throw std::invalid_argument("Parameter «playerName» must not be empty!");
     }
 
-    power_ranks::manager::MainManager::setPlayerRankByName(playerName, rank);
+    manager::MainManager::setPlayerRankByName(playerName, rank);
 }
 
-void setPlayerRankByXuid(const std::string& xuid, const power_ranks::object::Rank& rank) {
+void setPlayerRankByXuid(const std::string& xuid, const object::Rank& rank) {
     if (xuid.empty()) {
         throw std::invalid_argument("Parameter «xuid» must not be empty!");
     }
 
-    power_ranks::manager::MainManager::setPlayerRankByXuid(xuid, rank);
+    manager::MainManager::setPlayerRankByXuid(xuid, rank);
 }
+
+void onPlayerSendMessage(
+    [[maybe_unused]] const std::string&  playerName,
+    [[maybe_unused]] const object::Rank& playerRank,
+    [[maybe_unused]] std::string&        chatFormat,
+    [[maybe_unused]] std::string&        originalMessage
+) {
+    // NOPE
+    // Я против использования системы событий. По моему мнению,
+    // хуки - это отличное решение.
+}
+
+} // namespace power_ranks::api
