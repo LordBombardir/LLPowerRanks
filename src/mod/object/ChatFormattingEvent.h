@@ -28,7 +28,6 @@ public:
       originalMessage(originalMessage){};
 
     POWERRANKS_API void serialize(CompoundTag& nbt) const override;
-    POWERRANKS_API void deserialize(const CompoundTag& nbt) override;
 
     POWERRANKS_API Player& getPlayer() const;
     POWERRANKS_API const object::Rank& getPlayerRank() const;
