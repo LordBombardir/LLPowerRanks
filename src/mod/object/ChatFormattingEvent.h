@@ -12,6 +12,10 @@
 #endif
 #endif
 
+#ifndef POWERRANKS_NDAPI
+#define POWERRANKS_NDAPI [[nodiscard]] POWERRANKS_API
+#endif
+
 namespace power_ranks::object {
 
 class ChatFormattingEvent final : public ll::event::Event {
@@ -29,13 +33,13 @@ public:
 
     POWERRANKS_API void serialize(CompoundTag& nbt) const override;
 
-    POWERRANKS_API Player& getPlayer() const;
-    POWERRANKS_API const object::Rank& getPlayerRank() const;
+    POWERRANKS_NDAPI Player& getPlayer() const;
+    POWERRANKS_NDAPI const object::Rank& getPlayerRank() const;
 
-    POWERRANKS_API std::string& getChatFormat() const;
-    POWERRANKS_API std::string& getOriginalMessage() const;
+    POWERRANKS_NDAPI std::string& getChatFormat() const;
+    POWERRANKS_NDAPI std::string& getOriginalMessage() const;
 
-private:
+protected:
     Player&             player;
     const object::Rank& playerRank;
     std::string&        chatFormat;

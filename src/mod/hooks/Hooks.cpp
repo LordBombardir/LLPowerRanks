@@ -3,6 +3,7 @@
 #include "../manager/MainManager.h"
 #include "../manager/command/CommandManager.h"
 #include "../object/ChatFormattingEvent.h"
+#include <ll/api/event/Emitter.h>
 #include <ll/api/event/EventBus.h>
 #include <ll/api/memory/Hook.h>
 #include <mc/network/NetworkSystem.h>
@@ -14,7 +15,6 @@
 #include <mc/server/commands/CommandOutput.h>
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/level/Level.h>
-
 
 namespace power_ranks::hooks {
 
@@ -161,9 +161,15 @@ void Hooks::setupHooks() {
     CommandRegistryAddEnumValueConstraintsHook::hook();
     CommandRunHook::hook();
 
-    PlayerSendMessageHook::hook();
     NetworkSystemSendHook::hook();
     NetworkSystemSendToMultipleHook::hook();
 }
+
+static std::unique_ptr<ll::event::EmitterBase> emitterFactory();
+class PlayerSendMessageEmitter : public ll::event::Emitter<emitterFactory, object::ChatFormattingEvent> {
+    ll::memory::HookRegistrar<PlayerSendMessageHook> hook;
+};
+
+static std::unique_ptr<ll::event::EmitterBase> emitterFactory() { return std::make_unique<PlayerSendMessageEmitter>(); }
 
 } // namespace power_ranks::hooks
