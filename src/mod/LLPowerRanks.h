@@ -25,11 +25,11 @@ POWERRANKS_API void setPlayerRankByName(const std::string& playerName, const obj
 POWERRANKS_API void setPlayerRankByXuid(const std::string& xuid, const object::Rank& rank);
 
 POWERRANKS_API void onPlayerSendMessage(
-    const std::string&  playerName,
+    Player&             player,
     const object::Rank& playerRank,
     std::string&        chatFormat,
     std::string&        originalMessage
 );
 
-} // namespace power_ranks
+} // namespace power_ranks::api
 }

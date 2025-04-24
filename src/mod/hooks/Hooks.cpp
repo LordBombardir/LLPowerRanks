@@ -94,7 +94,7 @@ LL_TYPE_INSTANCE_HOOK(
         std::string chatFormat      = rank.getChatFormat();
         std::string originalMessage = packet.mMessage;
 
-        api::onPlayerSendMessage(player->getRealName(), rank, chatFormat, originalMessage);
+        api::onPlayerSendMessage(*player, rank, chatFormat, originalMessage);
 
         castedPacket.mMessage = Utils::strReplace(
             chatFormat,

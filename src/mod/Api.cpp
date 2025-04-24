@@ -46,7 +46,7 @@ void setPlayerRankByXuid(const std::string& xuid, const object::Rank& rank) {
 }
 
 void onPlayerSendMessage(
-    [[maybe_unused]] const std::string&  playerName,
+    [[maybe_unused]] Player&             player,
     [[maybe_unused]] const object::Rank& playerRank,
     [[maybe_unused]] std::string&        chatFormat,
     [[maybe_unused]] std::string&        originalMessage
