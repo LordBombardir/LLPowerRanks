@@ -45,15 +45,4 @@ void setPlayerRankByXuid(const std::string& xuid, const object::Rank& rank) {
     manager::MainManager::setPlayerRankByXuid(xuid, rank);
 }
 
-void onPlayerSendMessage(
-    [[maybe_unused]] Player&             player,
-    [[maybe_unused]] const object::Rank& playerRank,
-    [[maybe_unused]] std::string&        chatFormat,
-    [[maybe_unused]] std::string&        originalMessage
-) {
-    // NOPE
-    // Я против использования системы событий. По моему мнению,
-    // хуки - это отличное решение.
-}
-
 } // namespace power_ranks::api

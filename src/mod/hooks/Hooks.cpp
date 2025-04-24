@@ -1,8 +1,9 @@
 #include "Hooks.h"
-#include "../LLPowerRanks.h"
 #include "../Utils.hpp"
 #include "../manager/MainManager.h"
 #include "../manager/command/CommandManager.h"
+#include "../object/ChatFormattingEvent.h"
+#include <ll/api/event/EventBus.h>
 #include <ll/api/memory/Hook.h>
 #include <mc/network/NetworkSystem.h>
 #include <mc/network/PacketSender.h>
@@ -13,6 +14,7 @@
 #include <mc/server/commands/CommandOutput.h>
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/level/Level.h>
+
 
 namespace power_ranks::hooks {
 
@@ -91,15 +93,16 @@ LL_TYPE_INSTANCE_HOOK(
         const object::Rank& rank         = manager::MainManager::getPlayerRankOrSetDefault(*player);
         TextPacket&         castedPacket = const_cast<TextPacket&>(packet);
 
-        std::string chatFormat      = rank.getChatFormat();
-        std::string originalMessage = packet.mMessage;
+        std::string chatFormat = rank.getChatFormat();
 
-        api::onPlayerSendMessage(*player, rank, chatFormat, originalMessage);
+        ll::event::EventBus::getInstance().publish(
+            object::ChatFormattingEvent{*player, rank, chatFormat, castedPacket.mMessage}
+        );
 
         castedPacket.mMessage = Utils::strReplace(
             chatFormat,
             {"{prefix}", "{playerName}", "{message}"},
-            {rank.getPrefix(), player->getRealName(), originalMessage}
+            {rank.getPrefix(), player->getRealName(), castedPacket.mMessage}
         );
 
         return origin(identifier, castedPacket);

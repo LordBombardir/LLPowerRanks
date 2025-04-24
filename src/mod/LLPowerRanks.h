@@ -4,10 +4,12 @@
 #include <mc/world/actor/player/Player.h>
 #include <optional>
 
+#ifndef POWERRANKS_API
 #ifdef POWERRANKS_EXPORT
 #define POWERRANKS_API __declspec(dllexport)
 #else
 #define POWERRANKS_API __declspec(dllimport)
+#endif
 #endif
 
 extern "C++" {
@@ -23,13 +25,6 @@ POWERRANKS_API const object::Rank& getPlayerRankOrSetDefault(const std::string& 
 POWERRANKS_API void setPlayerRank(Player& player, const object::Rank& rank);
 POWERRANKS_API void setPlayerRankByName(const std::string& playerName, const object::Rank& rank);
 POWERRANKS_API void setPlayerRankByXuid(const std::string& xuid, const object::Rank& rank);
-
-POWERRANKS_API void onPlayerSendMessage(
-    Player&             player,
-    const object::Rank& playerRank,
-    std::string&        chatFormat,
-    std::string&        originalMessage
-);
 
 } // namespace power_ranks::api
 }
