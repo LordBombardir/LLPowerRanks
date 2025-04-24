@@ -49,5 +49,6 @@ target("PowerRanks") -- Change this to your mod name.
         os.cp(path.join(target:targetdir(), "PowerRanks.lib"), libDirectory)
         os.cp(path.join(os.projectdir(), "src", "mod", "LLPowerRanks.h"), includeDirectory)
         os.cp(path.join(os.projectdir(), "src", "mod", "object", "Rank.h"), objectDirectory)
+        os.cp(path.join(os.projectdir(), "src", "mod", "object", "ChatFormattingEvent.h"), objectDirectory)
         os.cp(path.join(os.projectdir(), "assets", "data"), path.join(path.join(binDirectory, target:name()), "data"))
     end)

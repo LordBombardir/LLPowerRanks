@@ -11,4 +11,12 @@ void ChatFormattingEvent::serialize(CompoundTag& nbt) const {
     nbt["originalMessage"] = getOriginalMessage();
 }
 
+Player& ChatFormattingEvent::getPlayer() const { return player; }
+
+const object::Rank& ChatFormattingEvent::getPlayerRank() const { return playerRank; }
+
+std::string& ChatFormattingEvent::getChatFormat() const { return chatFormat; }
+
+std::string& ChatFormattingEvent::getOriginalMessage() const { return originalMessage; }
+
 } // namespace power_ranks::object
