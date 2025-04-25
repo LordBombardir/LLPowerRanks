@@ -1,5 +1,4 @@
 #include "Hooks.h"
-#include "../Main.h"
 #include "../Utils.hpp"
 #include "../manager/MainManager.h"
 #include "../manager/command/CommandManager.h"
@@ -166,11 +165,11 @@ void Hooks::setupHooks() {
     NetworkSystemSendToMultipleHook::hook();
 }
 
-// static std::unique_ptr<ll::event::EmitterBase> emitterFactory();
-// class PlayerSendMessageEmitter : public ll::event::Emitter<emitterFactory, object::ChatFormattingEvent> {
-//     ll::memory::HookRegistrar<PlayerSendMessageHook> hook;
-// };
+static std::unique_ptr<ll::event::EmitterBase> emitterFactory();
+class PlayerSendMessageEmitter : public ll::event::Emitter<emitterFactory, object::ChatFormattingEvent> {
+    ll::memory::HookRegistrar<PlayerSendMessageHook> hook;
+};
 
-// static std::unique_ptr<ll::event::EmitterBase> emitterFactory() { return std::make_unique<PlayerSendMessageEmitter>(); }
+static std::unique_ptr<ll::event::EmitterBase> emitterFactory() { return std::make_unique<PlayerSendMessageEmitter>(); }
 
 } // namespace power_ranks::hooks
