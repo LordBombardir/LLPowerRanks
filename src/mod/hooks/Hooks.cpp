@@ -1,4 +1,5 @@
 #include "Hooks.h"
+#include "../Main.h"
 #include "../Utils.hpp"
 #include "../manager/MainManager.h"
 #include "../manager/command/CommandManager.h"
@@ -94,10 +95,12 @@ LL_TYPE_INSTANCE_HOOK(
         TextPacket&         castedPacket = const_cast<TextPacket&>(packet);
 
         std::string chatFormat = rank.getChatFormat();
-
         ll::event::EventBus::getInstance().publish(
             object::ChatFormattingEvent{*player, rank, chatFormat, castedPacket.mMessage}
         );
+
+        Main::getInstance().getSelf().getLogger().info(chatFormat);
+        Main::getInstance().getSelf().getLogger().info(castedPacket.mMessage);
 
         castedPacket.mMessage = Utils::strReplace(
             chatFormat,
@@ -128,6 +131,11 @@ LL_TYPE_INSTANCE_HOOK(
         }
 
         castedPacket.mAuthor = "";
+
+        Main::getInstance().getSelf().getLogger().info(castedPacket.mXuid);
+        Main::getInstance().getSelf().getLogger().info(castedPacket.mMessage);
+        Main::getInstance().getSelf().getLogger().info(castedPacket.mFilteredMessage.value_or(""));
+
         return origin(identifier, castedPacket, subId);
     }
 
@@ -150,6 +158,11 @@ LL_TYPE_INSTANCE_HOOK(
         }
 
         castedPacket.mAuthor = "";
+
+        Main::getInstance().getSelf().getLogger().info(castedPacket.mXuid);
+        Main::getInstance().getSelf().getLogger().info(castedPacket.mMessage);
+        Main::getInstance().getSelf().getLogger().info(castedPacket.mFilteredMessage.value_or(""));
+
         return origin(identifiers, castedPacket);
     }
 
@@ -161,6 +174,7 @@ void Hooks::setupHooks() {
     CommandRegistryAddEnumValueConstraintsHook::hook();
     CommandRunHook::hook();
 
+    PlayerSendMessageHook::hook();
     NetworkSystemSendHook::hook();
     NetworkSystemSendToMultipleHook::hook();
 }
