@@ -6,7 +6,6 @@
 #include <ll/api/event/Emitter.h>
 #include <ll/api/event/EventBus.h>
 #include <ll/api/memory/Hook.h>
-#include <mc/network/NetworkSystem.h>
 #include <mc/network/PacketSender.h>
 #include <mc/network/ServerNetworkHandler.h>
 #include <mc/network/packet/TextPacket.h>
@@ -98,6 +97,8 @@ LL_TYPE_INSTANCE_HOOK(
             object::ChatFormattingEvent{*player, rank, chatFormat, castedPacket.mMessage}
         );
 
+        castedPacket.mAuthor  = "";
+        castedPacket.mXuid    = "";
         castedPacket.mMessage = Utils::strReplace(
             chatFormat,
             {"{prefix}", "{playerName}", "{message}"},
@@ -110,49 +111,19 @@ LL_TYPE_INSTANCE_HOOK(
     origin(identifier, packet);
 }
 
-LL_TYPE_INSTANCE_HOOK(
-    NetworkSystemSendHook,
+LL_TYPE_STATIC_HOOK(
+    TextPacketCreateChatHook,
     HookPriority::Normal,
-    NetworkSystem,
-    &NetworkSystem::send,
-    void,
-    const NetworkIdentifier& identifier,
-    const Packet&            packet,
-    SubClientId              subId
+    TextPacket,
+    &TextPacket::createChat,
+    TextPacket,
+    [[maybe_unused]] const std::string& author,
+    const std::string&                  message,
+    std::optional<::std::string>        filteredMessage,
+    [[maybe_unused]] const std::string& xuid,
+    const std::string&                  platformId
 ) {
-    if (packet.getId() == MinecraftPacketIds::Text) {
-        TextPacket& castedPacket = const_cast<TextPacket&>(static_cast<const TextPacket&>(packet));
-        if (castedPacket.mType != TextPacketType::Chat) {
-            return origin(identifier, packet, subId);
-        }
-
-        castedPacket.mAuthor = "";
-        return origin(identifier, castedPacket, subId);
-    }
-
-    origin(identifier, packet, subId);
-}
-
-LL_TYPE_INSTANCE_HOOK(
-    NetworkSystemSendToMultipleHook,
-    HookPriority::Normal,
-    NetworkSystem,
-    &NetworkSystem::sendToMultiple,
-    void,
-    const std::vector<NetworkIdentifierWithSubId>& identifiers,
-    const Packet&                                  packet
-) {
-    if (packet.getId() == MinecraftPacketIds::Text) {
-        TextPacket& castedPacket = const_cast<TextPacket&>(static_cast<const TextPacket&>(packet));
-        if (castedPacket.mType != TextPacketType::Chat) {
-            return origin(identifiers, packet);
-        }
-
-        castedPacket.mAuthor = "";
-        return origin(identifiers, castedPacket);
-    }
-
-    origin(identifiers, packet);
+    return origin("", message, filteredMessage, "", platformId);
 }
 
 void Hooks::setupHooks() {
@@ -161,8 +132,7 @@ void Hooks::setupHooks() {
     CommandRunHook::hook();
 
     PlayerSendMessageHook::hook();
-    NetworkSystemSendHook::hook();
-    NetworkSystemSendToMultipleHook::hook();
+    TextPacketCreateChatHook::hook();
 }
 
 static std::unique_ptr<ll::event::EmitterBase> emitterFactory();
