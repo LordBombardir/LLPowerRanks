@@ -99,9 +99,6 @@ LL_TYPE_INSTANCE_HOOK(
             object::ChatFormattingEvent{*player, rank, chatFormat, castedPacket.mMessage}
         );
 
-        Main::getInstance().getSelf().getLogger().info(chatFormat);
-        Main::getInstance().getSelf().getLogger().info(castedPacket.mMessage);
-
         castedPacket.mMessage = Utils::strReplace(
             chatFormat,
             {"{prefix}", "{playerName}", "{message}"},
@@ -131,11 +128,6 @@ LL_TYPE_INSTANCE_HOOK(
         }
 
         castedPacket.mAuthor = "";
-
-        Main::getInstance().getSelf().getLogger().info(castedPacket.mXuid);
-        Main::getInstance().getSelf().getLogger().info(castedPacket.mMessage);
-        Main::getInstance().getSelf().getLogger().info(castedPacket.mFilteredMessage.value_or(""));
-
         return origin(identifier, castedPacket, subId);
     }
 
@@ -158,11 +150,6 @@ LL_TYPE_INSTANCE_HOOK(
         }
 
         castedPacket.mAuthor = "";
-
-        Main::getInstance().getSelf().getLogger().info(castedPacket.mXuid);
-        Main::getInstance().getSelf().getLogger().info(castedPacket.mMessage);
-        Main::getInstance().getSelf().getLogger().info(castedPacket.mFilteredMessage.value_or(""));
-
         return origin(identifiers, castedPacket);
     }
 
@@ -179,11 +166,11 @@ void Hooks::setupHooks() {
     NetworkSystemSendToMultipleHook::hook();
 }
 
-static std::unique_ptr<ll::event::EmitterBase> emitterFactory();
-class PlayerSendMessageEmitter : public ll::event::Emitter<emitterFactory, object::ChatFormattingEvent> {
-    ll::memory::HookRegistrar<PlayerSendMessageHook> hook;
-};
+// static std::unique_ptr<ll::event::EmitterBase> emitterFactory();
+// class PlayerSendMessageEmitter : public ll::event::Emitter<emitterFactory, object::ChatFormattingEvent> {
+//     ll::memory::HookRegistrar<PlayerSendMessageHook> hook;
+// };
 
-static std::unique_ptr<ll::event::EmitterBase> emitterFactory() { return std::make_unique<PlayerSendMessageEmitter>(); }
+// static std::unique_ptr<ll::event::EmitterBase> emitterFactory() { return std::make_unique<PlayerSendMessageEmitter>(); }
 
 } // namespace power_ranks::hooks
