@@ -123,6 +123,8 @@ void EditRankForm::init(Player& player, object::Rank* rank) {
 
             if (availableCommands != "null") {
                 rank->setAvailableCommands(availableCommandsVector);
+            } else {
+                rank->setAvailableCommands({});
             }
 
             if (inheritanceRank != nullptr) {

@@ -99,7 +99,7 @@ LL_TYPE_INSTANCE_HOOK(
         );
 
         if (!manager::ConfigManager::getConfig().ranksWithColoredMessages.contains(rank.getName())) {
-            castedPacket.mMessage = Utils::clean(castedPacket.mMessage);
+            castedPacket.mMessage = Utils::trim_copy(Utils::clean(castedPacket.mMessage));
             if (castedPacket.mMessage.empty()) {
                 return;
             }

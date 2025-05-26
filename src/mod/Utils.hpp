@@ -169,6 +169,7 @@ private:
         ltrim(str);
     }
 
+public:
     static inline std::string trim_copy(std::string str) {
         trim(str);
         return str;
