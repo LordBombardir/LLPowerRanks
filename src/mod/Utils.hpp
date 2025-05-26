@@ -17,12 +17,11 @@ public:
         string = removePrivateUseUnicode(string);
 
         if (removeFormat) {
-            // Remove §[0-9a-v] codes
             std::regex formatCodeRegex(std::string(MC_ESCAPE_CODE) + "[0-9a-v]", std::regex::icase);
             string = std::regex_replace(string, formatCodeRegex, "");
 
-            // Remove the escape char '§' itself
-            string.erase(std::remove(string.begin(), string.end(), MC_ESCAPE_CODE.front()), string.end());
+            std::regex loneEscapeRegex((std::string(MC_ESCAPE_CODE)));
+            string = std::regex_replace(string, loneEscapeRegex, "");
         }
 
         // Remove ANSI escape sequences like \x1b[31m
