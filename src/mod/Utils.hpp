@@ -93,6 +93,22 @@ public:
         return strings;
     }
 
+    static std::string separateVector(const std::vector<std::string>& vector, const std::string& separator) {
+        if (vector.empty()) {
+            return "";
+        }
+
+        std::string result;
+        for (size_t i = 0; i < vector.size(); ++i) {
+            result += vector[i];
+            if (i + 1 < vector.size()) {
+                result += separator;
+            }
+        }
+
+        return result;
+    }
+
 private:
     // Helper to remove Unicode codepoints in range U+E000 to U+F8FF
     static std::string removePrivateUseUnicode(const std::string& input) {

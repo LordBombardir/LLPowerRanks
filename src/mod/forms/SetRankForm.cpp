@@ -25,8 +25,8 @@ void SetRankForm::init(Player& player) {
     );
 
     std::vector<std::string> rankNames = {};
-    for (std::pair<std::string, object::Rank*> pair : manager::RanksManager::getRanks()) {
-        rankNames.push_back(pair.first + " - " + pair.second->getPrefix());
+    for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
+        rankNames.push_back(name + " - " + rank->getPrefix());
     }
 
     form.appendDropdown(

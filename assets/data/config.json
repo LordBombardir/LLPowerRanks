@@ -1,7 +1,11 @@
 {
-    "version": 2,
+    "version": 3,
     "defaultLocaleCode": "en_US",
     "defaultRankName": "Default",
+    "ranksWithColoredMessages": [
+        "Helper",
+        "Administrator"
+    ],
     "superRanks": [
         "Helper",
         "Administrator"

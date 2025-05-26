@@ -16,8 +16,8 @@ namespace power_ranks::commands {
 class SetRankCommand {
 public:
     struct Parameter {
-        CommandSelector<Player>                                   player;
         ll::command::SoftEnum<manager::CommandManager::RankNames> rankName;
+        CommandSelector<Player>                                   player;
     };
 
     static std::string getName() { return "setrank"; };
@@ -28,9 +28,9 @@ public:
     static std::vector<std::string> getAliases() { return {"set-rank"}; };
 
     static void execute(
-        const CommandOrigin&                             origin,
-        CommandOutput&                                   output,
-        const Parameter&                                 parameter,
+        const CommandOrigin&            origin,
+        CommandOutput&                  output,
+        const Parameter&                parameter,
         [[maybe_unused]] const Command& command
     );
     static void executeWithoutParameter(const CommandOrigin& origin, CommandOutput& output);

@@ -6,10 +6,10 @@
 
 namespace power_ranks::commands {
 
-void EditRankCommand::execute(
+void EditRankCommand::executeFirstParameter(
     const CommandOrigin&            origin,
     CommandOutput&                  output,
-    const Parameter&                parameter,
+    const FirstParameter&           parameter,
     [[maybe_unused]] const Command& _
 ) {
     // clang-format off
@@ -25,13 +25,13 @@ void EditRankCommand::execute(
     std::optional<object::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
         std::string ranks = "";
-        for (std::pair<std::string, object::Rank*> pair : manager::RanksManager::getRanks()) {
+        for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
             if (ranks.empty()) {
-                ranks = pair.first;
+                ranks = name;
                 continue;
             }
 
-            ranks += ", " + pair.first;
+            ranks += ", " + name;
         }
 
         output.error(Utils::strReplace(
@@ -45,19 +45,19 @@ void EditRankCommand::execute(
     std::optional<object::Rank*> inheritanceRank = manager::RanksManager::getRank(parameter.inheritanceRank);
     if (parameter.inheritanceRank != "null" && !inheritanceRank.has_value()) {
         std::string ranks = "";
-        for (std::pair<std::string, object::Rank*> pair : manager::RanksManager::getRanks()) {
+        for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
             if (ranks.empty()) {
-                ranks = pair.first;
+                ranks = name;
                 continue;
             }
 
-            ranks += ", " + pair.first;
+            ranks += ", " + name;
         }
 
         output.error(Utils::strReplace(
             manager::LanguageManager::getTranslate("undefinedRank", localeCode),
             {"{rankName}", "{ranks}"},
-            {parameter.rankName, ranks}
+            {parameter.inheritanceRank, ranks}
         ));
         return;
     }
@@ -87,13 +87,53 @@ void EditRankCommand::execute(
     ));
 }
 
-void EditRankCommand::executeWithoutParameter(const CommandOrigin& origin, CommandOutput& output) {
+void EditRankCommand::executeSecondParameter(
+    const CommandOrigin&            origin,
+    CommandOutput&                  output,
+    const SecondParameter&          parameter,
+    [[maybe_unused]] const Command& _
+) {
     if (origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)) {
         output.error(manager::LanguageManager::getTranslate("commandEditRankUsing"));
         return;
     }
 
-    forms::EditRankForm::init(static_cast<ServerPlayer&>(*origin.getEntity()));
+    ServerPlayer& player = static_cast<ServerPlayer&>(*origin.getEntity());
+
+    if (manager::ConfigManager::getConfig().superRanks.contains(parameter.rankName)) {
+        output.error(manager::LanguageManager::getTranslate("editRankSuperRank", player.getLocaleCode()));
+        return;
+    }
+
+    std::optional<object::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
+    if (!rank.has_value() || rank.value() == nullptr) {
+        std::string ranks = "";
+        for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
+            if (ranks.empty()) {
+                ranks = name;
+                continue;
+            }
+
+            ranks += ", " + name;
+        }
+
+        output.error(Utils::strReplace(
+            manager::LanguageManager::getTranslate("undefinedRank", player.getLocaleCode()),
+            {"{rankName}", "{ranks}"},
+            {parameter.rankName, ranks}
+        ));
+        return;
+    }
+
+    forms::EditRankForm::init(static_cast<ServerPlayer&>(*origin.getEntity()), rank.value());
+}
+
+void EditRankCommand::executeWithoutParameter(const CommandOrigin& origin, CommandOutput& output) {
+    std::string localeCode = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)
+                               ? manager::ConfigManager::getConfig().defaultLocaleCode
+                               : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
+
+    output.error(manager::LanguageManager::getTranslate("commandEditRankUsing", localeCode));
 }
 
 } // namespace power_ranks::commands

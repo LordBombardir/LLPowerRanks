@@ -35,7 +35,7 @@
     "formSetRankTitle": "Setting a new rank for a player",
     "formSetRankDropdownPlayers": "Select a player from the list to whom you want to set a new rank:",
     "formSetRankDropdownRanks": "Select a rank from the list that you want to set for the player:",
-    "formEditRankTitle": "Editing a rank",
+    "formEditRankTitle": "Editing the rank {rankName}",
     "formEditRankDropdownRanks": "Select a rank from the list that you want to edit:",
     "formEditRankInputPrefix": "Enter the new prefix of the selected rank:",
     "formEditRankInputPrefixPlaceholder": "New rank prefix",

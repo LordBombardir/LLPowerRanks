@@ -28,13 +28,13 @@ void SetRankCommand::execute(
     std::optional<object::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
         std::string ranks;
-        for (std::pair<std::string, object::Rank*> pair : manager::RanksManager::getRanks()) {
+        for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
             if (ranks.empty()) {
-                ranks = pair.first;
+                ranks = name;
                 continue;
             }
 
-            ranks += ", " + pair.first;
+            ranks += ", " + name;
         }
 
         output.error(Utils::strReplace(

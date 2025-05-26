@@ -31,8 +31,8 @@ bool RanksManager::init(ll::mod::NativeMod& mod) {
 }
 
 void RanksManager::dispose() {
-    for (std::pair<std::string, object::Rank*> pair : ranks) {
-        delete pair.second;
+    for (const auto& [name, rank] : ranks) {
+        delete rank;
     }
 
     ranks.clear();

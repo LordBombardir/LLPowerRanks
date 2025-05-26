@@ -13,13 +13,17 @@ namespace power_ranks::commands {
 
 class EditRankCommand {
 public:
-    struct Parameter {
+    struct FirstParameter {
         ll::command::SoftEnum<manager::CommandManager::RankNames> rankName;
         std::string                                               prefix;
         std::string                                               chatFormat;
         std::string                                               scoreTagFormat;
         ll::command::SoftEnum<manager::CommandManager::RankNames> inheritanceRank;
         std::string                                               availableCommands;
+    };
+
+    struct SecondParameter {
+        ll::command::SoftEnum<manager::CommandManager::RankNames> rankName;
     };
 
     static std::string getName() { return "editrank"; };
@@ -31,12 +35,19 @@ public:
 
     static std::vector<std::string> getAliases() { return {"edit-rank"}; };
 
-    static void execute(
+    static void executeFirstParameter(
         const CommandOrigin&            origin,
         CommandOutput&                  output,
-        const Parameter&                parameter,
+        const FirstParameter&           parameter,
         [[maybe_unused]] const Command& command
     );
+    static void executeSecondParameter(
+        const CommandOrigin&            origin,
+        CommandOutput&                  output,
+        const SecondParameter&          parameter,
+        [[maybe_unused]] const Command& command
+    );
+
     static void executeWithoutParameter(const CommandOrigin& origin, CommandOutput& output);
 };
 

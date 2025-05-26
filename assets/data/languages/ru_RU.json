@@ -35,7 +35,7 @@
     "formSetRankTitle": "Установка игроку нового ранга",
     "formSetRankDropdownPlayers": "Выберите игрока из списка, которому хотите установить новый ранг:",
     "formSetRankDropdownRanks": "Выберите ранг из списка, который хотите установить игроку:",
-    "formEditRankTitle": "Редактирование ранга",
+    "formEditRankTitle": "Редактирование ранга {rankName}",
     "formEditRankDropdownRanks": "Выберите ранг из списка, который хотите редактировать:",
     "formEditRankInputPrefix": "Введите новый префикс выбранного ранга:",
     "formEditRankInputPrefixPlaceholder": "Новый префикс ранга",

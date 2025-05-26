@@ -24,22 +24,20 @@ void AddRankCommand::execute(
     std::optional<object::Rank*> inheritanceRank = manager::RanksManager::getRank(parameter.inheritanceRank);
     if (parameter.inheritanceRank != "null" && !inheritanceRank.has_value()) {
         std::string ranks = "";
-        for (std::pair<std::string, object::Rank*> pair : manager::RanksManager::getRanks()) {
+        for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
             if (ranks.empty()) {
-                ranks = pair.first;
+                ranks = name;
                 continue;
             }
 
-            ranks += ", " + pair.first;
+            ranks += ", " + name;
         }
 
-        output.error(
-            Utils::strReplace(
-                manager::LanguageManager::getTranslate("undefinedRank", localeCode),
-                {"{rankName}", "{ranks}"},
-                {parameter.rankName, ranks}
-            )
-        );
+        output.error(Utils::strReplace(
+            manager::LanguageManager::getTranslate("undefinedRank", localeCode),
+            {"{rankName}", "{ranks}"},
+            {parameter.rankName, ranks}
+        ));
         return;
     }
 
@@ -50,13 +48,11 @@ void AddRankCommand::execute(
         parameter.scoreTagFormat,
         inheritanceRank
     );
-    output.success(
-        Utils::strReplace(
-            manager::LanguageManager::getTranslate("addRankSuccess", localeCode),
-            "{rankName}",
-            parameter.rankName
-        )
-    );
+    output.success(Utils::strReplace(
+        manager::LanguageManager::getTranslate("addRankSuccess", localeCode),
+        "{rankName}",
+        parameter.rankName
+    ));
 }
 
 void AddRankCommand::executeWithoutParameter(const CommandOrigin& origin, CommandOutput& output) {

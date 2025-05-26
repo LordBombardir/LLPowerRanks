@@ -18,8 +18,8 @@ bool CommandManager::registerCommands() {
     }
 
     std::vector<std::string> rankNames = {};
-    for (std::pair<std::string, object::Rank*> pair : RanksManager::getRanks()) {
-        rankNames.push_back(pair.first);
+    for (const auto& [name, rank] : RanksManager::getRanks()) {
+        rankNames.push_back(name);
     }
     ll::command::CommandRegistrar::getInstance().tryRegisterSoftEnum(std::string{rankEnumNames}, rankNames);
 
@@ -56,8 +56,8 @@ bool CommandManager::registerCommands() {
     }
 
     setRankCommand.overload<commands::SetRankCommand::Parameter>()
-        .optional("player")
         .required("rankName")
+        .optional("player")
         .execute(&commands::SetRankCommand::execute);
 
     setRankCommand.overload().execute(&commands::SetRankCommand::executeWithoutParameter);
@@ -90,14 +90,18 @@ bool CommandManager::registerCommands() {
         editRankCommand.alias(alias);
     }
 
-    editRankCommand.overload<commands::EditRankCommand::Parameter>()
+    editRankCommand.overload<commands::EditRankCommand::FirstParameter>()
         .required("rankName")
         .required("prefix")
         .required("chatFormat")
         .required("scoreTagFormat")
         .required("inheritanceRank")
         .required("availableCommands")
-        .execute(&commands::EditRankCommand::execute);
+        .execute(&commands::EditRankCommand::executeFirstParameter);
+
+    editRankCommand.overload<commands::EditRankCommand::SecondParameter>()
+        .required("rankName")
+        .execute(&commands::EditRankCommand::executeSecondParameter);
 
     editRankCommand.overload().execute(&commands::EditRankCommand::executeWithoutParameter);
     return true;

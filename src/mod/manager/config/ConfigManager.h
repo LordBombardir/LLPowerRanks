@@ -9,7 +9,7 @@ namespace power_ranks::manager {
 class ConfigManager final {
 public:
     struct MainConfig {
-        int                             version                  = 2;
+        int                             version                  = 3;
         std::string                     defaultLocaleCode        = "en_US";
         std::string                     defaultRankName          = "Default";
         std::unordered_set<std::string> ranksWithColoredMessages = {"Helper", "Administrator"};
