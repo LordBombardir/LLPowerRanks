@@ -43,10 +43,22 @@ void EditRankForm::init(Player& player, object::Rank* rank) {
         rankNames.push_back(name + " - " + otherRank->getPrefix());
     }
 
+    size_t index = 0;
+    if (rank->getInheritanceRank().has_value()) {
+        std::string inheritanceRankName =
+            rank->getInheritanceRank().value()->getName() + " - " + rank->getInheritanceRank().value()->getPrefix();
+
+        auto it = std::find(rankNames.begin(), rankNames.end(), inheritanceRankName);
+        if (it != rankNames.end()) {
+            index = std::distance(rankNames.begin(), it);
+        }
+    }
+
     form.appendDropdown(
         "inheritanceRankName",
         manager::LanguageManager::getTranslate("formEditRankDropdownInheritanceRanks", player.getLocaleCode()),
-        rankNames
+        rankNames,
+        index
     );
     form.appendInput(
         "availableCommands",
@@ -90,18 +102,14 @@ void EditRankForm::init(Player& player, object::Rank* rank) {
                 return;
             }
 
-            std::string definedRanks;
-            for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
-                if (definedRanks.empty()) {
-                    definedRanks = name;
-                    continue;
-                }
-
-                definedRanks += ", " + name;
+            if (prefix.empty() || chatFormat.empty()) {
+                player.sendMessage(manager::LanguageManager::getTranslate("formIncorrectData", player.getLocaleCode()));
+                return;
             }
 
             std::vector<std::string> availableCommandsVector = Utils::strSplit(availableCommands, ";");
-            if (availableCommands != "null" && (availableCommandsVector.empty() || availableCommandsVector.front().empty())) {
+            if (availableCommands != "null"
+                && (availableCommandsVector.empty() || availableCommandsVector.front().empty())) {
                 player.sendMessage(manager::LanguageManager::getTranslate(
                     "editRankInvalidFormatAvailableCommands",
                     player.getLocaleCode()

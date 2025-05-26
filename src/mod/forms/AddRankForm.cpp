@@ -77,6 +77,11 @@ void AddRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
         return;
     }
 
+    if (rankName.empty() || prefix.empty() || chatFormat.empty()) {
+        player.sendMessage(manager::LanguageManager::getTranslate("formIncorrectData", player.getLocaleCode()));
+        return;
+    }
+
     if (manager::RanksManager::getRank(rankName).has_value()) {
         player.sendMessage(manager::LanguageManager::getTranslate("addRankAlreadyExists", player.getLocaleCode()));
         return;

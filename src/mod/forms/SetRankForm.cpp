@@ -43,12 +43,17 @@ void SetRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
         return;
     }
 
-    std::string playerName;
-    std::string rankName;
+    std::unordered_map<std::string, object::Rank*> availableRanks = {};
+    for (const auto& [name, otherRank] : manager::RanksManager::getRanks()) {
+        availableRanks[(name + " - " + otherRank->getPrefix())] = otherRank;
+    }
+
+    std::string   playerName;
+    object::Rank* rank;
 
     try {
         playerName = std::get_if<std::string>(&result->at("playerName"))->data();
-        rankName   = Utils::strSplit(std::get_if<std::string>(&result->at("rankName"))->data(), " - ")[0];
+        rank       = availableRanks[std::get_if<std::string>(&result->at("rankName"))->data()];
     } catch (...) {
         player.sendMessage(manager::LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
         return;
@@ -63,27 +68,21 @@ void SetRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
         return;
     }
 
-    if (manager::ConfigManager::getConfig().superRanks.contains(rankName)) {
+    if (manager::ConfigManager::getConfig().superRanks.contains(rank->getName())) {
         player.sendMessage(manager::LanguageManager::getTranslate("setRankSuperRank", player.getLocaleCode()));
         return;
     }
 
-    std::optional<object::Rank*> rank = manager::RanksManager::getRank(rankName);
-    if (!rank.has_value() || rank.value() == nullptr) {
-        player.sendMessage(manager::LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
-        return;
-    }
-
     if (Player* otherPlayer = player.getLevel().getPlayer(playerName); otherPlayer != nullptr) {
-        manager::MainManager::setPlayerRank(*otherPlayer, *rank.value());
+        manager::MainManager::setPlayerRank(*otherPlayer, *rank);
     } else {
-        manager::MainManager::setPlayerRankByName(playerName, *rank.value());
+        manager::MainManager::setPlayerRankByName(playerName, *rank);
     }
 
     player.sendMessage(Utils::strReplace(
         manager::LanguageManager::getTranslate("setRankSuccess", player.getLocaleCode()),
         {"{playerName}", "{rankName}"},
-        {playerName, rankName}
+        {playerName, rank->getName()}
     ));
 }
 
