@@ -1,5 +1,4 @@
 #include "RanksManager.h"
-#include "../../Utils.hpp"
 #include "../command/CommandManager.h"
 #include <ll/api/Config.h>
 #include <stdexcept>
@@ -8,11 +7,11 @@ namespace power_ranks::manager {
 
 int                                            RanksManager::currentPriority = 0;
 RanksManager::Config                           RanksManager::config;
-std::string                                    RanksManager::pathToConfig;
+std::filesystem::path                          RanksManager::pathToConfig;
 std::unordered_map<std::string, object::Rank*> RanksManager::ranks = {};
 
 bool RanksManager::init(ll::mod::NativeMod& mod) {
-    pathToConfig = Utils::fixPath(mod.getDataDir().string() + "/ranks.json");
+    pathToConfig = mod.getDataDir() / "ranks.json";
 
     try {
         bool result = ll::config::loadConfig(config, pathToConfig);
@@ -92,26 +91,26 @@ void RanksManager::saveChangesRank(const object::Rank& rank) {
 }
 
 void RanksManager::parseRanks() {
-    if (!config.ranks.contains(ConfigManager::getConfig().defaultRankName)) {
+    if (config.ranks.find(ConfigManager::getConfig().defaultRankName) == config.ranks.end()) {
         throw std::runtime_error("No default rank detected!");
     }
 
-    for (std::pair<std::string, Rank> pair : config.ranks) {
+    for (const auto& [name, rawRank] : config.ranks) {
         object::Rank* rank = new object::Rank(
             currentPriority++,
-            pair.first,
-            pair.second.prefix,
-            pair.second.chat,
-            pair.second.scoreTag,
+            name,
+            rawRank.prefix,
+            rawRank.chat,
+            rawRank.scoreTag,
             std::nullopt,
-            pair.second.availableCommands
+            rawRank.availableCommands
         );
-        ranks[pair.first] = rank;
+        ranks[name] = rank;
     }
 
-    for (std::pair<std::string, Rank> pair : config.ranks) {
-        if (pair.second.inheritanceRank != "null") {
-            ranks[pair.first]->setInheritanceRank(ranks[pair.second.inheritanceRank]);
+    for (const auto& [name, rawRank] : config.ranks) {
+        if (rawRank.inheritanceRank != "null") {
+            ranks[name]->setInheritanceRank(ranks[rawRank.inheritanceRank]);
         }
     }
 }

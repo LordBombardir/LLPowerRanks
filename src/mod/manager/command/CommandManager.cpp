@@ -56,7 +56,7 @@ bool CommandManager::registerCommands() {
     }
 
     setRankCommand.overload<commands::SetRankCommand::Parameter>()
-        .required("player")
+        .optional("player")
         .required("rankName")
         .execute(&commands::SetRankCommand::execute);
 

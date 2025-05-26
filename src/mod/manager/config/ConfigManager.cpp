@@ -1,5 +1,4 @@
 #include "ConfigManager.h"
-#include "../../Utils.hpp"
 #include <ll/api/Config.h>
 
 namespace power_ranks::manager {
@@ -7,7 +6,7 @@ namespace power_ranks::manager {
 ConfigManager::MainConfig ConfigManager::config;
 
 bool ConfigManager::init(ll::mod::NativeMod& mod) {
-    std::string pathToConfig = Utils::fixPath(mod.getDataDir().string() + "/config.json");
+    std::filesystem::path pathToConfig = mod.getDataDir() / "config.json";
 
     try {
         return ll::config::loadConfig(config, pathToConfig);

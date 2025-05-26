@@ -2,16 +2,17 @@
 #include "manager/MainManager.h"
 #include "manager/ranks/RanksManager.h"
 #include <stdexcept>
-#include <utility>
 
 namespace power_ranks::api {
 
 std::unordered_map<std::string, const object::Rank*> getRanks() {
-    std::unordered_map<std::string, object::Rank*>       originalMap = manager::RanksManager::getRanks();
-    std::unordered_map<std::string, const object::Rank*> newMap;
+    const std::unordered_map<std::string, object::Rank*>& originalMap = manager::RanksManager::getRanks();
 
-    for (const std::pair<std::string, object::Rank*> pair : originalMap) {
-        newMap.emplace(pair);
+    std::unordered_map<std::string, const object::Rank*> newMap;
+    newMap.reserve(originalMap.size());
+
+    for (const auto& [key, value] : originalMap) {
+        newMap.emplace(key, value);
     }
 
     return newMap;

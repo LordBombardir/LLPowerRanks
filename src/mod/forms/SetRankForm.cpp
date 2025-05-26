@@ -54,7 +54,7 @@ void SetRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
         return;
     }
 
-    if (Utils::isValueInVector(manager::ConfigManager::getConfig().superPlayers, playerName)) {
+    if (manager::ConfigManager::getConfig().superPlayers.contains(playerName)) {
         player.sendMessage(Utils::strReplace(
             manager::LanguageManager::getTranslate("setRankSuperPlayer", player.getLocaleCode()),
             "{playerName}",
@@ -63,7 +63,7 @@ void SetRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
         return;
     }
 
-    if (Utils::isValueInVector(manager::ConfigManager::getConfig().superRanks, rankName)) {
+    if (manager::ConfigManager::getConfig().superRanks.contains(rankName)) {
         player.sendMessage(manager::LanguageManager::getTranslate("setRankSuperRank", player.getLocaleCode()));
         return;
     }

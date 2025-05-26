@@ -3,6 +3,8 @@
 #include "../forms/SetRankForm.h"
 #include "../manager/MainManager.h"
 #include "../manager/ranks/RanksManager.h"
+#include <cstddef>
+#include <ll/api/memory/Memory.h>
 #include <mc/server/ServerPlayer.h>
 
 namespace power_ranks::commands {
@@ -17,13 +19,7 @@ void SetRankCommand::execute(
     bool isOriginServer = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player);
     std::string localeCode = isOriginServer ? manager::ConfigManager::getConfig().defaultLocaleCode : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
 
-    CommandSelectorResults<Player> players = parameter.player.results(origin);
-    if (players.empty()) {
-        output.error(manager::LanguageManager::getTranslate("commandSetRankUndefinedPlayer", localeCode));
-        return;
-    }
-
-    if (!isOriginServer && Utils::isValueInVector(manager::ConfigManager::getConfig().superRanks, std::string{parameter.rankName})) {
+    if (!isOriginServer && manager::ConfigManager::getConfig().superRanks.contains(parameter.rankName)) {
         // clang-format on
         output.error(manager::LanguageManager::getTranslate("setRankSuperRank", localeCode));
         return;
@@ -41,28 +37,49 @@ void SetRankCommand::execute(
             ranks += ", " + pair.first;
         }
 
-        output.error(
-            Utils::strReplace(
-                manager::LanguageManager::getTranslate("undefinedRank", localeCode),
-                {"{rankName}", "{ranks}"},
-                {parameter.rankName, ranks}
-            )
-        );
+        output.error(Utils::strReplace(
+            manager::LanguageManager::getTranslate("undefinedRank", localeCode),
+            {"{rankName}", "{ranks}"},
+            {parameter.rankName, ranks}
+        ));
+        return;
+    }
+
+    CommandSelectorResults<Player> players = parameter.player.results(origin);
+    if (players.empty()) {
+        constexpr ptrdiff_t offset_mNameFilters = offsetof(CommandSelectorBase, mNameFilters);
+        const std::vector<InvertableFilter<std::string>>& filter =
+            ll::memory::dAccess<std::vector<InvertableFilter<std::string>>>(
+                reinterpret_cast<const void*>(&parameter.player),
+                offset_mNameFilters
+            );
+
+        if (filter.empty() || filter.front().value == "") {
+            output.error(manager::LanguageManager::getTranslate("commandSetRankUndefinedPlayer", localeCode));
+            return;
+        }
+
+        std::string playerName = filter.front().value;
+        manager::MainManager::setPlayerRankByName(playerName, *rank.value());
+
+        output.success(Utils::strReplace(
+            manager::LanguageManager::getTranslate("setRankSuccess", localeCode),
+            {"{playerName}", "{rankName}"},
+            {playerName, parameter.rankName}
+        ));
         return;
     }
 
     std::vector<std::string> playerNames;
     for (Player* player : *players.data) {
         // clang-format off
-        if (!isOriginServer && Utils::isValueInVector(manager::ConfigManager::getConfig().superPlayers, player->getRealName())) {
+        if (!isOriginServer && manager::ConfigManager::getConfig().superPlayers.contains(player->getRealName())) {
             // clang-format on
-            output.error(
-                Utils::strReplace(
-                    manager::LanguageManager::getTranslate("setRankSuperPlayer", localeCode),
-                    "{playerName}",
-                    player->getRealName()
-                )
-            );
+            output.error(Utils::strReplace(
+                manager::LanguageManager::getTranslate("setRankSuperPlayer", localeCode),
+                "{playerName}",
+                player->getRealName()
+            ));
             continue;
         }
 
@@ -80,13 +97,11 @@ void SetRankCommand::execute(
     }
 
     if (playerNames.size() == 1) {
-        output.success(
-            Utils::strReplace(
-                manager::LanguageManager::getTranslate("setRankSuccess", localeCode),
-                {"{playerName}", "{rankName}"},
-                {playerNames[0], parameter.rankName}
-            )
-        );
+        output.success(Utils::strReplace(
+            manager::LanguageManager::getTranslate("setRankSuccess", localeCode),
+            {"{playerName}", "{rankName}"},
+            {playerNames[0], parameter.rankName}
+        ));
         return;
     }
 
@@ -100,13 +115,11 @@ void SetRankCommand::execute(
         playerNamesStr += ", " + playerName;
     }
 
-    output.success(
-        Utils::strReplace(
-            manager::LanguageManager::getTranslate("commandSetRankSuccessMultiply", localeCode),
-            {"{playerNames}", "{rankName}"},
-            {playerNamesStr, parameter.rankName}
-        )
-    );
+    output.success(Utils::strReplace(
+        manager::LanguageManager::getTranslate("commandSetRankSuccessMultiply", localeCode),
+        {"{playerNames}", "{rankName}"},
+        {playerNamesStr, parameter.rankName}
+    ));
 }
 
 void SetRankCommand::executeWithoutParameter(const CommandOrigin& origin, CommandOutput& output) {

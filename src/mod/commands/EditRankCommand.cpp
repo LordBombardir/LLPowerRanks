@@ -16,7 +16,7 @@ void EditRankCommand::execute(
     bool isOriginServer = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player);
     std::string localeCode = isOriginServer ? manager::ConfigManager::getConfig().defaultLocaleCode : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
 
-    if (!isOriginServer && Utils::isValueInVector(manager::ConfigManager::getConfig().superRanks, std::string{parameter.rankName})) {
+    if (!isOriginServer && manager::ConfigManager::getConfig().superRanks.contains(parameter.rankName)) {
         // clang-format on
         output.error(manager::LanguageManager::getTranslate("editRankSuperRank", localeCode));
         return;
@@ -34,13 +34,11 @@ void EditRankCommand::execute(
             ranks += ", " + pair.first;
         }
 
-        output.error(
-            Utils::strReplace(
-                manager::LanguageManager::getTranslate("undefinedRank", localeCode),
-                {"{rankName}", "{ranks}"},
-                {parameter.rankName, ranks}
-            )
-        );
+        output.error(Utils::strReplace(
+            manager::LanguageManager::getTranslate("undefinedRank", localeCode),
+            {"{rankName}", "{ranks}"},
+            {parameter.rankName, ranks}
+        ));
         return;
     }
 
@@ -56,13 +54,11 @@ void EditRankCommand::execute(
             ranks += ", " + pair.first;
         }
 
-        output.error(
-            Utils::strReplace(
-                manager::LanguageManager::getTranslate("undefinedRank", localeCode),
-                {"{rankName}", "{ranks}"},
-                {parameter.rankName, ranks}
-            )
-        );
+        output.error(Utils::strReplace(
+            manager::LanguageManager::getTranslate("undefinedRank", localeCode),
+            {"{rankName}", "{ranks}"},
+            {parameter.rankName, ranks}
+        ));
         return;
     }
 
@@ -84,13 +80,11 @@ void EditRankCommand::execute(
     }
 
     manager::RanksManager::saveChangesRank(*rank.value());
-    output.success(
-        Utils::strReplace(
-            manager::LanguageManager::getTranslate("editRankSuccess", localeCode),
-            "{rankName}",
-            parameter.rankName
-        )
-    );
+    output.success(Utils::strReplace(
+        manager::LanguageManager::getTranslate("editRankSuccess", localeCode),
+        "{rankName}",
+        parameter.rankName
+    ));
 }
 
 void EditRankCommand::executeWithoutParameter(const CommandOrigin& origin, CommandOutput& output) {

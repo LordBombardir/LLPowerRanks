@@ -2,6 +2,7 @@
 #include "../Utils.hpp"
 #include "../manager/MainManager.h"
 #include "../manager/command/CommandManager.h"
+#include "../manager/config/ConfigManager.h"
 #include "../object/ChatFormattingEvent.h"
 #include <ll/api/event/Emitter.h>
 #include <ll/api/event/EventBus.h>
@@ -96,6 +97,13 @@ LL_TYPE_INSTANCE_HOOK(
         ll::event::EventBus::getInstance().publish(
             object::ChatFormattingEvent{*player, rank, chatFormat, castedPacket.mMessage}
         );
+
+        if (!manager::ConfigManager::getConfig().ranksWithColoredMessages.contains(rank.getName())) {
+            castedPacket.mMessage = Utils::clean(castedPacket.mMessage);
+            if (castedPacket.mMessage.empty()) {
+                return;
+            }
+        }
 
         castedPacket.mAuthor  = "";
         castedPacket.mXuid    = "";

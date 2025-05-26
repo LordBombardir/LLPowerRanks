@@ -46,10 +46,10 @@ const object::Rank& MainManager::getPlayerRankOrSetDefault(Player& player) {
     std::optional<std::string>   otherRankName;
     std::optional<object::Rank*> rank;
 
-    if (rankName = BaseManager::getInstance()->getPlayerRankByXuid(player.getXuid()); rankName.has_value()) {
-        // clang-format off
-        if (otherRankName = BaseManager::getInstance()->getPlayerRankByName(player.getRealName()); !otherRankName.has_value()) {
-            // clang-format on
+    if (rankName = BaseManager::getInstance()->getPlayerRankByXuid(player.getXuid());
+        player.getXuid() != "" && rankName.has_value()) {
+        if (otherRankName = BaseManager::getInstance()->getPlayerRankByName(player.getRealName());
+            !otherRankName.has_value()) {
             BaseManager::getInstance()->updatePlayerNameByXuid(player.getXuid(), player.getRealName());
         }
 

@@ -6,7 +6,7 @@
 #include <ll/api/reflection/Deserialization.h>
 #include <ll/api/reflection/Serialization.h>
 #include <string>
-#include <unordered_map>
+#include <nlohmann/json.hpp>
 
 namespace power_ranks::manager {
 
@@ -23,7 +23,7 @@ public:
     // clang-format off
     struct Config {
         int version = 1;
-        std::unordered_map<std::string, Rank> ranks = {
+        nlohmann::ordered_map<std::string, Rank> ranks = {
             {ConfigManager::getConfig().defaultRankName, {"Player", "{prefix} {playerName}: {message}", "{prefix}"}},
             {"Vip", {"V.I.P.", "{prefix} {playerName}: §b{message}", "{prefix}", ConfigManager::getConfig().defaultRankName, {"home", "warp"}}},
             {"Creative", {"Creator", "{prefix} {playerName}: §a{message}", "{prefix}", "Vip", {"gamemode"}}},
@@ -53,8 +53,8 @@ private:
     static int  currentPriority;
     static void parseRanks();
 
-    static std::string pathToConfig;
-    static Config      config;
+    static std::filesystem::path pathToConfig;
+    static Config                config;
 
     static std::unordered_map<std::string, object::Rank*> ranks;
 };

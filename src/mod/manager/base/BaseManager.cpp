@@ -8,7 +8,7 @@ BaseManager*                                BaseManager::instance       = nullpt
 
 BaseManager::BaseManager(ll::mod::NativeMod& mod) {
     connectionPool = std::make_unique<base::pool::ConnectionPool>(
-        base::pool::ConnectionPool(Utils::fixPath(mod.getDataDir().string() + "/players.db"))
+        base::pool::ConnectionPool((mod.getDataDir() / "players.db").generic_string())
     );
     connectionPool->setupDataBase([](sqlite3* db) -> void {
         char* errorMessage;

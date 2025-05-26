@@ -65,11 +65,12 @@ void AddRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
     std::string inheritanceRankName;
 
     try {
-        rankName            = std::get_if<std::string>(&result->at("rankName"))->data();
-        prefix              = std::get_if<std::string>(&result->at("prefix"))->data();
-        chatFormat          = std::get_if<std::string>(&result->at("chatFormat"))->data();
-        scoreTagFormat      = std::get_if<std::string>(&result->at("scoreTagFormat"))->data();
-        inheritanceRankName = Utils::strSplit(std::get_if<std::string>(&result->at("inheritanceRankName"))->data(), " - ")[0];
+        rankName       = std::get_if<std::string>(&result->at("rankName"))->data();
+        prefix         = std::get_if<std::string>(&result->at("prefix"))->data();
+        chatFormat     = std::get_if<std::string>(&result->at("chatFormat"))->data();
+        scoreTagFormat = std::get_if<std::string>(&result->at("scoreTagFormat"))->data();
+        inheritanceRankName =
+            Utils::strSplit(std::get_if<std::string>(&result->at("inheritanceRankName"))->data(), " - ")[0];
     } catch (...) {
         player.sendMessage(manager::LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
         return;
@@ -104,13 +105,11 @@ void AddRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
     // clang-format on
 
     manager::RanksManager::addRank(rankName, prefix, chatFormat, scoreTagFormat, inheritanceRank);
-    player.sendMessage(
-        Utils::strReplace(
-            manager::LanguageManager::getTranslate("addRankSuccess", player.getLocaleCode()),
-            "{rankName}",
-            rankName
-        )
-    );
+    player.sendMessage(Utils::strReplace(
+        manager::LanguageManager::getTranslate("addRankSuccess", player.getLocaleCode()),
+        "{rankName}",
+        rankName
+    ));
 }
 
 } // namespace power_ranks::forms
