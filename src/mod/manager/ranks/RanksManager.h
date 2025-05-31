@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../../object/Rank.h"
+#include "../../types/Rank.h"
 #include "../config/ConfigManager.h"
 #include <ll/api/mod/NativeMod.h>
 #include <ll/api/reflection/Deserialization.h>
 #include <ll/api/reflection/Serialization.h>
-#include <string>
 #include <nlohmann/json.hpp>
+#include <string>
 
 namespace power_ranks::manager {
 
@@ -36,18 +36,18 @@ public:
     static bool init(ll::mod::NativeMod& mod);
     static void dispose();
 
-    static std::unordered_map<std::string, object::Rank*> getRanks();
-    static std::optional<object::Rank*>                   getRank(const std::string& name);
+    static std::unordered_map<std::string, types::Rank*> getRanks();
+    static std::optional<types::Rank*>                   getRank(const std::string& name);
 
     static void addRank(
-        const std::string&                        name,
-        const std::string&                        prefix,
-        const std::string&                        chatFormat,
-        const std::string&                        scoreTagFormat,
-        const std::optional<const object::Rank*>& inheritanceRank = std::nullopt
+        const std::string&                       name,
+        const std::string&                       prefix,
+        const std::string&                       chatFormat,
+        const std::string&                       scoreTagFormat,
+        const std::optional<const types::Rank*>& inheritanceRank = std::nullopt
     );
-    static void removeRank(const object::Rank& rank);
-    static void saveChangesRank(const object::Rank& rank);
+    static void removeRank(const types::Rank& rank);
+    static void saveChangesRank(const types::Rank& rank);
 
 private:
     static int  currentPriority;
@@ -56,7 +56,7 @@ private:
     static std::filesystem::path pathToConfig;
     static Config                config;
 
-    static std::unordered_map<std::string, object::Rank*> ranks;
+    static std::unordered_map<std::string, types::Rank*> ranks;
 };
 
 } // namespace power_ranks::manager

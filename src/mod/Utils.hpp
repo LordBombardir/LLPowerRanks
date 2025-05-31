@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <ranges>
 #include <regex>
 #include <stdexcept>
 #include <string>
@@ -33,11 +34,6 @@ public:
         return string;
     }
 
-    static inline std::string strToLower(std::string str) {
-        std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return std::tolower(c); });
-        return str;
-    }
-
     static std::string strReplace(
         const std::string& originalStr,
         const std::string& whatNeedToReplace,
@@ -47,8 +43,8 @@ public:
 
         size_t pos = 0;
         while ((pos = result.find(whatNeedToReplace, pos)) != std::string::npos) {
-            result.replace(pos, whatNeedToReplace.length(), whatForReplace);
-            pos += whatForReplace.length();
+            result.replace(pos, whatNeedToReplace.size(), whatForReplace);
+            pos += whatForReplace.size();
         }
 
         return result;
@@ -74,21 +70,19 @@ public:
         return result;
     }
 
-    static std::vector<std::string> strSplit(const std::string& str, const std::string& separator) {
-        if (separator == "") {
-            return {};
-        }
-
+    static std::vector<std::string> strSplit(std::string_view str, std::string_view separator) {
         std::vector<std::string> strings;
-        size_t                   start = 0;
-        size_t                   end   = 0;
-
-        while ((end = str.find(separator, start)) != std::string::npos) {
-            strings.push_back(trim_copy(str.substr(start, end - start)));
-            start = end + separator.length();
+        if (separator == "") {
+            return strings;
         }
 
-        strings.push_back(trim_copy(str.substr(start)));
+        size_t start = 0, end;
+        while ((end = str.find(separator, start)) != std::string::npos) {
+            strings.emplace_back(strTrim(str.substr(start, end - start)));
+            start = end + separator.size();
+        }
+
+        strings.emplace_back(strTrim(str.substr(start)));
         return strings;
     }
 
@@ -106,6 +100,18 @@ public:
         }
 
         return result;
+    }
+
+    static inline std::string strTrim(std::string_view str) {
+        // clang-format off
+        auto trimmed = str
+            | std::views::drop_while([](unsigned char ch) -> int { return std::isspace(ch); })
+            | std::views::reverse
+            | std::views::drop_while([](unsigned char ch) -> int { return std::isspace(ch); })
+            | std::views::reverse;
+        // clang-format on
+
+        return std::string(trimmed.begin(), trimmed.end());
     }
 
 private:
@@ -146,32 +152,6 @@ private:
         }
 
         return output;
-    }
-
-    // Оригинал кода, написанного ниже: https://stackoverflow.com/questions/216823/how-to-trim-a-stdstring
-
-    static inline void ltrim(std::string& str) {
-        str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](unsigned char ch) {
-                      return !std::isspace(ch);
-                  }));
-    }
-
-    static inline void rtrim(std::string& str) {
-        str.erase(
-            std::find_if(str.rbegin(), str.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(),
-            str.end()
-        );
-    }
-
-    static inline void trim(std::string& str) {
-        rtrim(str);
-        ltrim(str);
-    }
-
-public:
-    static inline std::string trim_copy(std::string str) {
-        trim(str);
-        return str;
     }
 };
 

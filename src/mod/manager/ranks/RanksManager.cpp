@@ -5,10 +5,10 @@
 
 namespace power_ranks::manager {
 
-int                                            RanksManager::currentPriority = 0;
-RanksManager::Config                           RanksManager::config;
-std::filesystem::path                          RanksManager::pathToConfig;
-std::unordered_map<std::string, object::Rank*> RanksManager::ranks = {};
+int                                           RanksManager::currentPriority = 0;
+RanksManager::Config                          RanksManager::config;
+std::filesystem::path                         RanksManager::pathToConfig;
+std::unordered_map<std::string, types::Rank*> RanksManager::ranks = {};
 
 bool RanksManager::init(ll::mod::NativeMod& mod) {
     pathToConfig = mod.getDataDir() / "ranks.json";
@@ -38,8 +38,9 @@ void RanksManager::dispose() {
     ranks.clear();
 }
 
-std::unordered_map<std::string, object::Rank*> RanksManager::getRanks() { return ranks; }
-std::optional<object::Rank*>                   RanksManager::getRank(const std::string& name) {
+std::unordered_map<std::string, types::Rank*> RanksManager::getRanks() { return ranks; }
+
+std::optional<types::Rank*> RanksManager::getRank(const std::string& name) {
     if (!ranks.contains(name)) {
         return std::nullopt;
     }
@@ -48,11 +49,11 @@ std::optional<object::Rank*>                   RanksManager::getRank(const std::
 }
 
 void RanksManager::addRank(
-    const std::string&                        name,
-    const std::string&                        prefix,
-    const std::string&                        chatFormat,
-    const std::string&                        scoreTagFormat,
-    const std::optional<const object::Rank*>& inheritanceRank
+    const std::string&                       name,
+    const std::string&                       prefix,
+    const std::string&                       chatFormat,
+    const std::string&                       scoreTagFormat,
+    const std::optional<const types::Rank*>& inheritanceRank
 ) {
     config.ranks[name] = Rank{
         prefix,
@@ -61,13 +62,13 @@ void RanksManager::addRank(
         inheritanceRank.has_value() ? inheritanceRank.value()->getName() : "null"
     };
 
-    ranks[name] = new object::Rank(currentPriority++, name, prefix, chatFormat, scoreTagFormat, inheritanceRank);
+    ranks[name] = new types::Rank(currentPriority++, name, prefix, chatFormat, scoreTagFormat, inheritanceRank);
     ll::config::saveConfig(config, pathToConfig);
 
     manager::CommandManager::addRankNameToSoftEnum(name);
 }
 
-void RanksManager::removeRank(const object::Rank& rank) {
+void RanksManager::removeRank(const types::Rank& rank) {
     std::string rankName = rank.getName();
 
     config.ranks.erase(rankName);
@@ -79,7 +80,7 @@ void RanksManager::removeRank(const object::Rank& rank) {
     manager::CommandManager::removeRankNameFromSoftEnum(rankName);
 }
 
-void RanksManager::saveChangesRank(const object::Rank& rank) {
+void RanksManager::saveChangesRank(const types::Rank& rank) {
     config.ranks[rank.getName()] = Rank{
         rank.getPrefix(),
         rank.getChatFormat(),
@@ -96,7 +97,7 @@ void RanksManager::parseRanks() {
     }
 
     for (const auto& [name, rawRank] : config.ranks) {
-        object::Rank* rank = new object::Rank(
+        types::Rank* rank = new types::Rank(
             currentPriority++,
             name,
             rawRank.prefix,

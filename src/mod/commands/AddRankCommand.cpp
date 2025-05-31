@@ -21,7 +21,7 @@ void AddRankCommand::execute(
         return;
     }
 
-    std::optional<object::Rank*> inheritanceRank = manager::RanksManager::getRank(parameter.inheritanceRank);
+    std::optional<types::Rank*> inheritanceRank = manager::RanksManager::getRank(parameter.inheritanceRank);
     if (parameter.inheritanceRank != "null" && !inheritanceRank.has_value()) {
         std::string ranks = "";
         for (const auto& [name, rank] : manager::RanksManager::getRanks()) {

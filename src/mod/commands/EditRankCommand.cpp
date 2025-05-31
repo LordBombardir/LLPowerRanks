@@ -22,7 +22,7 @@ void EditRankCommand::executeFirstParameter(
         return;
     }
 
-    std::optional<object::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
+    std::optional<types::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
         std::string ranks = "";
         for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
@@ -42,7 +42,7 @@ void EditRankCommand::executeFirstParameter(
         return;
     }
 
-    std::optional<object::Rank*> inheritanceRank = manager::RanksManager::getRank(parameter.inheritanceRank);
+    std::optional<types::Rank*> inheritanceRank = manager::RanksManager::getRank(parameter.inheritanceRank);
     if (parameter.inheritanceRank != "null" && !inheritanceRank.has_value()) {
         std::string ranks = "";
         for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
@@ -105,7 +105,7 @@ void EditRankCommand::executeSecondParameter(
         return;
     }
 
-    std::optional<object::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
+    std::optional<types::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
         std::string ranks = "";
         for (const auto& [name, rank] : manager::RanksManager::getRanks()) {

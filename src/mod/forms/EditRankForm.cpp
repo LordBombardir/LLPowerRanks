@@ -6,7 +6,7 @@
 
 namespace power_ranks::forms {
 
-void EditRankForm::init(Player& player, object::Rank* rank) {
+void EditRankForm::init(Player& player, types::Rank* rank) {
     ll::form::CustomForm form(Utils::strReplace(
         manager::LanguageManager::getTranslate("formEditRankTitle", player.getLocaleCode()),
         "{rankName}",
@@ -74,7 +74,7 @@ void EditRankForm::init(Player& player, object::Rank* rank) {
                 return;
             }
 
-            std::unordered_map<std::string, object::Rank*> availableRanks = {
+            std::unordered_map<std::string, types::Rank*> availableRanks = {
                 {manager::LanguageManager::getTranslate("dropdownDontPoint", player.getLocaleCode()), nullptr}
             };
             for (const auto& [name, otherRank] : manager::RanksManager::getRanks()) {
@@ -85,11 +85,11 @@ void EditRankForm::init(Player& player, object::Rank* rank) {
                 availableRanks[(name + " - " + otherRank->getPrefix())] = otherRank;
             }
 
-            std::string   prefix;
-            std::string   chatFormat;
-            std::string   scoreTagFormat;
-            object::Rank* inheritanceRank;
-            std::string   availableCommands;
+            std::string  prefix;
+            std::string  chatFormat;
+            std::string  scoreTagFormat;
+            types::Rank* inheritanceRank;
+            std::string  availableCommands;
 
             try {
                 prefix          = std::get_if<std::string>(&result->at("prefix"))->data();

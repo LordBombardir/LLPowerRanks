@@ -6,8 +6,8 @@ add_repositories("lordbombardir-repo https://github.com/LordBombardir/xmake-repo
 -- add_requires("levilamina x.x.x") for a specific version
 -- add_requires("levilamina develop") to use develop version
 -- please note that you should add bdslibrary yourself if using dev version
-add_requires("levilamina 1.1.2")
-add_requires("translatorapi 1.1.1")
+add_requires("levilamina 1.2.0")
+add_requires("translatorapi 1.1.3")
 add_requires("sqlitecpp")
 add_requires("nlohmann_json")
 add_requires("levibuildscript")
@@ -41,16 +41,16 @@ target("PowerRanks") -- Change this to your mod name.
         local binDirectory = path.join(os.projectdir(), "bin")
         
         local libDirectory = path.join(binDirectory, "lib")
-        local includeDirectory = path.join(binDirectory, "include")
-        local objectDirectory = path.join(includeDirectory, "object")
+        local includeDirectory = path.join(path.join(binDirectory, "include"), "power_ranks")
+        local typesDirectory = path.join(includeDirectory, "types")
 
         os.mkdir(libDirectory)
         os.mkdir(includeDirectory)
-        os.mkdir(objectDirectory)
+        os.mkdir(typesDirectory)
 
         os.cp(path.join(target:targetdir(), "PowerRanks.lib"), libDirectory)
-        os.cp(path.join(os.projectdir(), "src", "mod", "LLPowerRanks.h"), includeDirectory)
-        os.cp(path.join(os.projectdir(), "src", "mod", "object", "Rank.h"), objectDirectory)
-        os.cp(path.join(os.projectdir(), "src", "mod", "object", "ChatFormattingEvent.h"), objectDirectory)
+        os.cp(path.join(os.projectdir(), "src", "mod", "Api.h"), includeDirectory)
+        os.cp(path.join(os.projectdir(), "src", "mod", "types", "Rank.h"), typesDirectory)
+        os.cp(path.join(os.projectdir(), "src", "mod", "types", "ChatFormattingEvent.h"), typesDirectory)
         os.cp(path.join(os.projectdir(), "assets", "data"), path.join(path.join(binDirectory, target:name()), "data"))
     end)

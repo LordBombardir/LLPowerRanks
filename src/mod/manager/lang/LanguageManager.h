@@ -16,6 +16,7 @@ public:
     );
 
     static void addTranslations();
+
 private:
     LanguageManager()  = default;
     ~LanguageManager() = default;

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace power_ranks::object {
+namespace power_ranks::types {
 
 class Rank {
 public:
@@ -62,4 +62,4 @@ private:
     std::vector<std::string>   availableCommands = {};
 };
 
-} // namespace power_ranks::object
+} // namespace power_ranks::types

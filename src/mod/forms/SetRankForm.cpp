@@ -43,13 +43,13 @@ void SetRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
         return;
     }
 
-    std::unordered_map<std::string, object::Rank*> availableRanks = {};
+    std::unordered_map<std::string, types::Rank*> availableRanks = {};
     for (const auto& [name, otherRank] : manager::RanksManager::getRanks()) {
         availableRanks[(name + " - " + otherRank->getPrefix())] = otherRank;
     }
 
-    std::string   playerName;
-    object::Rank* rank;
+    std::string  playerName;
+    types::Rank* rank;
 
     try {
         playerName = std::get_if<std::string>(&result->at("playerName"))->data();

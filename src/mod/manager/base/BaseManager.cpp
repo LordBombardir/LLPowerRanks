@@ -1,5 +1,4 @@
 #include "BaseManager.h"
-#include "../../Utils.hpp"
 
 namespace power_ranks::manager {
 
@@ -8,34 +7,33 @@ BaseManager*                                BaseManager::instance       = nullpt
 
 BaseManager::BaseManager(ll::mod::NativeMod& mod) {
     connectionPool = std::make_unique<base::pool::ConnectionPool>(
-        base::pool::ConnectionPool((mod.getDataDir() / "players.db").generic_string())
+        base::pool::ConnectionPool((mod.getDataDir() / "base.db").generic_string())
     );
     connectionPool->setupDataBase([](sqlite3* db) -> void {
         char* errorMessage;
 
-        std::string createPlayersTableQuery = "CREATE TABLE IF NOT EXISTS `players` "
-                                              "("
-                                              "`Name` TEXT DEFAULT 'null', "
-                                              "`XUID` TEXT DEFAULT 'null', "
-                                              "`RankName` TEXT NOT NULL"
-                                              ");";
+        std::string createTableQuery = "CREATE TABLE IF NOT EXISTS `ranks` "
+                                       "("
+                                       "`Name` TEXT DEFAULT 'null', "
+                                       "`XUID` TEXT DEFAULT 'null', "
+                                       "`RankName` TEXT NOT NULL"
+                                       ");";
 
-        sqlite3_exec(db, createPlayersTableQuery.c_str(), nullptr, nullptr, &errorMessage);
+        sqlite3_exec(db, createTableQuery.c_str(), nullptr, nullptr, &errorMessage);
         sqlite3_free(errorMessage);
     });
 }
 
 void BaseManager::init(ll::mod::NativeMod& mod) { instance = new BaseManager(mod); }
+
 void BaseManager::dispose() { delete getInstance(); }
 
 std::optional<std::string> BaseManager::getPlayerRankByName(const std::string& playerName) {
-    return connectionPool->executeSelectQuery(
-        "SELECT `RankName` FROM `players` WHERE `Name` = ?;",
-        {Utils::strToLower(playerName)}
-    );
+    return connectionPool->executeSelectQuery("SELECT `RankName` FROM `ranks` WHERE `Name` = ?;", {playerName});
 }
+
 std::optional<std::string> BaseManager::getPlayerRankByXuid(const std::string& xuid) {
-    return connectionPool->executeSelectQuery("SELECT `RankName` FROM `players` WHERE `XUID` = ?;", {xuid});
+    return connectionPool->executeSelectQuery("SELECT `RankName` FROM `ranks` WHERE `XUID` = ?;", {xuid});
 }
 
 bool BaseManager::setPlayerRank(const std::string& playerName, const std::string& xuid, const std::string& rankName) {
@@ -43,45 +41,36 @@ bool BaseManager::setPlayerRank(const std::string& playerName, const std::string
         return updateRankNameByPlayerName(playerName, rankName);
     }
 
-    if (xuid == "") {
+    if (xuid.empty()) {
         return connectionPool->executeUpdateQuery(
-            "INSERT INTO `players` (`Name`, `RankName`) VALUES (?, ?);",
-            {Utils::strToLower(playerName), rankName}
+            "INSERT INTO `ranks` (`Name`, `RankName`) VALUES (?, ?);",
+            {playerName, rankName}
         );
     }
 
     return connectionPool->executeUpdateQuery(
-        "INSERT INTO `players` (`Name`, `XUID`, `RankName`) VALUES (?, ?, ?);",
-        {Utils::strToLower(playerName), xuid, rankName}
+        "INSERT INTO `ranks` (`Name`, `XUID`, `RankName`) VALUES (?, ?, ?);",
+        {playerName, xuid, rankName}
     );
 }
 
 bool BaseManager::updatePlayerNameByXuid(const std::string& xuid, const std::string& playerName) {
-    return connectionPool->executeUpdateQuery(
-        "UPDATE `players` SET `Name` = ? WHERE `XUID` = ?;",
-        {Utils::strToLower(playerName), xuid}
-    );
+    return connectionPool->executeUpdateQuery("UPDATE `ranks` SET `Name` = ? WHERE `XUID` = ?;", {playerName, xuid});
 }
 
 bool BaseManager::updateXuidByPlayerName(const std::string& playerName, const std::string& xuid) {
-    return connectionPool->executeUpdateQuery(
-        "UPDATE `players` SET `XUID` = ? WHERE `Name` = ?;",
-        {xuid, Utils::strToLower(playerName)}
-    );
+    return connectionPool->executeUpdateQuery("UPDATE `ranks` SET `XUID` = ? WHERE `Name` = ?;", {xuid, playerName});
 }
 
 bool BaseManager::updateRankNameByPlayerName(const std::string& playerName, const std::string& rankName) {
     return connectionPool->executeUpdateQuery(
-        "UPDATE `players` SET `RankName` = ? WHERE `Name` = ?;",
-        {rankName, Utils::strToLower(playerName)}
+        "UPDATE `ranks` SET `RankName` = ? WHERE `Name` = ?;",
+        {rankName, playerName}
     );
 }
 
 bool BaseManager::updateRankNameByXuid(const std::string& xuid, const std::string& rankName) {
-    return connectionPool->executeUpdateQuery(
-        "UPDATE `players` SET `RankName` = ? WHERE `XUID` = ?;",
-        {rankName, xuid}
-    );
+    return connectionPool->executeUpdateQuery("UPDATE `ranks` SET `RankName` = ? WHERE `XUID` = ?;", {rankName, xuid});
 }
 
 BaseManager* BaseManager::getInstance() { return instance; }

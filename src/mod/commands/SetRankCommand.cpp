@@ -25,7 +25,7 @@ void SetRankCommand::execute(
         return;
     }
 
-    std::optional<object::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
+    std::optional<types::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
         std::string ranks;
         for (const auto& [name, rank] : manager::RanksManager::getRanks()) {

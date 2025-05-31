@@ -4,13 +4,13 @@
 #include "config/ConfigManager.h"
 #include "lang/LanguageManager.h"
 #include "ranks/RanksManager.h"
-#include <LLTranslatorApi.h>
 #include <ll/api/service/Bedrock.h>
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/actor/ActorDataIDs.h>
 #include <mc/world/actor/SynchedActorDataEntityWrapper.h>
 #include <mc/world/actor/player/LayeredAbilities.h>
 #include <mc/world/level/Level.h>
+#include <translator_api/Api.h>
 
 // wth mojang?
 AvailableCommandsPacket::EnumData::EnumData(const EnumData&)                                     = default;
@@ -41,17 +41,15 @@ void MainManager::disposeManagers() {
     RanksManager::dispose();
 }
 
-const object::Rank& MainManager::getPlayerRankOrSetDefault(Player& player) {
-    std::optional<std::string>   rankName;
-    std::optional<std::string>   otherRankName;
-    std::optional<object::Rank*> rank;
+const types::Rank& MainManager::getPlayerRankOrSetDefault(Player& player) {
+    std::optional<std::string>  rankName;
+    std::optional<std::string>  otherRankName;
+    std::optional<types::Rank*> rank;
 
-    if (rankName = BaseManager::getInstance()->getPlayerRankByXuid(player.getXuid());
-        player.getXuid() != "" && rankName.has_value()) {
-        if (otherRankName = BaseManager::getInstance()->getPlayerRankByName(player.getRealName());
-            !otherRankName.has_value()) {
-            BaseManager::getInstance()->updatePlayerNameByXuid(player.getXuid(), player.getRealName());
-        }
+    // clang-format off
+    if (rankName = BaseManager::getInstance()->getPlayerRankByXuid(player.getXuid()); player.getXuid() != "" && rankName.has_value()) {
+        // clang-format on
+        BaseManager::getInstance()->updatePlayerNameByXuid(player.getXuid(), player.getRealName());
 
         if (rank = *RanksManager::getRank(rankName.value()); rank.has_value()) {
             return *rank.value();
@@ -88,11 +86,11 @@ const object::Rank& MainManager::getPlayerRankOrSetDefault(Player& player) {
     return *rank.value();
 }
 
-const object::Rank& MainManager::getPlayerRankOrSetDefault(const std::string& playerName) {
+const types::Rank& MainManager::getPlayerRankOrSetDefault(const std::string& playerName) {
     // clang-format off
     if (std::optional<std::string> rankName = BaseManager::getInstance()->getPlayerRankByName(playerName); rankName.has_value()) {
         // clang-format on
-        if (std::optional<object::Rank*> rank = RanksManager::getRank(rankName.value()); rank.has_value()) {
+        if (std::optional<types::Rank*> rank = RanksManager::getRank(rankName.value()); rank.has_value()) {
             return *rank.value();
         }
 
@@ -104,19 +102,19 @@ const object::Rank& MainManager::getPlayerRankOrSetDefault(const std::string& pl
     return *RanksManager::getRank(ConfigManager::getConfig().defaultRankName).value();
 }
 
-void MainManager::setPlayerRank(Player& player, const object::Rank& rank) {
+void MainManager::setPlayerRank(Player& player, const types::Rank& rank) {
     BaseManager::getInstance()->setPlayerRank(player.getRealName(), player.getXuid(), rank.getName());
     updatePlayerRank(player);
 }
 
-void MainManager::setPlayerRankByName(const std::string& playerName, const object::Rank& rank) {
+void MainManager::setPlayerRankByName(const std::string& playerName, const types::Rank& rank) {
     BaseManager::getInstance()->setPlayerRank(playerName, "", rank.getName());
     if (Player* player = ll::service::getLevel()->getPlayer(playerName); player != nullptr) {
         updatePlayerRank(*player);
     }
 }
 
-void MainManager::setPlayerRankByXuid(const std::string& xuid, const object::Rank& rank) {
+void MainManager::setPlayerRankByXuid(const std::string& xuid, const types::Rank& rank) {
     BaseManager::getInstance()->setPlayerRank("", xuid, rank.getName());
     if (Player* player = ll::service::getLevel()->getPlayerByXuid(xuid); player != nullptr) {
         updatePlayerRank(*player);
@@ -124,17 +122,20 @@ void MainManager::setPlayerRankByXuid(const std::string& xuid, const object::Ran
 }
 
 void MainManager::updatePlayerRank(Player& player) {
-    const object::Rank& rank = manager::MainManager::getPlayerRankOrSetDefault(player);
+    const types::Rank& rank = manager::MainManager::getPlayerRankOrSetDefault(player);
 
-    std::string scoreTag = Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix());
-    player.mEntityData->set(static_cast<ushort>(ActorDataIDs::Score), scoreTag);
+    setScoreTag(player, Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
 
     extraActions(rank, player);
     extraVanillaActions(player, rank);
 }
 
-void MainManager::extraActions(const object::Rank& rank, const Player& player) {
-    AvailableCommandsPacket packet = ::getAvailableCommandsPacket(player);
+void MainManager::setScoreTag(Player& player, const std::string& scoreTag) {
+    player.mEntityData->set(static_cast<ushort>(ActorDataIDs::Score), scoreTag);
+}
+
+void MainManager::extraActions(const types::Rank& rank, const Player& player) {
+    AvailableCommandsPacket packet = translator::api::getAvailableCommandsPacket(player);
     for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
         std::string commandName = command.name.get();
         if (rank.isCommandAvailable(commandName)) {
@@ -145,7 +146,7 @@ void MainManager::extraActions(const object::Rank& rank, const Player& player) {
     packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
 }
 
-void MainManager::extraVanillaActions(Player& player, const object::Rank& rank) {
+void MainManager::extraVanillaActions(Player& player, const types::Rank& rank) {
     std::vector<std::string> availableCommands = rank.getAvailableCommands();
     if (std::find(availableCommands.begin(), availableCommands.end(), "teleport") != availableCommands.end()) {
         player.setAbility(AbilitiesIndex::Teleport, true);

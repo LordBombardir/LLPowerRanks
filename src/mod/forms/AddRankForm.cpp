@@ -53,18 +53,18 @@ void AddRankForm::handle(Player& player, const ll::form::CustomFormResult& resul
         return;
     }
 
-    std::unordered_map<std::string, std::optional<object::Rank*>> availableRanks = {
+    std::unordered_map<std::string, std::optional<types::Rank*>> availableRanks = {
         {manager::LanguageManager::getTranslate("dropdownDontPoint", player.getLocaleCode()), std::nullopt}
     };
     for (const auto& [name, otherRank] : manager::RanksManager::getRanks()) {
         availableRanks[(name + " - " + otherRank->getPrefix())] = otherRank;
     }
 
-    std::string                  rankName;
-    std::string                  prefix;
-    std::string                  chatFormat;
-    std::string                  scoreTagFormat;
-    std::optional<object::Rank*> inheritanceRank;
+    std::string                 rankName;
+    std::string                 prefix;
+    std::string                 chatFormat;
+    std::string                 scoreTagFormat;
+    std::optional<types::Rank*> inheritanceRank;
 
     try {
         rankName        = std::get_if<std::string>(&result->at("rankName"))->data();

@@ -1,6 +1,10 @@
 #include "LanguageManager.h"
-#include <LLTranslatorApi.h>
+#include "../../commands/AddRankCommand.h"
+#include "../../commands/EditRankCommand.h"
+#include "../../commands/RemoveRankCommand.h"
+#include "../../commands/SetRankCommand.h"
 #include <memory>
+#include <translator_api/Api.h>
 
 namespace power_ranks::manager {
 
@@ -16,24 +20,24 @@ std::string LanguageManager::getTranslate(const std::string_view& key, const std
 }
 
 void LanguageManager::addTranslations() {
-    ::setTranslationForCommandDescription(
-        "addrank",
+    translator::api::setTranslationForCommandDescription(
+        commands::AddRankCommand::getName(),
         manager::LanguageManager::getTranslate("commandAddRankDescription", "ru_RU"),
         "ru_RU"
     );
-    ::setTranslationForCommandDescription(
-        "setrank",
-        manager::LanguageManager::getTranslate("commandSetRankDescription", "ru_RU"),
+    translator::api::setTranslationForCommandDescription(
+        commands::EditRankCommand::getName(),
+        manager::LanguageManager::getTranslate("commandEditRankDescription", "ru_RU"),
         "ru_RU"
     );
-    ::setTranslationForCommandDescription(
-        "removerank",
+    translator::api::setTranslationForCommandDescription(
+        commands::RemoveRankCommand::getName(),
         manager::LanguageManager::getTranslate("commandRemoveRankDescription", "ru_RU"),
         "ru_RU"
     );
-    ::setTranslationForCommandDescription(
-        "editrank",
-        manager::LanguageManager::getTranslate("commandEditRankDescription", "ru_RU"),
+    translator::api::setTranslationForCommandDescription(
+        commands::SetRankCommand::getName(),
+        manager::LanguageManager::getTranslate("commandSetRankDescription", "ru_RU"),
         "ru_RU"
     );
 }

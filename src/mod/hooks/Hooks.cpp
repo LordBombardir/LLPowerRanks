@@ -3,7 +3,7 @@
 #include "../manager/MainManager.h"
 #include "../manager/command/CommandManager.h"
 #include "../manager/config/ConfigManager.h"
-#include "../object/ChatFormattingEvent.h"
+#include "../types/ChatFormattingEvent.h"
 #include <ll/api/event/Emitter.h>
 #include <ll/api/event/EventBus.h>
 #include <ll/api/memory/Hook.h>
@@ -65,7 +65,7 @@ LL_TYPE_INSTANCE_HOOK(
     ServerPlayer& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
 
     if (!manager::CommandManager::isCommandAvailable(commandOrigin, mFlags, mPermissionLevel)) {
-        const object::Rank& rank = manager::MainManager::getPlayerRankOrSetDefault(player);
+        const types::Rank& rank = manager::MainManager::getPlayerRankOrSetDefault(player);
         if (!rank.isCommandAvailable(getCommandName())) {
             output.addMessage(
                 "commands.generic.unknown",
@@ -89,17 +89,17 @@ LL_TYPE_INSTANCE_HOOK(
     const NetworkIdentifier& identifier,
     const TextPacket&        packet
 ) {
-    if (ServerPlayer* player = thisFor<NetEventCallback>()->_getServerPlayer(identifier, packet.mClientSubId); player) {
-        const object::Rank& rank         = manager::MainManager::getPlayerRankOrSetDefault(*player);
-        TextPacket&         castedPacket = const_cast<TextPacket&>(packet);
+    if (ServerPlayer* player = thisFor<NetEventCallback>()->_getServerPlayer(identifier, packet.mSenderSubId); player) {
+        const types::Rank& rank         = manager::MainManager::getPlayerRankOrSetDefault(*player);
+        TextPacket&        castedPacket = const_cast<TextPacket&>(packet);
 
         std::string chatFormat = rank.getChatFormat();
         ll::event::EventBus::getInstance().publish(
-            object::ChatFormattingEvent{*player, rank, chatFormat, castedPacket.mMessage}
+            types::ChatFormattingEvent{*player, rank, chatFormat, castedPacket.mMessage}
         );
 
         if (!manager::ConfigManager::getConfig().ranksWithColoredMessages.contains(rank.getName())) {
-            castedPacket.mMessage = Utils::trim_copy(Utils::clean(castedPacket.mMessage));
+            castedPacket.mMessage = Utils::strTrim(Utils::clean(castedPacket.mMessage));
             if (castedPacket.mMessage.empty()) {
                 return;
             }
@@ -144,7 +144,7 @@ void Hooks::setupHooks() {
 }
 
 static std::unique_ptr<ll::event::EmitterBase> emitterFactory();
-class PlayerSendMessageEmitter : public ll::event::Emitter<emitterFactory, object::ChatFormattingEvent> {
+class PlayerSendMessageEmitter : public ll::event::Emitter<emitterFactory, types::ChatFormattingEvent> {
     ll::memory::HookRegistrar<PlayerSendMessageHook> hook;
 };
 

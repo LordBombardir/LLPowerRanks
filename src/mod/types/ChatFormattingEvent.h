@@ -16,15 +16,15 @@
 #define POWERRANKS_NDAPI [[nodiscard]] POWERRANKS_API
 #endif
 
-namespace power_ranks::object {
+namespace power_ranks::types {
 
 class ChatFormattingEvent final : public ll::event::Event {
 public:
     constexpr explicit ChatFormattingEvent(
-        Player&             player,
-        const object::Rank& playerRank,
-        std::string&        chatFormat,
-        std::string&        originalMessage
+        Player&      player,
+        const Rank&  playerRank,
+        std::string& chatFormat,
+        std::string& originalMessage
     )
     : player(player),
       playerRank(playerRank),
@@ -33,17 +33,17 @@ public:
 
     POWERRANKS_API void serialize(CompoundTag& nbt) const override;
 
-    POWERRANKS_NDAPI Player& getPlayer() const;
-    POWERRANKS_NDAPI const object::Rank& getPlayerRank() const;
+    POWERRANKS_NDAPI Player&     getPlayer() const;
+    POWERRANKS_NDAPI const Rank& getPlayerRank() const;
 
     POWERRANKS_NDAPI std::string& getChatFormat() const;
     POWERRANKS_NDAPI std::string& getOriginalMessage() const;
 
 protected:
-    Player&             player;
-    const object::Rank& playerRank;
-    std::string&        chatFormat;
-    std::string&        originalMessage;
+    Player&      player;
+    const Rank&  playerRank;
+    std::string& chatFormat;
+    std::string& originalMessage;
 };
 
-} // namespace power_ranks::object
+} // namespace power_ranks::types

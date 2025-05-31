@@ -1,12 +1,16 @@
 #include "Rank.h"
 #include <algorithm>
 
-namespace power_ranks::object {
+namespace power_ranks::types {
 
 void Rank::setPrefix(const std::string& prefix) { this->prefix = prefix; }
+
 void Rank::setChatFormat(const std::string& chatFormat) { this->chatFormat = chatFormat; }
+
 void Rank::setInheritanceRank(const Rank* inheritanceRank) { this->inheritanceRank = inheritanceRank; }
+
 void Rank::setScoreTagFormat(const std::string& scoreTagFormat) { this->scoreTagFormat = scoreTagFormat; }
+
 void Rank::setAvailableCommands(const std::vector<std::string>& availableCommands) {
     this->availableCommands = availableCommands;
 }
@@ -23,6 +27,7 @@ bool Rank::isCommandAvailable(const std::string& name) const {
 
     return false;
 }
+
 void Rank::addAvailableCommand(const std::string& name) {
     if (isCommandAvailable(name)) {
         return;
@@ -30,6 +35,7 @@ void Rank::addAvailableCommand(const std::string& name) {
 
     availableCommands.push_back(name);
 }
+
 void Rank::removeAvailableCommand(const std::string& name) {
     auto iterator = std::find(availableCommands.begin(), availableCommands.end(), name);
     if (iterator == availableCommands.end()) {
@@ -42,8 +48,11 @@ void Rank::removeAvailableCommand(const std::string& name) {
 void Rank::removeInheritanceRank() { inheritanceRank = std::nullopt; }
 
 bool Rank::operator<(const Rank& other) { return priority < other.priority; }
+
 bool Rank::operator<=(const Rank& other) { return priority <= other.priority; }
+
 bool Rank::operator>(const Rank& other) { return priority > other.priority; }
+
 bool Rank::operator>=(const Rank& other) { return priority >= other.priority; }
 
-} // namespace power_ranks::object
+} // namespace power_ranks::types
