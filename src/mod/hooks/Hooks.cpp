@@ -100,9 +100,10 @@ LL_TYPE_INSTANCE_HOOK(
 
         if (!manager::ConfigManager::getConfig().ranksWithColoredMessages.contains(rank.getName())) {
             castedPacket.mMessage = Utils::strTrim(Utils::clean(castedPacket.mMessage));
-            if (castedPacket.mMessage.empty()) {
-                return;
-            }
+        }
+
+        if (castedPacket.mMessage.empty()) {
+            return;
         }
 
         castedPacket.mAuthor  = "";
