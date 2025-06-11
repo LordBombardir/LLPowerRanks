@@ -5,7 +5,6 @@
 #include "lang/LanguageManager.h"
 #include "ranks/RanksManager.h"
 #include <ll/api/service/Bedrock.h>
-#include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/actor/ActorDataIDs.h>
 #include <mc/world/actor/SynchedActorDataEntityWrapper.h>
 #include <mc/world/actor/player/LayeredAbilities.h>
