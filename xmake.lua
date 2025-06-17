@@ -6,8 +6,9 @@ add_repositories("lordbombardir-repo https://github.com/LordBombardir/xmake-repo
 -- add_requires("levilamina x.x.x") for a specific version
 -- add_requires("levilamina develop") to use develop version
 -- please note that you should add bdslibrary yourself if using dev version
-add_requires("levilamina 1.3.0")
+add_requires("levilamina d032175bf921813c86479baeb4f6d5eeac9fd66f")
 add_requires("translatorapi 1.1.3")
+add_requires("playerdb 1.0.0")
 add_requires("sqlitecpp")
 add_requires("nlohmann_json")
 add_requires("levibuildscript")
@@ -25,6 +26,7 @@ target("PowerRanks") -- Change this to your mod name.
 
     add_packages("levilamina")
     add_packages("translatorapi")
+    add_packages("playerdb")
     add_packages("sqlitecpp")
     add_packages("nlohmann_json")
 

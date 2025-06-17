@@ -14,8 +14,7 @@ BaseManager::BaseManager(ll::mod::NativeMod& mod) {
 
         std::string createTableQuery = "CREATE TABLE IF NOT EXISTS `ranks` "
                                        "("
-                                       "`Name` TEXT DEFAULT 'null', "
-                                       "`XUID` TEXT DEFAULT 'null', "
+                                       "`UUID` TEXT UNIQUE NOT NULL, "
                                        "`RankName` TEXT NOT NULL"
                                        ");";
 
@@ -28,49 +27,16 @@ void BaseManager::init(ll::mod::NativeMod& mod) { instance = new BaseManager(mod
 
 void BaseManager::dispose() { delete getInstance(); }
 
-std::optional<std::string> BaseManager::getPlayerRankByName(const std::string& playerName) {
-    return connectionPool->executeSelectQuery("SELECT `RankName` FROM `ranks` WHERE `Name` = ?;", {playerName});
+std::optional<std::string> BaseManager::getPlayerRank(const mce::UUID& uuid) {
+    return connectionPool->executeSelectQuery("SELECT `RankName` FROM `ranks` WHERE `UUID` = ?;", {uuid.asString()});
 }
 
-std::optional<std::string> BaseManager::getPlayerRankByXuid(const std::string& xuid) {
-    return connectionPool->executeSelectQuery("SELECT `RankName` FROM `ranks` WHERE `XUID` = ?;", {xuid});
-}
-
-bool BaseManager::setPlayerRank(const std::string& playerName, const std::string& xuid, const std::string& rankName) {
-    if (getPlayerRankByName(playerName).has_value() || getPlayerRankByXuid(xuid).has_value()) {
-        return updateRankNameByPlayerName(playerName, rankName);
-    }
-
-    if (xuid.empty()) {
-        return connectionPool->executeUpdateQuery(
-            "INSERT INTO `ranks` (`Name`, `RankName`) VALUES (?, ?);",
-            {playerName, rankName}
-        );
-    }
-
+bool BaseManager::setPlayerRank(const mce::UUID& uuid, const std::string& rankName) {
     return connectionPool->executeUpdateQuery(
-        "INSERT INTO `ranks` (`Name`, `XUID`, `RankName`) VALUES (?, ?, ?);",
-        {playerName, xuid, rankName}
+        "INSERT INTO `ranks` (`UUID`, `RankName`) VALUES (?, ?) "
+        "ON CONFLICT(`UUID`) DO UPDATE SET `RankName` = excluded.`RankName`;",
+        {uuid.asString(), rankName}
     );
-}
-
-bool BaseManager::updatePlayerNameByXuid(const std::string& xuid, const std::string& playerName) {
-    return connectionPool->executeUpdateQuery("UPDATE `ranks` SET `Name` = ? WHERE `XUID` = ?;", {playerName, xuid});
-}
-
-bool BaseManager::updateXuidByPlayerName(const std::string& playerName, const std::string& xuid) {
-    return connectionPool->executeUpdateQuery("UPDATE `ranks` SET `XUID` = ? WHERE `Name` = ?;", {xuid, playerName});
-}
-
-bool BaseManager::updateRankNameByPlayerName(const std::string& playerName, const std::string& rankName) {
-    return connectionPool->executeUpdateQuery(
-        "UPDATE `ranks` SET `RankName` = ? WHERE `Name` = ?;",
-        {rankName, playerName}
-    );
-}
-
-bool BaseManager::updateRankNameByXuid(const std::string& xuid, const std::string& rankName) {
-    return connectionPool->executeUpdateQuery("UPDATE `ranks` SET `RankName` = ? WHERE `XUID` = ?;", {rankName, xuid});
 }
 
 BaseManager* BaseManager::getInstance() { return instance; }

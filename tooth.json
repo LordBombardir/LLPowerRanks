@@ -2,7 +2,7 @@
     "format_version": 3,
     "format_uuid": "289f771f-2c9a-4d73-9f3f-8492495a924d",
     "tooth": "github.com/LordBombardir/LLPowerRanks",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "info": {
         "name": "PowerRanks",
         "description": "A mod that adds a rank (privilege) system to the game",
@@ -16,8 +16,9 @@
             "label": "",
             "platform": "win-x64",
             "dependencies": {
-                "github.com/LiteLDev/LeviLamina": ">=1.3.0",
-                "github.com/LordBombardir/LLTranslatorApi": ">=1.1.3"
+                "github.com/LiteLDev/LeviLamina": ">=1.3.1",
+                "github.com/LordBombardir/LLTranslatorApi": ">=1.1.3",
+                "github.com/LordBombardir/LLPlayerDB-Release": ">=1.0.0"
             },
             "assets": [
                 {

@@ -9,6 +9,7 @@
 #include <mc/world/actor/SynchedActorDataEntityWrapper.h>
 #include <mc/world/actor/player/LayeredAbilities.h>
 #include <mc/world/level/Level.h>
+#include <player_db/Api.h>
 #include <translator_api/Api.h>
 
 // wth mojang?
@@ -41,41 +42,17 @@ void MainManager::disposeManagers() {
 }
 
 const types::Rank& MainManager::getPlayerRankOrSetDefault(Player& player) {
-    std::optional<std::string>  rankName;
-    std::optional<std::string>  otherRankName;
     std::optional<types::Rank*> rank;
 
-    // clang-format off
-    if (rankName = BaseManager::getInstance()->getPlayerRankByXuid(player.getXuid()); player.getXuid() != "" && rankName.has_value()) {
-        // clang-format on
-        BaseManager::getInstance()->updatePlayerNameByXuid(player.getXuid(), player.getRealName());
+    const auto& entry = player_db::api::getPlayerEntry(player);
 
+    if (std::optional<std::string> rankName = BaseManager::getInstance()->getPlayerRank(entry.uuid);
+        rankName.has_value()) {
         if (rank = *RanksManager::getRank(rankName.value()); rank.has_value()) {
             return *rank.value();
         }
 
-        BaseManager::getInstance()->updateRankNameByPlayerName(
-            player.getRealName(),
-            ConfigManager::getConfig().defaultRankName
-        );
-        return *RanksManager::getRank(ConfigManager::getConfig().defaultRankName).value();
-    }
-
-    if (rankName = BaseManager::getInstance()->getPlayerRankByName(player.getRealName()); rankName.has_value()) {
-        // clang-format off
-        if (otherRankName = BaseManager::getInstance()->getPlayerRankByXuid(player.getXuid()); player.getXuid() != "" && !otherRankName.has_value()) {
-            // clang-format on
-            BaseManager::getInstance()->updateXuidByPlayerName(player.getRealName(), player.getXuid());
-        }
-
-        if (rank = *RanksManager::getRank(rankName.value()); rank.has_value()) {
-            return *rank.value();
-        }
-
-        BaseManager::getInstance()->updateRankNameByPlayerName(
-            player.getRealName(),
-            ConfigManager::getConfig().defaultRankName
-        );
+        BaseManager::getInstance()->setPlayerRank(entry.uuid, ConfigManager::getConfig().defaultRankName);
         return *RanksManager::getRank(ConfigManager::getConfig().defaultRankName).value();
     }
 
@@ -86,35 +63,51 @@ const types::Rank& MainManager::getPlayerRankOrSetDefault(Player& player) {
 }
 
 const types::Rank& MainManager::getPlayerRankOrSetDefault(const std::string& playerName) {
-    // clang-format off
-    if (std::optional<std::string> rankName = BaseManager::getInstance()->getPlayerRankByName(playerName); rankName.has_value()) {
-        // clang-format on
+    auto entry = player_db::api::getPlayerEntryByName(playerName);
+    if (!entry.has_value()) {
+        entry = player_db::api::addTemporaryPlayerEntry(playerName);
+    }
+
+    if (std::optional<std::string> rankName = BaseManager::getInstance()->getPlayerRank(entry->uuid);
+        rankName.has_value()) {
         if (std::optional<types::Rank*> rank = RanksManager::getRank(rankName.value()); rank.has_value()) {
             return *rank.value();
         }
 
-        BaseManager::getInstance()->updateRankNameByPlayerName(playerName, ConfigManager::getConfig().defaultRankName);
+        BaseManager::getInstance()->setPlayerRank(entry->uuid, ConfigManager::getConfig().defaultRankName);
         return *RanksManager::getRank(ConfigManager::getConfig().defaultRankName).value();
     }
 
-    BaseManager::getInstance()->setPlayerRank(playerName, "", ConfigManager::getConfig().defaultRankName);
+    BaseManager::getInstance()->setPlayerRank(entry->uuid, ConfigManager::getConfig().defaultRankName);
     return *RanksManager::getRank(ConfigManager::getConfig().defaultRankName).value();
 }
 
 void MainManager::setPlayerRank(Player& player, const types::Rank& rank) {
-    BaseManager::getInstance()->setPlayerRank(player.getRealName(), player.getXuid(), rank.getName());
+    const auto& entry = player_db::api::getPlayerEntry(player);
+
+    BaseManager::getInstance()->setPlayerRank(entry.uuid, rank.getName());
     updatePlayerRank(player);
 }
 
 void MainManager::setPlayerRankByName(const std::string& playerName, const types::Rank& rank) {
-    BaseManager::getInstance()->setPlayerRank(playerName, "", rank.getName());
+    auto entry = player_db::api::getPlayerEntryByName(playerName);
+    if (!entry.has_value()) {
+        entry = player_db::api::addTemporaryPlayerEntry(playerName);
+    }
+
+    BaseManager::getInstance()->setPlayerRank(entry->uuid, rank.getName());
     if (Player* player = ll::service::getLevel()->getPlayer(playerName); player != nullptr) {
         updatePlayerRank(*player);
     }
 }
 
 void MainManager::setPlayerRankByXuid(const std::string& xuid, const types::Rank& rank) {
-    BaseManager::getInstance()->setPlayerRank("", xuid, rank.getName());
+    auto entry = player_db::api::getPlayerEntryByXuid(xuid);
+    if (!entry.has_value()) {
+        entry = player_db::api::addTemporaryPlayerEntry("", xuid);
+    }
+
+    BaseManager::getInstance()->setPlayerRank(entry->uuid, rank.getName());
     if (Player* player = ll::service::getLevel()->getPlayerByXuid(xuid); player != nullptr) {
         updatePlayerRank(*player);
     }
