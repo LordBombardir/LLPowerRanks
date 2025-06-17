@@ -1,5 +1,4 @@
 #include "MainManager.h"
-#include "../Main.h"
 #include "../Utils.hpp"
 #include "base/BaseManager.h"
 #include "config/ConfigManager.h"
@@ -46,11 +45,6 @@ const types::Rank& MainManager::getPlayerRankOrSetDefault(Player& player) {
     std::optional<types::Rank*> rank;
 
     const auto& entry = player_db::api::getPlayerEntry(player);
-    Main::getInstance().getSelf().getLogger().info("UUID: {}", entry.uuid.asString());
-    Main::getInstance().getSelf().getLogger().info("Name: {}", entry.name);
-    Main::getInstance().getSelf().getLogger().info("XUID: {}", entry.xuid);
-    Main::getInstance().getSelf().getLogger().info("Minecraft UUID: {}", entry.minecraftUUID.asString());
-    Main::getInstance().getSelf().getLogger().info("Latest Ip Address: {}", entry.latestIpAddress);
 
     if (std::optional<std::string> rankName = BaseManager::getInstance()->getPlayerRank(entry.uuid);
         rankName.has_value()) {
