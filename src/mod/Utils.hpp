@@ -3,7 +3,9 @@
 #include <regex>
 #include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <vector>
+
 
 namespace power_ranks {
 
@@ -34,11 +36,8 @@ public:
         return string;
     }
 
-    static std::string strReplace(
-        const std::string& originalStr,
-        const std::string& whatNeedToReplace,
-        const std::string& whatForReplace
-    ) {
+    static std::string
+    strReplace(const std::string& originalStr, std::string_view whatNeedToReplace, std::string_view whatForReplace) {
         std::string result = originalStr;
 
         size_t pos = 0;
@@ -86,15 +85,15 @@ public:
         return strings;
     }
 
-    static std::string separateVector(const std::vector<std::string>& vector, const std::string& separator) {
-        if (vector.empty()) {
+    static std::string separateUnorderedSet(const std::unordered_set<std::string>& set, std::string_view separator) {
+        if (set.empty()) {
             return "";
         }
 
         std::string result;
-        for (size_t i = 0; i < vector.size(); ++i) {
-            result += vector[i];
-            if (i + 1 < vector.size()) {
+        for (auto [index, str] : std::views::enumerate(set)) {
+            result += str;
+            if (static_cast<size_t>(index) + 1 < set.size()) {
                 result += separator;
             }
         }
@@ -116,7 +115,7 @@ public:
 
 private:
     // Helper to remove Unicode codepoints in range U+E000 to U+F8FF
-    static std::string removePrivateUseUnicode(const std::string& input) {
+    static std::string removePrivateUseUnicode(std::string_view input) {
         std::string output;
         size_t      i = 0;
 

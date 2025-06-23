@@ -64,7 +64,16 @@ void EditRankForm::init(Player& player, types::Rank* rank) {
         "availableCommands",
         manager::LanguageManager::getTranslate("formEditRankInputAvailableCommands", player.getLocaleCode()),
         manager::LanguageManager::getTranslate("formEditRankInputAvailableCommandsPlaceholder", player.getLocaleCode()),
-        Utils::separateVector(rank->getAvailableCommands(), ";")
+        Utils::separateUnorderedSet(rank->getAvailableCommands(), ";")
+    );
+    form.appendInput(
+        "hiddenCommandOverloads",
+        manager::LanguageManager::getTranslate("formEditRankInputHiddenCommandOverloads", player.getLocaleCode()),
+        manager::LanguageManager::getTranslate(
+            "formEditRankInputHiddenCommandOverloadsPlaceholder",
+            player.getLocaleCode()
+        ),
+        rank->getHiddenCommandOverloads().toString()
     );
 
     form.sendTo(
@@ -90,6 +99,7 @@ void EditRankForm::init(Player& player, types::Rank* rank) {
             std::string  scoreTagFormat;
             types::Rank* inheritanceRank;
             std::string  availableCommands;
+            std::string  hiddenCommandOverloads;
 
             try {
                 prefix          = std::get_if<std::string>(&result->at("prefix"))->data();
@@ -97,6 +107,7 @@ void EditRankForm::init(Player& player, types::Rank* rank) {
                 scoreTagFormat  = std::get_if<std::string>(&result->at("scoreTagFormat"))->data();
                 inheritanceRank = availableRanks[std::get_if<std::string>(&result->at("inheritanceRankName"))->data()];
                 availableCommands = std::get_if<std::string>(&result->at("availableCommands"))->data();
+                hiddenCommandOverloads = std::get_if<std::string>(&result->at("hiddenCommandOverloads"))->data();
             } catch (...) {
                 player.sendMessage(manager::LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
                 return;
@@ -122,9 +133,15 @@ void EditRankForm::init(Player& player, types::Rank* rank) {
             rank->setScoreTagFormat(scoreTagFormat);
 
             if (availableCommands != "null") {
-                rank->setAvailableCommands(availableCommandsVector);
+                rank->setAvailableCommands({availableCommandsVector.begin(), availableCommandsVector.end()});
             } else {
                 rank->setAvailableCommands({});
+            }
+
+            if (hiddenCommandOverloads != "null") {
+                rank->getHiddenCommandOverloads().updateFromString(hiddenCommandOverloads);
+            } else {
+                rank->getHiddenCommandOverloads().clearData();
             }
 
             if (inheritanceRank != nullptr) {

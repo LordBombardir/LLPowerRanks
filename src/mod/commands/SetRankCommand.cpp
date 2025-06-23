@@ -17,7 +17,7 @@ void SetRankCommand::execute(
 ) {
     // clang-format off
     bool isOriginServer = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player);
-    std::string localeCode = isOriginServer ? manager::ConfigManager::getConfig().defaultLocaleCode : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
+    const auto& localeCode = isOriginServer ? manager::ConfigManager::getConfig().defaultLocaleCode : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
 
     if (!isOriginServer && manager::ConfigManager::getConfig().superRanks.contains(parameter.rankName)) {
         // clang-format on
@@ -25,7 +25,7 @@ void SetRankCommand::execute(
         return;
     }
 
-    std::optional<types::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
+    const auto& rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
         std::string ranks;
         for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
@@ -40,7 +40,7 @@ void SetRankCommand::execute(
         output.error(Utils::strReplace(
             manager::LanguageManager::getTranslate("undefinedRank", localeCode),
             {"{rankName}", "{ranks}"},
-            {parameter.rankName, ranks}
+            {parameter.rankName, std::move(ranks)}
         ));
         return;
     }
@@ -59,7 +59,7 @@ void SetRankCommand::execute(
             return;
         }
 
-        std::string playerName = filter.front().value;
+        const auto& playerName = filter.front().value;
         manager::MainManager::setPlayerRankByName(playerName, *rank.value());
 
         output.success(Utils::strReplace(

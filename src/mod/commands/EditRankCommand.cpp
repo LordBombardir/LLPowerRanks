@@ -14,7 +14,7 @@ void EditRankCommand::executeFirstParameter(
 ) {
     // clang-format off
     bool isOriginServer = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player);
-    std::string localeCode = isOriginServer ? manager::ConfigManager::getConfig().defaultLocaleCode : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
+    const auto& localeCode = isOriginServer ? manager::ConfigManager::getConfig().defaultLocaleCode : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
 
     if (!isOriginServer && manager::ConfigManager::getConfig().superRanks.contains(parameter.rankName)) {
         // clang-format on
@@ -22,7 +22,7 @@ void EditRankCommand::executeFirstParameter(
         return;
     }
 
-    std::optional<types::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
+    const auto& rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
         std::string ranks = "";
         for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
@@ -37,12 +37,12 @@ void EditRankCommand::executeFirstParameter(
         output.error(Utils::strReplace(
             manager::LanguageManager::getTranslate("undefinedRank", localeCode),
             {"{rankName}", "{ranks}"},
-            {parameter.rankName, ranks}
+            {parameter.rankName, std::move(ranks)}
         ));
         return;
     }
 
-    std::optional<types::Rank*> inheritanceRank = manager::RanksManager::getRank(parameter.inheritanceRank);
+    const auto& inheritanceRank = manager::RanksManager::getRank(parameter.inheritanceRank);
     if (parameter.inheritanceRank != "null" && !inheritanceRank.has_value()) {
         std::string ranks = "";
         for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
@@ -57,12 +57,12 @@ void EditRankCommand::executeFirstParameter(
         output.error(Utils::strReplace(
             manager::LanguageManager::getTranslate("undefinedRank", localeCode),
             {"{rankName}", "{ranks}"},
-            {parameter.inheritanceRank, ranks}
+            {parameter.inheritanceRank, std::move(ranks)}
         ));
         return;
     }
 
-    std::vector<std::string> availableCommands = Utils::strSplit(parameter.availableCommands, ";");
+    const auto& availableCommands = Utils::strSplit(parameter.availableCommands, ";");
     if (parameter.availableCommands != "null" && availableCommands.empty()) {
         output.error(manager::LanguageManager::getTranslate("editRankInvalidFormatAvailableCommands", localeCode));
         return;
@@ -71,7 +71,7 @@ void EditRankCommand::executeFirstParameter(
     rank.value()->setPrefix(parameter.prefix);
     rank.value()->setChatFormat(parameter.chatFormat);
     rank.value()->setScoreTagFormat(parameter.scoreTagFormat);
-    rank.value()->setAvailableCommands(availableCommands);
+    rank.value()->setAvailableCommands({availableCommands.begin(), availableCommands.end()});
 
     if (inheritanceRank.has_value()) {
         rank.value()->setInheritanceRank(inheritanceRank.value());
@@ -105,7 +105,7 @@ void EditRankCommand::executeSecondParameter(
         return;
     }
 
-    std::optional<types::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
+    const auto& rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
         std::string ranks = "";
         for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
@@ -120,7 +120,7 @@ void EditRankCommand::executeSecondParameter(
         output.error(Utils::strReplace(
             manager::LanguageManager::getTranslate("undefinedRank", player.getLocaleCode()),
             {"{rankName}", "{ranks}"},
-            {parameter.rankName, ranks}
+            {parameter.rankName, std::move(ranks)}
         ));
         return;
     }
@@ -129,7 +129,7 @@ void EditRankCommand::executeSecondParameter(
 }
 
 void EditRankCommand::executeWithoutParameter(const CommandOrigin& origin, CommandOutput& output) {
-    std::string localeCode = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)
+    const auto& localeCode = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)
                                ? manager::ConfigManager::getConfig().defaultLocaleCode
                                : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
 

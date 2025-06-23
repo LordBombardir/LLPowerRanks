@@ -6,7 +6,8 @@
             "chat": "{prefix} {playerName}: {message}",
             "scoreTag": "{prefix}",
             "inheritanceRank": "null",
-            "availableCommands": []
+            "availableCommands": [],
+            "hiddenCommandOverloads": {}
         },
         "Vip": {
             "prefix": "V.I.P.",
@@ -16,7 +17,8 @@
             "availableCommands": [
                 "home",
                 "warp"
-            ]
+            ],
+            "hiddenCommandOverloads": {}
         },
         "Creative": {
             "prefix": "Creator",
@@ -25,7 +27,8 @@
             "inheritanceRank": "Vip",
             "availableCommands": [
                 "gamemode"
-            ]
+            ],
+            "hiddenCommandOverloads": {}
         },
         "Helper": {
             "prefix": "Mini-boss",
@@ -35,7 +38,8 @@
             "availableCommands": [
                 "kick",
                 "mute"
-            ]
+            ],
+            "hiddenCommandOverloads": {}
         },
         "Administrator": {
             "prefix": "BOSS",
@@ -44,7 +48,8 @@
             "inheritanceRank": "Helper",
             "availableCommands": [
                 "ban"
-            ]
+            ],
+            "hiddenCommandOverloads": {}
         }
     }
 }

@@ -2,9 +2,6 @@
 
 namespace power_ranks::hooks {
 
-class Hooks {
-public:
-    static void setupHooks();
-};
+void setupHooks();
 
 } // namespace power_ranks::hooks

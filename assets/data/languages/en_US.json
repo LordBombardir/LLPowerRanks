@@ -21,7 +21,7 @@
     "commandRemoveRankSuccess": "§r(Ranks) You have successfully removed the rank of {rankName}.",
     "commandEditRankUsing": "§r(Ranks) Usage: /editrank <rankName: string> <prefix: string> <chatFormat: string> <scoreTagFormat: string> <inheritanceRank: string> <availableCommands: string>",
     "editRankSuperRank": "§r(Ranks) This rank can only be edited from the console!",
-    "editRankInvalidFormatAvailableCommands": "§r(Ranks) Please enter available commands this rank separated by a semicolon («;», without quotes).",
+    "editRankInvalidFormatAvailableCommands": "§r(Ranks) Please enter available commands this rank separated by a semicolon (\";\", without quotes; example of the correct format: teleport;gamemode).",
     "editRankSuccess": "§r(Ranks) You have successfully edited the rank {rankName}.",
     "formAddRankTitle": "Creating a new rank",
     "formAddRankInputRankName": "Enter the name of the future rank:",
@@ -45,6 +45,8 @@
     "formEditRankInputScoreTagFormat": "Enter the new format for the player's scoreTag (supported variable {prefix} - rank prefix):",
     "formEditRankInputScoreTagFormatPlaceholder": "New format for the player's scoreTag",
     "formEditRankDropdownInheritanceRanks": "Select a rank from the list, from which the selected rank will inherit:",
-    "formEditRankInputAvailableCommands": "Enter new commands for the selected rank separated by semicolons («;», without quotes; enter the value «null» (without quotes) if you want to remove commands specifically available to this rank):",
-    "formEditRankInputAvailableCommandsPlaceholder": "New rank commands"
+    "formEditRankInputAvailableCommands": "Enter new commands for the selected rank separated by semicolons (\";\", without quotes; enter the value \"null\" (without quotes) if you want to remove commands specifically available to this rank; example of the correct format: teleport;gamemode):",
+    "formEditRankInputAvailableCommandsPlaceholder": "New rank commands",
+    "formEditRankInputHiddenCommandOverloads": "Enter new command overloads that will be hidden for the selected rank with semicolon-separated indexes (\";\", without quotes; leave the field empty if you want to remove command overloads that will be hidden for the selected rank; example of the correct format: teleport:0,2,3;gamemode:1):",
+    "formEditRankInputHiddenCommandOverloadsPlaceholder": "New command overloads that will be hidden"
 }

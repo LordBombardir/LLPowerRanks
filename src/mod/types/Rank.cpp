@@ -1,5 +1,4 @@
 #include "Rank.h"
-#include <algorithm>
 
 namespace power_ranks::types {
 
@@ -11,13 +10,12 @@ void Rank::setInheritanceRank(const Rank* inheritanceRank) { this->inheritanceRa
 
 void Rank::setScoreTagFormat(const std::string& scoreTagFormat) { this->scoreTagFormat = scoreTagFormat; }
 
-void Rank::setAvailableCommands(const std::vector<std::string>& availableCommands) {
+void Rank::setAvailableCommands(const std::unordered_set<std::string>& availableCommands) {
     this->availableCommands = availableCommands;
 }
 
 bool Rank::isCommandAvailable(const std::string& name) const {
-    auto iterator = std::find(availableCommands.begin(), availableCommands.end(), name);
-    if (iterator != availableCommands.end()) {
+    if (availableCommands.contains(name)) {
         return true;
     }
 
@@ -28,31 +26,23 @@ bool Rank::isCommandAvailable(const std::string& name) const {
     return false;
 }
 
-void Rank::addAvailableCommand(const std::string& name) {
-    if (isCommandAvailable(name)) {
-        return;
+bool Rank::isCommandOverloadHidden(const std::string& name, int overloadIndex) const {
+    auto it = hiddenCommandOverloads.getData().find(name);
+    if (it == hiddenCommandOverloads.getData().end()) {
+        return false;
     }
 
-    availableCommands.push_back(name);
-}
-
-void Rank::removeAvailableCommand(const std::string& name) {
-    auto iterator = std::find(availableCommands.begin(), availableCommands.end(), name);
-    if (iterator == availableCommands.end()) {
-        return;
-    }
-
-    availableCommands.erase(iterator);
+    return it->second.contains(overloadIndex);
 }
 
 void Rank::removeInheritanceRank() { inheritanceRank = std::nullopt; }
 
-bool Rank::operator<(const Rank& other) { return priority < other.priority; }
+bool Rank::operator<(const Rank& other) const { return priority < other.priority; }
 
-bool Rank::operator<=(const Rank& other) { return priority <= other.priority; }
+bool Rank::operator<=(const Rank& other) const { return priority <= other.priority; }
 
-bool Rank::operator>(const Rank& other) { return priority > other.priority; }
+bool Rank::operator>(const Rank& other) const { return priority > other.priority; }
 
-bool Rank::operator>=(const Rank& other) { return priority >= other.priority; }
+bool Rank::operator>=(const Rank& other) const { return priority >= other.priority; }
 
 } // namespace power_ranks::types

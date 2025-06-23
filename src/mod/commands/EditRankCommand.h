@@ -20,6 +20,7 @@ public:
         std::string                                               scoreTagFormat;
         ll::command::SoftEnum<manager::CommandManager::RankNames> inheritanceRank;
         std::string                                               availableCommands;
+        std::string                                               hiddenCommandOverloads;
     };
 
     struct SecondParameter {

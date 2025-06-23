@@ -20,7 +20,7 @@ bool Main::load() {
         return false;
     }
 
-    hooks::Hooks::setupHooks();
+    hooks::setupHooks();
 
     getSelf().getLogger().info("The mod has been successfully loaded!");
     return true;

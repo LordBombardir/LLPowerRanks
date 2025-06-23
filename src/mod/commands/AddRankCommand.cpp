@@ -12,7 +12,7 @@ void AddRankCommand::execute(
     const Parameter&                parameter,
     [[maybe_unused]] const Command& _
 ) {
-    std::string localeCode = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)
+    const auto& localeCode = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)
                                ? manager::ConfigManager::getConfig().defaultLocaleCode
                                : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
 
@@ -21,7 +21,7 @@ void AddRankCommand::execute(
         return;
     }
 
-    std::optional<types::Rank*> inheritanceRank = manager::RanksManager::getRank(parameter.inheritanceRank);
+    const auto& inheritanceRank = manager::RanksManager::getRank(parameter.inheritanceRank);
     if (parameter.inheritanceRank != "null" && !inheritanceRank.has_value()) {
         std::string ranks = "";
         for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
@@ -36,7 +36,7 @@ void AddRankCommand::execute(
         output.error(Utils::strReplace(
             manager::LanguageManager::getTranslate("undefinedRank", localeCode),
             {"{rankName}", "{ranks}"},
-            {parameter.rankName, ranks}
+            {parameter.rankName, std::move(ranks)}
         ));
         return;
     }

@@ -13,16 +13,17 @@ namespace power_ranks::manager {
 class RanksManager final {
 public:
     struct Rank {
-        std::string              prefix;
-        std::string              chat;
-        std::string              scoreTag;
-        std::string              inheritanceRank   = "null";
-        std::vector<std::string> availableCommands = {};
+        std::string                                              prefix;
+        std::string                                              chat;
+        std::string                                              scoreTag;
+        std::string                                              inheritanceRank        = "null";
+        std::unordered_set<std::string>                          availableCommands      = {};
+        std::unordered_map<std::string, std::unordered_set<int>> hiddenCommandOverloads = {};
     };
 
     // clang-format off
     struct Config {
-        int version = 1;
+        int version = 2;
         nlohmann::ordered_map<std::string, Rank> ranks = {
             {ConfigManager::getConfig().defaultRankName, {"Player", "{prefix} {playerName}: {message}", "{prefix}"}},
             {"Vip", {"V.I.P.", "{prefix} {playerName}: §b{message}", "{prefix}", ConfigManager::getConfig().defaultRankName, {"home", "warp"}}},

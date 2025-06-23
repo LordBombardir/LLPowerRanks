@@ -46,5 +46,7 @@
     "formEditRankInputScoreTagFormatPlaceholder": "Новый формат scoreTag'а игрока",
     "formEditRankDropdownInheritanceRanks": "Выберите ранг из списка, от которого будет наследоваться выбранный ранг:",
     "formEditRankInputAvailableCommands": "Введите новые команды для выбранного ранга через точку с запятой («;», без кавычек; введите значение «null» (без кавычек), если хотите убрать команды, специально доступные этому рангу):",
-    "formEditRankInputAvailableCommandsPlaceholder": "Новые команды ранга"
+    "formEditRankInputAvailableCommandsPlaceholder": "Новые команды ранга",
+    "formEditRankInputHiddenCommandOverloads": "Введите новые перегрузки команд, которые будут скрыты для выбранного ранга, с индексами через точку с запятой («;», без кавычек; оставьте поле пустым, если хотите убрать перегрузки команд, которые будут скрыты для выбранного ранга; пример правильного формата: teleport:0,2,3;gamemode:1):",
+    "formEditRankInputHiddenCommandOverloadsPlaceholder": "Новые перегрузки команд, которые будут скрыты"
 }

@@ -11,11 +11,11 @@ void RemoveRankCommand::execute(
     const Parameter&                parameter,
     [[maybe_unused]] const Command& _
 ) {
-    std::string localeCode = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)
+    const auto& localeCode = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)
                                ? manager::ConfigManager::getConfig().defaultLocaleCode
                                : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
 
-    std::optional<types::Rank*> rank = manager::RanksManager::getRank(parameter.rankName);
+    const auto& rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
         std::string ranks;
         for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
@@ -30,7 +30,7 @@ void RemoveRankCommand::execute(
         output.error(Utils::strReplace(
             manager::LanguageManager::getTranslate("undefinedRank", localeCode),
             {"{rankName}", "{ranks}"},
-            {parameter.rankName, ranks}
+            {parameter.rankName, std::move(ranks)}
         ));
         return;
     }
@@ -44,7 +44,7 @@ void RemoveRankCommand::execute(
 }
 
 void RemoveRankCommand::executeWithoutParameter(const CommandOrigin& origin, CommandOutput& output) {
-    std::string localeCode = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)
+    const auto& localeCode = origin.getEntity() == nullptr || !origin.getEntity()->isType(ActorType::Player)
                                ? manager::ConfigManager::getConfig().defaultLocaleCode
                                : static_cast<ServerPlayer&>(*origin.getEntity()).getLocaleCode();
 

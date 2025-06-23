@@ -86,7 +86,8 @@ void RanksManager::saveChangesRank(const types::Rank& rank) {
         rank.getChatFormat(),
         rank.getScoreTagFormat(),
         rank.getInheritanceRank().has_value() ? rank.getInheritanceRank().value()->getName() : "null",
-        rank.getAvailableCommands()
+        rank.getAvailableCommands(),
+        rank.getHiddenCommandOverloads().getData()
     };
     ll::config::saveConfig(config, pathToConfig);
 }
@@ -104,7 +105,8 @@ void RanksManager::parseRanks() {
             rawRank.chat,
             rawRank.scoreTag,
             std::nullopt,
-            rawRank.availableCommands
+            rawRank.availableCommands,
+            types::HiddenCommandOverloads(rawRank.hiddenCommandOverloads)
         );
         ranks[name] = rank;
     }

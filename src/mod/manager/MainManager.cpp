@@ -5,6 +5,9 @@
 #include "lang/LanguageManager.h"
 #include "ranks/RanksManager.h"
 #include <ll/api/service/Bedrock.h>
+#include <mc/server/commands/CommandParameterData.h>
+#include <mc/server/commands/CommandParameterOption.h>
+#include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/actor/ActorDataIDs.h>
 #include <mc/world/actor/SynchedActorDataEntityWrapper.h>
 #include <mc/world/actor/player/LayeredAbilities.h>
@@ -36,30 +39,21 @@ bool MainManager::initManagers(ll::mod::NativeMod& mod) {
     }
 }
 
-void MainManager::disposeManagers() {
-    BaseManager::dispose();
-    RanksManager::dispose();
-}
+void MainManager::disposeManagers() { RanksManager::dispose(); }
 
 const types::Rank& MainManager::getPlayerRankOrSetDefault(Player& player) {
-    std::optional<types::Rank*> rank;
-
     const auto& entry = player_db::api::getPlayerEntry(player);
 
-    if (std::optional<std::string> rankName = BaseManager::getInstance()->getPlayerRank(entry.uuid);
-        rankName.has_value()) {
-        if (rank = *RanksManager::getRank(rankName.value()); rank.has_value()) {
+    if (const auto& rankName = BaseManager::getPlayerRank(entry.uuid); rankName.has_value()) {
+        if (const auto& rank = RanksManager::getRank(rankName.value()); rank.has_value()) {
             return *rank.value();
         }
-
-        BaseManager::getInstance()->setPlayerRank(entry.uuid, ConfigManager::getConfig().defaultRankName);
-        return *RanksManager::getRank(ConfigManager::getConfig().defaultRankName).value();
     }
 
-    rank = RanksManager::getRank(ConfigManager::getConfig().defaultRankName).value();
+    const auto& rank = **RanksManager::getRank(ConfigManager::getConfig().defaultRankName);
 
-    setPlayerRank(player, *rank.value());
-    return *rank.value();
+    setPlayerRank(player, rank);
+    return rank;
 }
 
 const types::Rank& MainManager::getPlayerRankOrSetDefault(const std::string& playerName) {
@@ -68,24 +62,20 @@ const types::Rank& MainManager::getPlayerRankOrSetDefault(const std::string& pla
         entry = player_db::api::addTemporaryPlayerEntry(playerName);
     }
 
-    if (std::optional<std::string> rankName = BaseManager::getInstance()->getPlayerRank(entry->uuid);
-        rankName.has_value()) {
-        if (std::optional<types::Rank*> rank = RanksManager::getRank(rankName.value()); rank.has_value()) {
+    if (const auto& rankName = BaseManager::getPlayerRank(entry->uuid); rankName.has_value()) {
+        if (const auto& rank = RanksManager::getRank(rankName.value()); rank.has_value()) {
             return *rank.value();
         }
-
-        BaseManager::getInstance()->setPlayerRank(entry->uuid, ConfigManager::getConfig().defaultRankName);
-        return *RanksManager::getRank(ConfigManager::getConfig().defaultRankName).value();
     }
 
-    BaseManager::getInstance()->setPlayerRank(entry->uuid, ConfigManager::getConfig().defaultRankName);
+    BaseManager::setPlayerRank(entry->uuid, ConfigManager::getConfig().defaultRankName);
     return *RanksManager::getRank(ConfigManager::getConfig().defaultRankName).value();
 }
 
 void MainManager::setPlayerRank(Player& player, const types::Rank& rank) {
     const auto& entry = player_db::api::getPlayerEntry(player);
 
-    BaseManager::getInstance()->setPlayerRank(entry.uuid, rank.getName());
+    BaseManager::setPlayerRank(entry.uuid, rank.getName());
     updatePlayerRank(player);
 }
 
@@ -95,7 +85,7 @@ void MainManager::setPlayerRankByName(const std::string& playerName, const types
         entry = player_db::api::addTemporaryPlayerEntry(playerName);
     }
 
-    BaseManager::getInstance()->setPlayerRank(entry->uuid, rank.getName());
+    BaseManager::setPlayerRank(entry->uuid, rank.getName());
     if (Player* player = ll::service::getLevel()->getPlayer(playerName); player != nullptr) {
         updatePlayerRank(*player);
     }
@@ -107,7 +97,7 @@ void MainManager::setPlayerRankByXuid(const std::string& xuid, const types::Rank
         entry = player_db::api::addTemporaryPlayerEntry("", xuid);
     }
 
-    BaseManager::getInstance()->setPlayerRank(entry->uuid, rank.getName());
+    BaseManager::setPlayerRank(entry->uuid, rank.getName());
     if (Player* player = ll::service::getLevel()->getPlayerByXuid(xuid); player != nullptr) {
         updatePlayerRank(*player);
     }
@@ -127,20 +117,56 @@ void MainManager::setScoreTag(Player& player, const std::string& scoreTag) {
 }
 
 void MainManager::extraActions(const types::Rank& rank, const Player& player) {
-    AvailableCommandsPacket packet = translator::api::getAvailableCommandsPacket(player);
-    for (AvailableCommandsPacket::CommandData& command : packet.mCommands.get()) {
-        std::string commandName = command.name.get();
+    AvailableCommandsPacket packet = std::move(translator::api::getAvailableCommandsPacket(player));
+    for (AvailableCommandsPacket::CommandData& command : *packet.mCommands) {
+        const auto& commandName = *command.name;
         if (rank.isCommandAvailable(commandName)) {
             command.permission = CommandPermissionLevel::Any;
         }
+
+        if (command.permission == CommandPermissionLevel::Any) {
+            if (command.overloads->empty()) {
+                continue;
+            }
+
+            std::vector<AvailableCommandsPacket::OverloadData> myOverloads = {};
+            for (auto [index, overload] : std::views::enumerate(*command.overloads)) {
+                if (rank.isCommandOverloadHidden(commandName, index)) {
+                    continue;
+                }
+
+                for (auto& param : *overload.params) {
+                    param.paramOptions = static_cast<uchar>(CommandParameterOption::None);
+                }
+
+                myOverloads.push_back(std::move(overload));
+            }
+
+            command.overloads = std::move(myOverloads);
+        }
+    }
+
+    for (auto& constraint : *packet.mConstraints) {
+        if (constraint.constraints->empty()) {
+            continue;
+        }
+
+        // выбираем только CommandName и нужные нам команды (packet.mEnumValues->at(constraint.enumValueSymbol)
+        // возвращает имя команды)
+        if (constraint.enumSymbol != 13
+            && !rank.isCommandAvailable(packet.mEnumValues->at(constraint.enumValueSymbol))) {
+            continue;
+        }
+
+        // убираем constraint
+        constraint.constraints = {};
     }
 
     packet.sendToClient(player.getNetworkIdentifier(), player.getClientSubId());
 }
 
 void MainManager::extraVanillaActions(Player& player, const types::Rank& rank) {
-    std::vector<std::string> availableCommands = rank.getAvailableCommands();
-    if (std::find(availableCommands.begin(), availableCommands.end(), "teleport") != availableCommands.end()) {
+    if (rank.isCommandAvailable("teleport")) {
         player.setAbility(AbilitiesIndex::Teleport, true);
     }
 }
