@@ -97,6 +97,8 @@ bool CommandManager::registerCommands() {
         .required("scoreTagFormat")
         .required("inheritanceRank")
         .required("availableCommands")
+        .required("hiddenCommandOverloads")
+        .required("additionalInformation")
         .execute(&commands::EditRankCommand::executeFirstParameter);
 
     editRankCommand.overload<commands::EditRankCommand::SecondParameter>()

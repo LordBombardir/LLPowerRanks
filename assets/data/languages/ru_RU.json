@@ -22,6 +22,7 @@
     "commandEditRankUsing": "§r(Ранги) Использование: /editrank <rankName: string> <prefix: string> <chatFormat: string> <scoreTagFormat: string> <inheritanceRank: string> <availableCommands: string>",
     "editRankSuperRank": "§r(Ранги) Данный ранг можно редактировать только с консоли!",
     "editRankInvalidFormatAvailableCommands": "§r(Ранги) Пожалуйста, вводите доступные команды этому рангу через точку с запятой («;», без кавычек).",
+    "editRankInvalidFormatAdditionalInformation": "§r(Ранги) Пожалуйста, вводите дополнительную информацию для этого ранга через точку с запятой («;», без кавычек).",
     "editRankSuccess": "§r(Ранги) Вы успешно отредактировали ранг {rankName}.",
     "formAddRankTitle": "Создание нового ранга",
     "formAddRankInputRankName": "Введите название будущего ранга:",
@@ -48,5 +49,7 @@
     "formEditRankInputAvailableCommands": "Введите новые команды для выбранного ранга через точку с запятой («;», без кавычек; введите значение «null» (без кавычек), если хотите убрать команды, специально доступные этому рангу):",
     "formEditRankInputAvailableCommandsPlaceholder": "Новые команды ранга",
     "formEditRankInputHiddenCommandOverloads": "Введите новые перегрузки команд, которые будут скрыты для выбранного ранга, с индексами через точку с запятой («;», без кавычек; оставьте поле пустым, если хотите убрать перегрузки команд, которые будут скрыты для выбранного ранга; пример правильного формата: teleport:0,2,3;gamemode:1):",
-    "formEditRankInputHiddenCommandOverloadsPlaceholder": "Новые перегрузки команд, которые будут скрыты"
+    "formEditRankInputHiddenCommandOverloadsPlaceholder": "Новые перегрузки команд, которые будут скрыты",
+    "formEditRankInputAdditionalInformation": "Введите дополнительную информацию для выбранного ранга через точку с запятой («;», без кавычек; введите значение «null» (без кавычек), если хотите убрать дополнительную информацию для выбранного ранга; данная информация может использоваться другими модами, например, для поддержания единого цветового стиля):",
+    "formEditRankInputAdditionalInformationPlaceholder": "Новая дополнительная информация"
 }

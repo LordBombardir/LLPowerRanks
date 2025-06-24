@@ -12,16 +12,14 @@ std::string HiddenCommandOverloads::toString() const {
             overloadStrs.insert(std::to_string(overload));
         }
 
-        const auto& joinedOverloads = Utils::separateUnorderedSet(overloadStrs, ",");
+        const auto& joinedOverloads = Utils::separateContainer(overloadStrs, ",");
         commandEntries.insert(command + ":" + joinedOverloads);
     }
 
-    return Utils::separateUnorderedSet(commandEntries, ";");
+    return Utils::separateContainer(commandEntries, ";");
 }
 
 void HiddenCommandOverloads::updateFromString(const std::string& rawData) { data = getDataFromString(rawData); }
-
-void HiddenCommandOverloads::clearData() { this->data = {}; }
 
 std::unordered_map<std::string, std::unordered_set<int>>
 HiddenCommandOverloads::getDataFromString(const std::string& rawData) {

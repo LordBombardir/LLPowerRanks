@@ -7,7 +7,8 @@
             "scoreTag": "{prefix}",
             "inheritanceRank": "null",
             "availableCommands": [],
-            "hiddenCommandOverloads": {}
+            "hiddenCommandOverloads": {},
+            "additionalInformation": []
         },
         "Vip": {
             "prefix": "V.I.P.",
@@ -18,7 +19,8 @@
                 "home",
                 "warp"
             ],
-            "hiddenCommandOverloads": {}
+            "hiddenCommandOverloads": {},
+            "additionalInformation": []
         },
         "Creative": {
             "prefix": "Creator",
@@ -28,7 +30,8 @@
             "availableCommands": [
                 "gamemode"
             ],
-            "hiddenCommandOverloads": {}
+            "hiddenCommandOverloads": {},
+            "additionalInformation": []
         },
         "Helper": {
             "prefix": "Mini-boss",
@@ -39,7 +42,8 @@
                 "kick",
                 "mute"
             ],
-            "hiddenCommandOverloads": {}
+            "hiddenCommandOverloads": {},
+            "additionalInformation": []
         },
         "Administrator": {
             "prefix": "BOSS",
@@ -49,7 +53,8 @@
             "availableCommands": [
                 "ban"
             ],
-            "hiddenCommandOverloads": {}
+            "hiddenCommandOverloads": {},
+            "additionalInformation": []
         }
     }
 }

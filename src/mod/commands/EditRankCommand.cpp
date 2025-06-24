@@ -63,20 +63,40 @@ void EditRankCommand::executeFirstParameter(
     }
 
     const auto& availableCommands = Utils::strSplit(parameter.availableCommands, ";");
-    if (parameter.availableCommands != "null" && availableCommands.empty()) {
+    if (parameter.availableCommands != "null" && (availableCommands.empty() || availableCommands.front().empty())) {
         output.error(manager::LanguageManager::getTranslate("editRankInvalidFormatAvailableCommands", localeCode));
+        return;
+    }
+
+    const auto& additionalInformation = Utils::strSplit(parameter.additionalInformation, ";");
+    if (parameter.additionalInformation != "null"
+        && (additionalInformation.empty() || additionalInformation.front().empty())) {
+        output.error(manager::LanguageManager::getTranslate("editRankInvalidFormatAdditionalInformation", localeCode));
         return;
     }
 
     rank.value()->setPrefix(parameter.prefix);
     rank.value()->setChatFormat(parameter.chatFormat);
     rank.value()->setScoreTagFormat(parameter.scoreTagFormat);
-    rank.value()->setAvailableCommands({availableCommands.begin(), availableCommands.end()});
 
     if (inheritanceRank.has_value()) {
         rank.value()->setInheritanceRank(inheritanceRank.value());
     } else {
         rank.value()->removeInheritanceRank();
+    }
+
+    if (parameter.availableCommands != "null") {
+        rank.value()->setAvailableCommands({availableCommands.begin(), availableCommands.end()});
+    } else {
+        rank.value()->setAvailableCommands({});
+    }
+
+    rank.value()->getHiddenCommandOverloads().updateFromString(parameter.hiddenCommandOverloads);
+
+    if (parameter.additionalInformation != "null") {
+        rank.value()->setAdditionalInformation(additionalInformation);
+    } else {
+        rank.value()->setAvailableCommands({});
     }
 
     manager::RanksManager::saveChangesRank(*rank.value());

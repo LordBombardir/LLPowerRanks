@@ -19,6 +19,7 @@ public:
         std::string                                              inheritanceRank        = "null";
         std::unordered_set<std::string>                          availableCommands      = {};
         std::unordered_map<std::string, std::unordered_set<int>> hiddenCommandOverloads = {};
+        std::vector<std::string>                                 additionalInformation  = {};
     };
 
     // clang-format off

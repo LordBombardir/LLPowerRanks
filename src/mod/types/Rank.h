@@ -15,7 +15,8 @@ public:
         const std::string&                     scoreTagFormat,
         const std::optional<const Rank*>&      inheritanceRank        = std::nullopt,
         const std::unordered_set<std::string>& availableCommands      = {},
-        const HiddenCommandOverloads&          hiddenCommandOverloads = {}
+        const HiddenCommandOverloads&          hiddenCommandOverloads = {},
+        const std::vector<std::string>         additionalInformation  = {}
     )
     : priority(priority),
       name(name),
@@ -24,7 +25,8 @@ public:
       scoreTagFormat(scoreTagFormat),
       inheritanceRank(inheritanceRank),
       availableCommands(availableCommands),
-      hiddenCommandOverloads(hiddenCommandOverloads) {}
+      hiddenCommandOverloads(hiddenCommandOverloads),
+      additionalInformation(additionalInformation) {}
     ~Rank() = default;
 
     std::string                            getName() const { return name; }
@@ -35,12 +37,16 @@ public:
     const std::unordered_set<std::string>& getAvailableCommands() const { return availableCommands; }
     const HiddenCommandOverloads&          getHiddenCommandOverloads() const { return hiddenCommandOverloads; }
     HiddenCommandOverloads&                getHiddenCommandOverloads() { return hiddenCommandOverloads; }
+    const std::vector<std::string>&        getAdditionalInformation() const { return additionalInformation; }
+
+    std::optional<std::string> getAdditionalInformation(size_t index) const;
 
     void setPrefix(const std::string& prefix);
     void setChatFormat(const std::string& chatFormat);
     void setInheritanceRank(const Rank* inheritanceRank);
     void setScoreTagFormat(const std::string& scoreTagFormat);
     void setAvailableCommands(const std::unordered_set<std::string>& availableCommands);
+    void setAdditionalInformation(const std::vector<std::string>& additionalInformation);
 
     bool isCommandAvailable(const std::string& name) const;
     bool isCommandOverloadHidden(const std::string& name, int overloadIndex) const;
@@ -64,6 +70,7 @@ private:
     std::optional<const Rank*>      inheritanceRank;
     std::unordered_set<std::string> availableCommands;
     HiddenCommandOverloads          hiddenCommandOverloads;
+    std::vector<std::string>        additionalInformation;
 };
 
 } // namespace power_ranks::types

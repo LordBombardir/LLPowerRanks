@@ -16,7 +16,6 @@ public:
     // Format: teleport:0,2,3,1;gamemode:1
     std::string toString() const;
     void        updateFromString(const std::string& rawData);
-    void        clearData();
 
     const std::unordered_map<std::string, std::unordered_set<int>>& getData() const { return data; };
 

@@ -64,7 +64,7 @@ void EditRankForm::init(Player& player, types::Rank* rank) {
         "availableCommands",
         manager::LanguageManager::getTranslate("formEditRankInputAvailableCommands", player.getLocaleCode()),
         manager::LanguageManager::getTranslate("formEditRankInputAvailableCommandsPlaceholder", player.getLocaleCode()),
-        Utils::separateUnorderedSet(rank->getAvailableCommands(), ";")
+        Utils::separateContainer(rank->getAvailableCommands(), ";")
     );
     form.appendInput(
         "hiddenCommandOverloads",
@@ -74,6 +74,15 @@ void EditRankForm::init(Player& player, types::Rank* rank) {
             player.getLocaleCode()
         ),
         rank->getHiddenCommandOverloads().toString()
+    );
+    form.appendInput(
+        "additionalInformation",
+        manager::LanguageManager::getTranslate("formEditRankInputAdditionalInformation", player.getLocaleCode()),
+        manager::LanguageManager::getTranslate(
+            "formEditRankInputAdditionalInformationPlaceholder",
+            player.getLocaleCode()
+        ),
+        Utils::separateContainer(rank->getAdditionalInformation(), ";")
     );
 
     form.sendTo(
@@ -100,14 +109,16 @@ void EditRankForm::init(Player& player, types::Rank* rank) {
             types::Rank* inheritanceRank;
             std::string  availableCommands;
             std::string  hiddenCommandOverloads;
+            std::string  additionalInformation;
 
             try {
                 prefix          = std::get_if<std::string>(&result->at("prefix"))->data();
                 chatFormat      = std::get_if<std::string>(&result->at("chatFormat"))->data();
                 scoreTagFormat  = std::get_if<std::string>(&result->at("scoreTagFormat"))->data();
                 inheritanceRank = availableRanks[std::get_if<std::string>(&result->at("inheritanceRankName"))->data()];
-                availableCommands = std::get_if<std::string>(&result->at("availableCommands"))->data();
+                availableCommands      = std::get_if<std::string>(&result->at("availableCommands"))->data();
                 hiddenCommandOverloads = std::get_if<std::string>(&result->at("hiddenCommandOverloads"))->data();
+                additionalInformation  = std::get_if<std::string>(&result->at("additionalInformation"))->data();
             } catch (...) {
                 player.sendMessage(manager::LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
                 return;
@@ -128,9 +139,25 @@ void EditRankForm::init(Player& player, types::Rank* rank) {
                 return;
             }
 
+            std::vector<std::string> additionalInformationVector = Utils::strSplit(additionalInformation, ";");
+            if (additionalInformation != "null"
+                && (additionalInformationVector.empty() || additionalInformationVector.front().empty())) {
+                player.sendMessage(manager::LanguageManager::getTranslate(
+                    "editRankInvalidFormatAdditionalInformation",
+                    player.getLocaleCode()
+                ));
+                return;
+            }
+
             rank->setPrefix(prefix);
             rank->setChatFormat(chatFormat);
             rank->setScoreTagFormat(scoreTagFormat);
+
+            if (inheritanceRank != nullptr) {
+                rank->setInheritanceRank(inheritanceRank);
+            } else {
+                rank->removeInheritanceRank();
+            }
 
             if (availableCommands != "null") {
                 rank->setAvailableCommands({availableCommandsVector.begin(), availableCommandsVector.end()});
@@ -138,16 +165,12 @@ void EditRankForm::init(Player& player, types::Rank* rank) {
                 rank->setAvailableCommands({});
             }
 
-            if (hiddenCommandOverloads != "null") {
-                rank->getHiddenCommandOverloads().updateFromString(hiddenCommandOverloads);
-            } else {
-                rank->getHiddenCommandOverloads().clearData();
-            }
+            rank->getHiddenCommandOverloads().updateFromString(hiddenCommandOverloads);
 
-            if (inheritanceRank != nullptr) {
-                rank->setInheritanceRank(inheritanceRank);
+            if (additionalInformation != "null") {
+                rank->setAdditionalInformation(additionalInformationVector);
             } else {
-                rank->removeInheritanceRank();
+                rank->setAvailableCommands({});
             }
 
             manager::RanksManager::saveChangesRank(*rank);

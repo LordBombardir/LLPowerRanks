@@ -85,15 +85,18 @@ public:
         return strings;
     }
 
-    static std::string separateUnorderedSet(const std::unordered_set<std::string>& set, std::string_view separator) {
-        if (set.empty()) {
+    template <typename Container>
+        requires std::ranges::range<Container> && requires(const Container& c) { c.size(); }
+              && std::convertible_to<std::ranges::range_value_t<Container>, std::string_view>
+    static std::string separateContainer(const Container& container, std::string_view separator) {
+        if (container.empty()) {
             return "";
         }
 
         std::string result;
-        for (auto [index, str] : std::views::enumerate(set)) {
+        for (auto [index, str] : std::views::enumerate(container)) {
             result += str;
-            if (static_cast<size_t>(index) + 1 < set.size()) {
+            if (static_cast<size_t>(index) + 1 < container.size()) {
                 result += separator;
             }
         }

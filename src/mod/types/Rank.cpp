@@ -2,6 +2,14 @@
 
 namespace power_ranks::types {
 
+std::optional<std::string> Rank::getAdditionalInformation(size_t index) const {
+    if (index < additionalInformation.size()) {
+        return additionalInformation[index];
+    }
+
+    return std::nullopt;
+}
+
 void Rank::setPrefix(const std::string& prefix) { this->prefix = prefix; }
 
 void Rank::setChatFormat(const std::string& chatFormat) { this->chatFormat = chatFormat; }
@@ -12,6 +20,10 @@ void Rank::setScoreTagFormat(const std::string& scoreTagFormat) { this->scoreTag
 
 void Rank::setAvailableCommands(const std::unordered_set<std::string>& availableCommands) {
     this->availableCommands = availableCommands;
+}
+
+void Rank::setAdditionalInformation(const std::vector<std::string>& additionalInformation) {
+    this->additionalInformation = additionalInformation;
 }
 
 bool Rank::isCommandAvailable(const std::string& name) const {

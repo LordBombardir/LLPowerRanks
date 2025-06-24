@@ -21,6 +21,7 @@ public:
         ll::command::SoftEnum<manager::CommandManager::RankNames> inheritanceRank;
         std::string                                               availableCommands;
         std::string                                               hiddenCommandOverloads;
+        std::string                                               additionalInformation;
     };
 
     struct SecondParameter {
