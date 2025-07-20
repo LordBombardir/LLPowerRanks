@@ -5,18 +5,18 @@ namespace power_ranks::types {
 
 void ChatFormattingEvent::serialize(CompoundTag& nbt) const {
     ll::event::Event::serialize(nbt);
-    nbt["player"]          = ll::event::serializeRefObj(getPlayer());
-    nbt["playerRank"]      = ll::event::serializeRefObj(getPlayerRank());
-    nbt["chatFormat"]      = getChatFormat();
-    nbt["originalMessage"] = getOriginalMessage();
+    nbt["sender"]     = ll::event::serializeRefObj(getSender());
+    nbt["senderRank"] = ll::event::serializeRefObj(getSenderRank());
+    nbt["chatFormat"] = getChatFormat();
+    nbt["chatEvent"]  = ll::event::serializeRefObj(getChatEvent());
 }
 
-Player& ChatFormattingEvent::getPlayer() const { return player; }
+Player& ChatFormattingEvent::getSender() const { return sender; }
 
-const Rank& ChatFormattingEvent::getPlayerRank() const { return playerRank; }
+const Rank& ChatFormattingEvent::getSenderRank() const { return senderRank; }
 
 std::string& ChatFormattingEvent::getChatFormat() const { return chatFormat; }
 
-std::string& ChatFormattingEvent::getOriginalMessage() const { return originalMessage; }
+ChatEvent& ChatFormattingEvent::getChatEvent() const { return chatEvent; }
 
 } // namespace power_ranks::types

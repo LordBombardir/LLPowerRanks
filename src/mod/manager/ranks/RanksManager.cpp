@@ -1,5 +1,6 @@
 #include "RanksManager.h"
 #include "../command/CommandManager.h"
+#include "../rankFormats/RankFormatsManager.h"
 #include <ll/api/Config.h>
 #include <stdexcept>
 
@@ -55,17 +56,14 @@ void RanksManager::addRank(
     const std::string&                       scoreTagFormat,
     const std::optional<const types::Rank*>& inheritanceRank
 ) {
-    config.ranks[name] = Rank{
-        prefix,
-        chatFormat,
-        scoreTagFormat,
-        inheritanceRank.has_value() ? inheritanceRank.value()->getName() : "null"
-    };
+    RankFormatsManager::setRankFormat(name, prefix, chatFormat, scoreTagFormat, "ALL");
 
-    ranks[name] = new types::Rank(currentPriority++, name, prefix, chatFormat, scoreTagFormat, inheritanceRank);
+    config.ranks[name] = Rank{inheritanceRank.has_value() ? inheritanceRank.value()->getName() : "null"};
+
+    ranks[name] = new types::Rank(currentPriority++, name, inheritanceRank);
     ll::config::saveConfig(config, pathToConfig);
 
-    manager::CommandManager::addRankNameToSoftEnum(name);
+    CommandManager::addRankNameToSoftEnum(name);
 }
 
 void RanksManager::removeRank(const types::Rank& rank) {
@@ -77,14 +75,11 @@ void RanksManager::removeRank(const types::Rank& rank) {
     delete ranks[rankName];
     ranks.erase(rankName);
 
-    manager::CommandManager::removeRankNameFromSoftEnum(rankName);
+    CommandManager::removeRankNameFromSoftEnum(rankName);
 }
 
 void RanksManager::saveChangesRank(const types::Rank& rank) {
     config.ranks[rank.getName()] = Rank{
-        rank.getPrefix(),
-        rank.getChatFormat(),
-        rank.getScoreTagFormat(),
         rank.getInheritanceRank().has_value() ? rank.getInheritanceRank().value()->getName() : "null",
         rank.getAvailableCommands(),
         rank.getHiddenCommandOverloads().getData()
@@ -101,9 +96,6 @@ void RanksManager::parseRanks() {
         types::Rank* rank = new types::Rank(
             currentPriority++,
             name,
-            rawRank.prefix,
-            rawRank.chat,
-            rawRank.scoreTag,
             std::nullopt,
             rawRank.availableCommands,
             types::HiddenCommandOverloads(rawRank.hiddenCommandOverloads)

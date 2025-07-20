@@ -1,5 +1,5 @@
 #include "EditRankCommand.h"
-#include "../Utils.hpp"
+#include "../utils/Utils.h"
 #include "../forms/EditRankForm.h"
 #include "../manager/ranks/RanksManager.h"
 #include <mc/server/ServerPlayer.h>
@@ -25,7 +25,7 @@ void EditRankCommand::executeFirstParameter(
     const auto& rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
         std::string ranks = "";
-        for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
+        for (const auto& [name, otherRank] : manager::RanksManager::getRanks()) {
             if (ranks.empty()) {
                 ranks = name;
                 continue;
@@ -45,7 +45,7 @@ void EditRankCommand::executeFirstParameter(
     const auto& inheritanceRank = manager::RanksManager::getRank(parameter.inheritanceRank);
     if (parameter.inheritanceRank != "null" && !inheritanceRank.has_value()) {
         std::string ranks = "";
-        for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
+        for (const auto& [name, otherRank] : manager::RanksManager::getRanks()) {
             if (ranks.empty()) {
                 ranks = name;
                 continue;
@@ -128,7 +128,7 @@ void EditRankCommand::executeSecondParameter(
     const auto& rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
         std::string ranks = "";
-        for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
+        for (const auto& [name, otherRank] : manager::RanksManager::getRanks()) {
             if (ranks.empty()) {
                 ranks = name;
                 continue;

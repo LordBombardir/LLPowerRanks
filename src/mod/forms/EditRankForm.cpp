@@ -1,17 +1,20 @@
 #include "EditRankForm.h"
-#include "../Utils.hpp"
 #include "../manager/lang/LanguageManager.h"
 #include "../manager/ranks/RanksManager.h"
+#include "../utils/Utils.h"
 #include <ll/api/form/CustomForm.h>
+
 
 namespace power_ranks::forms {
 
 void EditRankForm::init(Player& player, types::Rank* rank) {
-    ll::form::CustomForm form(Utils::strReplace(
-        manager::LanguageManager::getTranslate("formEditRankTitle", player.getLocaleCode()),
-        "{rankName}",
-        rank->getName()
-    ));
+    ll::form::CustomForm form(
+        Utils::strReplace(
+            manager::LanguageManager::getTranslate("formEditRankTitle", player.getLocaleCode()),
+            "{rankName}",
+            rank->getName()
+        )
+    );
 
     form.appendInput(
         "prefix",
@@ -132,20 +135,24 @@ void EditRankForm::init(Player& player, types::Rank* rank) {
             std::vector<std::string> availableCommandsVector = Utils::strSplit(availableCommands, ";");
             if (availableCommands != "null"
                 && (availableCommandsVector.empty() || availableCommandsVector.front().empty())) {
-                player.sendMessage(manager::LanguageManager::getTranslate(
-                    "editRankInvalidFormatAvailableCommands",
-                    player.getLocaleCode()
-                ));
+                player.sendMessage(
+                    manager::LanguageManager::getTranslate(
+                        "editRankInvalidFormatAvailableCommands",
+                        player.getLocaleCode()
+                    )
+                );
                 return;
             }
 
             std::vector<std::string> additionalInformationVector = Utils::strSplit(additionalInformation, ";");
             if (additionalInformation != "null"
                 && (additionalInformationVector.empty() || additionalInformationVector.front().empty())) {
-                player.sendMessage(manager::LanguageManager::getTranslate(
-                    "editRankInvalidFormatAdditionalInformation",
-                    player.getLocaleCode()
-                ));
+                player.sendMessage(
+                    manager::LanguageManager::getTranslate(
+                        "editRankInvalidFormatAdditionalInformation",
+                        player.getLocaleCode()
+                    )
+                );
                 return;
             }
 
@@ -174,11 +181,13 @@ void EditRankForm::init(Player& player, types::Rank* rank) {
             }
 
             manager::RanksManager::saveChangesRank(*rank);
-            player.sendMessage(Utils::strReplace(
-                manager::LanguageManager::getTranslate("editRankSuccess", player.getLocaleCode()),
-                "{rankName}",
-                rank->getName()
-            ));
+            player.sendMessage(
+                Utils::strReplace(
+                    manager::LanguageManager::getTranslate("editRankSuccess", player.getLocaleCode()),
+                    "{rankName}",
+                    rank->getName()
+                )
+            );
         }
     );
 }

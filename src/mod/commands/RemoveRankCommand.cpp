@@ -1,5 +1,5 @@
 #include "RemoveRankCommand.h"
-#include "../Utils.hpp"
+#include "../utils/Utils.h"
 #include "../manager/ranks/RanksManager.h"
 #include <mc/server/ServerPlayer.h>
 
@@ -18,7 +18,7 @@ void RemoveRankCommand::execute(
     const auto& rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
         std::string ranks;
-        for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
+        for (const auto& [name, otherRank] : manager::RanksManager::getRanks()) {
             if (ranks.empty()) {
                 ranks = name;
                 continue;

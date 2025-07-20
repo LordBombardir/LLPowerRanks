@@ -1,11 +1,11 @@
 #include "MainManager.h"
-#include "../Utils.hpp"
+#include "../utils/Utils.h"
 #include "base/BaseManager.h"
 #include "config/ConfigManager.h"
 #include "lang/LanguageManager.h"
+#include "rankFormats/RankFormatsManager.h"
 #include "ranks/RanksManager.h"
 #include <ll/api/service/Bedrock.h>
-#include <mc/server/commands/CommandParameterData.h>
 #include <mc/server/commands/CommandParameterOption.h>
 #include <mc/server/commands/CommandRegistry.h>
 #include <mc/world/actor/ActorDataIDs.h>
@@ -26,17 +26,14 @@ AvailableCommandsPacket::CommandData::CommandData(const CommandData&)           
 namespace power_ranks::manager {
 
 bool MainManager::initManagers(ll::mod::NativeMod& mod) {
-    try {
-        BaseManager::init(mod);
-        bool configInit = ConfigManager::init(mod);
-        LanguageManager::init(mod);
-        LanguageManager::addTranslations();
-        bool ranksInit = RanksManager::init(mod);
+    BaseManager::init(mod);
+    bool configInit = ConfigManager::init(mod);
+    LanguageManager::init(mod);
+    LanguageManager::addTranslations();
+    bool rankFormatsInit = RankFormatsManager::init(mod);
+    bool ranksInit = RanksManager::init(mod);
 
-        return configInit && ranksInit;
-    } catch (...) {
-        return false;
-    }
+    return configInit && rankFormatsInit && ranksInit;
 }
 
 void MainManager::disposeManagers() { RanksManager::dispose(); }
@@ -46,7 +43,7 @@ const types::Rank& MainManager::getPlayerRankOrSetDefault(Player& player) {
 
     if (const auto& rankName = BaseManager::getPlayerRank(entry.uuid); rankName.has_value()) {
         if (const auto& rank = RanksManager::getRank(rankName.value()); rank.has_value()) {
-            return *rank.value();
+            return **rank;
         }
     }
 
@@ -64,7 +61,7 @@ const types::Rank& MainManager::getPlayerRankOrSetDefault(const std::string& pla
 
     if (const auto& rankName = BaseManager::getPlayerRank(entry->uuid); rankName.has_value()) {
         if (const auto& rank = RanksManager::getRank(rankName.value()); rank.has_value()) {
-            return *rank.value();
+            return **rank;
         }
     }
 
@@ -117,7 +114,7 @@ void MainManager::setScoreTag(Player& player, const std::string& scoreTag) {
 }
 
 void MainManager::extraActions(const types::Rank& rank, const Player& player) {
-    AvailableCommandsPacket packet = std::move(translator::api::getAvailableCommandsPacket(player));
+    AvailableCommandsPacket packet = translator::api::getAvailableCommandsPacket(player);
     for (AvailableCommandsPacket::CommandData& command : *packet.mCommands) {
         const auto& commandName = *command.name;
         if (rank.isCommandAvailable(commandName)) {
@@ -131,7 +128,7 @@ void MainManager::extraActions(const types::Rank& rank, const Player& player) {
 
             std::vector<AvailableCommandsPacket::OverloadData> myOverloads = {};
             for (auto [index, overload] : std::views::enumerate(*command.overloads)) {
-                if (rank.isCommandOverloadHidden(commandName, index)) {
+                if (rank.isCommandOverloadHidden(commandName, static_cast<int>(index))) {
                     continue;
                 }
 

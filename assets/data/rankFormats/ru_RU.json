@@ -1,0 +1,30 @@
+{
+    "version": 1,
+    "ranks": {
+        "Default": {
+            "prefix": "Player",
+            "chat": "{prefix} {playerName}: {message}",
+            "scoreTag": "{prefix}"
+        },
+        "Vip": {
+            "prefix": "V.I.P.",
+            "chat": "{prefix} {playerName}: §b{message}",
+            "scoreTag": "{prefix}"
+        },
+        "Creative": {
+            "prefix": "Creator",
+            "chat": "{prefix} {playerName}: §a{message}",
+            "scoreTag": "{prefix}"
+        },
+        "Helper": {
+            "prefix": "Mini-boss",
+            "chat": "{prefix} {playerName}: §l{message}",
+            "scoreTag": "{prefix}"
+        },
+        "Administrator": {
+            "prefix": "BOSS",
+            "chat": "{prefix} {playerName}: §c§l{message}",
+            "scoreTag": "{prefix}"
+        }
+    }
+}

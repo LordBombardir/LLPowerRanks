@@ -20,22 +20,22 @@ std::string LanguageManager::getTranslate(const std::string_view& key, const std
 }
 
 void LanguageManager::addTranslations() {
-    translator::api::setTranslationForCommandDescription(
+    translator::api::setPlaceholder(
         commands::AddRankCommand::getName(),
         manager::LanguageManager::getTranslate("commandAddRankDescription", "ru_RU"),
         "ru_RU"
     );
-    translator::api::setTranslationForCommandDescription(
+    translator::api::setPlaceholder(
         commands::EditRankCommand::getName(),
         manager::LanguageManager::getTranslate("commandEditRankDescription", "ru_RU"),
         "ru_RU"
     );
-    translator::api::setTranslationForCommandDescription(
+    translator::api::setPlaceholder(
         commands::RemoveRankCommand::getName(),
         manager::LanguageManager::getTranslate("commandRemoveRankDescription", "ru_RU"),
         "ru_RU"
     );
-    translator::api::setTranslationForCommandDescription(
+    translator::api::setPlaceholder(
         commands::SetRankCommand::getName(),
         manager::LanguageManager::getTranslate("commandSetRankDescription", "ru_RU"),
         "ru_RU"

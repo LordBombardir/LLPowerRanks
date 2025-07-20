@@ -1,5 +1,5 @@
 #include "SetRankCommand.h"
-#include "../Utils.hpp"
+#include "../utils/Utils.h"
 #include "../forms/SetRankForm.h"
 #include "../manager/MainManager.h"
 #include "../manager/ranks/RanksManager.h"
@@ -28,7 +28,7 @@ void SetRankCommand::execute(
     const auto& rank = manager::RanksManager::getRank(parameter.rankName);
     if (!rank.has_value() || rank.value() == nullptr) {
         std::string ranks;
-        for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
+        for (const auto& [name, otherRank] : manager::RanksManager::getRanks()) {
             if (ranks.empty()) {
                 ranks = name;
                 continue;

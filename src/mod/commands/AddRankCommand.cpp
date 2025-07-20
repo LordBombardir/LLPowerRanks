@@ -1,5 +1,5 @@
 #include "AddRankCommand.h"
-#include "../Utils.hpp"
+#include "../utils/Utils.h"
 #include "../forms/AddRankForm.h"
 #include "../manager/ranks/RanksManager.h"
 #include <mc/server/ServerPlayer.h>

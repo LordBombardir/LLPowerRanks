@@ -1,20 +1,22 @@
 #include "Hooks.h"
-#include "../Utils.hpp"
 #include "../manager/MainManager.h"
 #include "../manager/command/CommandManager.h"
 #include "../manager/config/ConfigManager.h"
 #include "../types/ChatFormattingEvent.h"
+#include "../utils/Utils.h"
 #include <ll/api/event/Emitter.h>
 #include <ll/api/event/EventBus.h>
 #include <ll/api/memory/Hook.h>
-#include <mc/network/PacketSender.h>
+#include <mc/deps/ecs/WeakEntityRef.h>
+#include <mc/deps/ecs/gamerefs_entity/EntityContext.h>
+#include <mc/deps/game_refs/GameRefs.h>
+#include <mc/deps/game_refs/WeakRef.h>
 #include <mc/network/ServerNetworkHandler.h>
 #include <mc/network/packet/SetLocalPlayerAsInitializedPacket.h>
 #include <mc/network/packet/TextPacket.h>
 #include <mc/server/ServerPlayer.h>
 #include <mc/server/commands/Command.h>
 #include <mc/server/commands/CommandOutput.h>
-#include <mc/world/level/Level.h>
 
 namespace power_ranks::hooks {
 
@@ -68,43 +70,36 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 LL_TYPE_INSTANCE_HOOK(
-    PlayerSendMessageHook,
+    DisplayGameMessageHook,
     HookPriority::Normal,
     ServerNetworkHandler,
-    &ServerNetworkHandler::$handle,
+    &ServerNetworkHandler::_displayGameMessage,
     void,
-    const NetworkIdentifier& identifier,
-    const TextPacket&        packet
+    const Player& sender,
+    ChatEvent&    chatEvent
 ) {
-    if (ServerPlayer* player = thisFor<NetEventCallback>()->_getServerPlayer(identifier, packet.mSenderSubId); player) {
-        const types::Rank& rank         = manager::MainManager::getPlayerRankOrSetDefault(*player);
-        TextPacket&        castedPacket = const_cast<TextPacket&>(packet);
+    Player& player = const_cast<Player&>(sender);
 
-        std::string chatFormat = rank.getChatFormat();
-        ll::event::EventBus::getInstance().publish(
-            types::ChatFormattingEvent{*player, rank, chatFormat, castedPacket.mMessage}
-        );
+    const types::Rank& rank = manager::MainManager::getPlayerRankOrSetDefault(player);
 
-        if (!manager::ConfigManager::getConfig().ranksWithColoredMessages.contains(rank.getName())) {
-            castedPacket.mMessage = Utils::strTrim(Utils::clean(castedPacket.mMessage));
-        }
+    std::string chatFormat = rank.getChatFormat();
+    ll::event::EventBus::getInstance().publish(types::ChatFormattingEvent{player, rank, chatFormat, chatEvent});
 
-        if (castedPacket.mMessage.empty()) {
-            return;
-        }
-
-        castedPacket.mAuthor  = "";
-        castedPacket.mXuid    = "";
-        castedPacket.mMessage = Utils::strReplace(
-            chatFormat,
-            {"{prefix}", "{playerName}", "{message}"},
-            {rank.getPrefix(), player->getRealName(), castedPacket.mMessage}
-        );
-
-        return origin(identifier, castedPacket);
+    if (!manager::ConfigManager::getConfig().ranksWithColoredMessages.contains(rank.getName())) {
+        chatEvent.mMessage = Utils::strTrim(Utils::clean(chatEvent.mMessage));
     }
 
-    origin(identifier, packet);
+    if (chatEvent.mMessage->empty()) {
+        return;
+    }
+
+    chatEvent.mMessage = Utils::strReplace(
+        chatFormat,
+        {"{prefix}", "{playerName}", "{message}"},
+        {rank.getPrefix(), player.getRealName(), chatEvent.mMessage}
+    );
+
+    return origin(sender, chatEvent);
 }
 
 LL_TYPE_STATIC_HOOK(
@@ -115,26 +110,28 @@ LL_TYPE_STATIC_HOOK(
     TextPacket,
     [[maybe_unused]] const std::string& author,
     const std::string&                  message,
-    std::optional<::std::string>        filteredMessage,
-    [[maybe_unused]] const std::string& xuid,
+    std::optional<std::string>          filteredMessage,
+    const std::string&                  xuid,
     const std::string&                  platformId
 ) {
-    return origin("", message, filteredMessage, "", platformId);
+    return origin("", message, filteredMessage, xuid, platformId);
 }
 
 void setupHooks() {
     PlayerJoinHook::hook();
     CommandRunHook::hook();
 
-    PlayerSendMessageHook::hook();
+    DisplayGameMessageHook::hook();
     TextPacketCreateChatHook::hook();
 }
 
 static std::unique_ptr<ll::event::EmitterBase> emitterFactory();
-class PlayerSendMessageEmitter : public ll::event::Emitter<emitterFactory, types::ChatFormattingEvent> {
-    ll::memory::HookRegistrar<PlayerSendMessageHook> hook;
+class DisplayGameMessageHookEmitter : public ll::event::Emitter<emitterFactory, types::ChatFormattingEvent> {
+    ll::memory::HookRegistrar<DisplayGameMessageHook> hook;
 };
 
-static std::unique_ptr<ll::event::EmitterBase> emitterFactory() { return std::make_unique<PlayerSendMessageEmitter>(); }
+static std::unique_ptr<ll::event::EmitterBase> emitterFactory() {
+    return std::make_unique<DisplayGameMessageHookEmitter>();
+}
 
 } // namespace power_ranks::hooks

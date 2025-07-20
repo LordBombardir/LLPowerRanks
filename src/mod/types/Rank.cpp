@@ -10,13 +10,7 @@ std::optional<std::string> Rank::getAdditionalInformation(size_t index) const {
     return std::nullopt;
 }
 
-void Rank::setPrefix(const std::string& prefix) { this->prefix = prefix; }
-
-void Rank::setChatFormat(const std::string& chatFormat) { this->chatFormat = chatFormat; }
-
 void Rank::setInheritanceRank(const Rank* inheritanceRank) { this->inheritanceRank = inheritanceRank; }
-
-void Rank::setScoreTagFormat(const std::string& scoreTagFormat) { this->scoreTagFormat = scoreTagFormat; }
 
 void Rank::setAvailableCommands(const std::unordered_set<std::string>& availableCommands) {
     this->availableCommands = availableCommands;

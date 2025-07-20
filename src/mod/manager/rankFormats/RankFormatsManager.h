@@ -1,0 +1,67 @@
+#pragma once
+
+#include "../config/ConfigManager.h"
+#include <ll/api/mod/NativeMod.h>
+#include <ll/api/reflection/Deserialization.h>
+#include <ll/api/reflection/Serialization.h>
+#include <nlohmann/json.hpp>
+#include <string>
+
+namespace power_ranks::manager {
+
+class RankFormatsManager final {
+public:
+    struct RankFormat {
+        std::string prefix;
+        std::string chat;
+        std::string scoreTag;
+    };
+
+    // clang-format off
+    struct Config {
+        int version = 1;
+        nlohmann::ordered_map<std::string, RankFormat> ranks = {
+            {ConfigManager::getConfig().defaultRankName, {"Player", "{prefix} {playerName}: {message}", "{prefix}"}},
+            {"Vip", {"V.I.P.", "{prefix} {playerName}: §b{message}", "{prefix}"}},
+            {"Creative", {"Creator", "{prefix} {playerName}: §a{message}", "{prefix}"}},
+            {"Helper", {"Mini-boss", "{prefix} {playerName}: §l{message}", "{prefix}"}},
+            {"Administrator", {"BOSS", "{prefix} {playerName}: §c§l{message}", "{prefix}"}},
+        };
+    };
+    // clang-format on
+
+    static bool init(ll::mod::NativeMod& mod);
+
+    static std::string getPrefixFormat(
+        const std::string& rankName,
+        std::string_view   localeCode = ConfigManager::getConfig().defaultLocaleCode
+    );
+    static std::string getChatFormat(
+        const std::string& rankName,
+        std::string_view   localeCode = ConfigManager::getConfig().defaultLocaleCode
+    );
+    static std::string getScoreTagFormat(
+        const std::string& rankName,
+        std::string_view   localeCode = ConfigManager::getConfig().defaultLocaleCode
+    );
+
+    static void setRankFormat(
+        const std::string& rankName,
+        const std::string& prefix,
+        const std::string& chat,
+        const std::string& scoreTag,
+        std::string_view   localeCode = ConfigManager::getConfig().defaultLocaleCode
+    );
+
+private:
+    struct ConfigInfo {
+        std::filesystem::path pathToConfig;
+        Config                config;
+    };
+
+    static std::unordered_map<std::string, ConfigInfo> configs;
+
+    static ConfigInfo& getConfig(std::string_view localeCode = ConfigManager::getConfig().defaultLocaleCode);
+};
+
+} // namespace power_ranks::manager
