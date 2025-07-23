@@ -1,7 +1,7 @@
 #include "AddRankCommand.h"
-#include "../utils/Utils.h"
 #include "../forms/AddRankForm.h"
 #include "../manager/ranks/RanksManager.h"
+#include "../utils/Utils.h"
 #include <mc/server/ServerPlayer.h>
 
 namespace power_ranks::commands {
@@ -33,26 +33,30 @@ void AddRankCommand::execute(
             ranks += ", " + name;
         }
 
-        output.error(Utils::strReplace(
-            manager::LanguageManager::getTranslate("undefinedRank", localeCode),
-            {"{rankName}", "{ranks}"},
-            {parameter.rankName, std::move(ranks)}
-        ));
+        output.error(
+            Utils::strReplace(
+                manager::LanguageManager::getTranslate("undefinedRank", localeCode),
+                {"{rankName}", "{ranks}"},
+                {parameter.rankName, std::move(ranks)}
+            )
+        );
         return;
     }
 
     manager::RanksManager::addRank(
         parameter.rankName,
         parameter.prefix,
-        parameter.chatFormat,
-        parameter.scoreTagFormat,
+        parameter.chat,
+        parameter.scoreTag,
         inheritanceRank
     );
-    output.success(Utils::strReplace(
-        manager::LanguageManager::getTranslate("addRankSuccess", localeCode),
-        "{rankName}",
-        parameter.rankName
-    ));
+    output.success(
+        Utils::strReplace(
+            manager::LanguageManager::getTranslate("addRankSuccess", localeCode),
+            "{rankName}",
+            parameter.rankName
+        )
+    );
 }
 
 void AddRankCommand::executeWithoutParameter(const CommandOrigin& origin, CommandOutput& output) {

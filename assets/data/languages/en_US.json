@@ -8,7 +8,7 @@
     "commandSetRankDescription": "Set a new rank for a player.",
     "commandRemoveRankDescription": "Remove rank.",
     "commandEditRankDescription": "Edit rank.",
-    "commandAddRankUsing": "§r(Ranks) Usage: /addrank <rankName: string> <prefix: string> <chatFormat: string> <scoreTagFormat: string> [inheritanceRank: string]",
+    "commandAddRankUsing": "§r(Ranks) Usage: /addrank <rankName: string> <prefix: string> <chat: string> <scoreTag: string> [inheritanceRank: string]",
     "addRankAlreadyExists": "§r(Ranks) A rank with this name already exists!",
     "addRankSuccess": "§r(Ranks) You have successfully created a rank called {rankName}!",
     "commandSetRankUsing": "§r(Ranks) Usage: /setrank <rankName: string> <player: target>",
@@ -19,8 +19,10 @@
     "commandSetRankSuccessMultiply": "§r(Ranks) You have successfully set the rank of {playerNames} to {rankName}!",
     "commandRemoveRankUsing": "§r(Ranks) Usage: /removerank <rankName: string>",
     "commandRemoveRankSuccess": "§r(Ranks) You have successfully removed the rank of {rankName}.",
-    "commandEditRankUsing": "§r(Ranks) Usage: /editrank <rankName: string> <prefix: string> <chatFormat: string> <scoreTagFormat: string> <inheritanceRank: string> <availableCommands: string>",
+    "commandEditRankUsing": "§r(Ranks) Usage: /editrank <rankName: string> <prefix: string> <chat: string> <scoreTag: string> <localeCode: string> <inheritanceRank: string> <availableCommands: string>",
     "editRankSuperRank": "§r(Ranks) This rank can only be edited from the console!",
+    "editRankFirstInvalidLocaleCode": "§r(Ranks) This language code is unknown! Type \"ALL\" (without quotes) to replace the formatting in all languages.",
+    "editRankSecondInvalidLocaleCode": "§r(Ranks) This language code is unknown! Default language code: \"{defaultLocaleCode}\".",
     "editRankInvalidFormatAvailableCommands": "§r(Ranks) Please enter available commands this rank separated by a semicolon (\";\", without quotes; example of the correct format: teleport;gamemode).",
     "editRankSuccess": "§r(Ranks) You have successfully edited the rank {rankName}.",
     "formAddRankTitle": "Creating a new rank",
@@ -37,7 +39,7 @@
     "formSetRankDropdownPlayers": "Select a player from the list to whom you want to set a new rank:",
     "formSetRankDropdownRanks": "Select a rank from the list that you want to set for the player:",
     "formEditRankTitle": "Editing the rank {rankName}",
-    "formEditRankDropdownRanks": "Select a rank from the list that you want to edit:",
+    "formEditRankLabel": "The following three parameters (prefix, player message display format, player scoreTag) will be changed only for the language code you have selected (\"{localeCode}\"). The rest of the parameters will be changed GLOBALLY!",
     "formEditRankInputPrefix": "Enter the new prefix of the selected rank:",
     "formEditRankInputPrefixPlaceholder": "New rank prefix",
     "formEditRankInputChatFormat": "Enter the new format for displaying player messages that will have the selected rank (supported variables {prefix} - rank prefix, {playerName} - player name, {message} - message sent by the player):",
@@ -48,5 +50,7 @@
     "formEditRankInputAvailableCommands": "Enter new commands for the selected rank separated by semicolons (\";\", without quotes; enter the value \"null\" (without quotes) if you want to remove commands specifically available to this rank; example of the correct format: teleport;gamemode):",
     "formEditRankInputAvailableCommandsPlaceholder": "New rank commands",
     "formEditRankInputHiddenCommandOverloads": "Enter new command overloads that will be hidden for the selected rank with semicolon-separated indexes (\";\", without quotes; leave the field empty if you want to remove command overloads that will be hidden for the selected rank; example of the correct format: teleport:0,2,3;gamemode:1):",
-    "formEditRankInputHiddenCommandOverloadsPlaceholder": "New command overloads that will be hidden"
+    "formEditRankInputHiddenCommandOverloadsPlaceholder": "New command overloads that will be hidden",
+    "formEditRankInputAdditionalInformation": "Enter additional information for the selected rank separated by a semicolon (\";\", without quotes; enter the value \"null\" (without quotes) if you want to remove additional information for the selected rank; this information can be used by other mods, for example, to maintain a uniform color style):",
+    "formEditRankInputAdditionalInformationPlaceholder": "New additional information"
 }

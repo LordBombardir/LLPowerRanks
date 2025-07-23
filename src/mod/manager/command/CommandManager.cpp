@@ -37,8 +37,8 @@ bool CommandManager::registerCommands() {
     addRankCommand.overload<commands::AddRankCommand::Parameter>()
         .required("rankName")
         .required("prefix")
-        .required("chatFormat")
-        .required("scoreTagFormat")
+        .required("chat")
+        .required("scoreTag")
         .optional("inheritanceRank")
         .execute(&commands::AddRankCommand::execute);
 
@@ -92,17 +92,18 @@ bool CommandManager::registerCommands() {
 
     editRankCommand.overload<commands::EditRankCommand::FirstParameter>()
         .required("rankName")
-        .required("prefix")
-        .required("chatFormat")
-        .required("scoreTagFormat")
-        .required("inheritanceRank")
-        .required("availableCommands")
-        .required("hiddenCommandOverloads")
-        .required("additionalInformation")
+        .required("localeCode")
         .execute(&commands::EditRankCommand::executeFirstParameter);
 
     editRankCommand.overload<commands::EditRankCommand::SecondParameter>()
         .required("rankName")
+        .required("prefix")
+        .required("chat")
+        .required("scoreTag")
+        .required("inheritanceRank")
+        .required("availableCommands")
+        .required("hiddenCommandOverloads")
+        .required("additionalInformation")
         .execute(&commands::EditRankCommand::executeSecondParameter);
 
     editRankCommand.overload().execute(&commands::EditRankCommand::executeWithoutParameter);

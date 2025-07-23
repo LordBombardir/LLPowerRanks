@@ -39,6 +39,18 @@ void RanksManager::dispose() {
     ranks.clear();
 }
 
+nlohmann::ordered_map<std::string, types::Rank*> RanksManager::getOrderedRanks() {
+    nlohmann::ordered_map<std::string, types::Rank*> result = {};
+    for (const auto& [name, rawRank] : config.ranks) {
+        const auto& rank = getRank(name);
+        if (rank.has_value()) {
+            result[name] = *rank;
+        }
+    }
+
+    return result;
+}
+
 std::unordered_map<std::string, types::Rank*> RanksManager::getRanks() { return ranks; }
 
 std::optional<types::Rank*> RanksManager::getRank(const std::string& name) {
@@ -68,6 +80,7 @@ void RanksManager::addRank(
 
 void RanksManager::removeRank(const types::Rank& rank) {
     std::string rankName = rank.getName();
+    RankFormatsManager::removeRankFormat(rankName);
 
     config.ranks.erase(rankName);
     ll::config::saveConfig(config, pathToConfig);

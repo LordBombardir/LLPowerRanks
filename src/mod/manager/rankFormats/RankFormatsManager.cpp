@@ -33,33 +33,57 @@ bool RankFormatsManager::init(ll::mod::NativeMod& mod) {
         return false;
     }
 
+    generatePlaceholders();
     return result;
 }
 
-std::string RankFormatsManager::getPrefixFormat(const std::string& rankName, std::string_view localeCode) {
-    const RankFormatsManager::Config& config = getConfig(localeCode).config;
-
-    auto it = config.ranks.find(rankName);
-    if (it == config.ranks.end()) {
-        return config.ranks.at(ConfigManager::getConfig().defaultRankName).prefix;
-    }
-
-    return it->second.prefix;
+bool RankFormatsManager::isKnownLocaleCode(std::string_view localeCode, bool supportAll) {
+    return (localeCode == "ALL" && supportAll) || configs.find(std::string(localeCode)) != configs.end();
 }
 
-std::string RankFormatsManager::getChatFormat(const std::string& rankName, std::string_view localeCode) {
-    // todo: сделать генерацию rankFormats при запуске мода. Это гораздо эффективнее и лучше смотрится.
+std::string RankFormatsManager::getRawPrefixFormat(const std::string& rankName, const std::string& localeCode) {
+    const RankFormatsManager::ConfigInfo& configInfo = getConfig(localeCode);
+    return configInfo.config.ranks[rankName].prefix;
 }
 
-std::string RankFormatsManager::getScoreTagFormat(const std::string& rankName, std::string_view localeCode) {
-    const RankFormatsManager::Config& config = getConfig(localeCode).config;
+std::string RankFormatsManager::getRawChatFormat(const std::string& rankName, const std::string& localeCode) {
+    const RankFormatsManager::ConfigInfo& configInfo = getConfig(localeCode);
+    return configInfo.config.ranks[rankName].chat;
+}
 
-    auto it = config.ranks.find(rankName);
-    if (it == config.ranks.end()) {
-        return config.ranks.at(ConfigManager::getConfig().defaultRankName).scoreTag;
+std::string RankFormatsManager::getRawScoreTagFormat(const std::string& rankName, const std::string& localeCode) {
+    const RankFormatsManager::ConfigInfo& configInfo = getConfig(localeCode);
+    return configInfo.config.ranks[rankName].scoreTag;
+}
+
+std::string RankFormatsManager::getPrefixFormat(const std::string& rankName) {
+    return translator::api::generatePlaceholder(std::format("PowerRanks_{}_prefix", rankName));
+}
+
+std::string RankFormatsManager::getScoreTagFormat(const std::string& rankName) {
+    return translator::api::generatePlaceholder(std::format("PowerRanks_{}_scoreTag", rankName));
+}
+
+std::string RankFormatsManager::getChatFormat(
+    const std::string& rankName,
+    const std::string& playerName,
+    const std::string& message
+) {
+    const auto& prefixFormat         = getPrefixFormat(rankName);
+    const auto& temporaryPlaceholder = translator::api::generateTemporaryPlaceholder();
+
+    for (const auto& [localeCode, configInfo] : configs) {
+        const auto& rankFormat = configInfo.config.ranks[rankName];
+        const auto& chat       = Utils::strReplace(
+            rankFormat.chat,
+            {"{prefix}", "{playerName}", "{message}"},
+            {prefixFormat, playerName, message}
+        );
+
+        translator::api::setTemporaryPlaceholder(temporaryPlaceholder, chat, localeCode);
     }
 
-    return it->second.scoreTag;
+    return temporaryPlaceholder;
 }
 
 void RankFormatsManager::setRankFormat(
@@ -69,6 +93,9 @@ void RankFormatsManager::setRankFormat(
     const std::string& scoreTag,
     std::string_view   localeCode
 ) {
+    const auto& prefixPlaceholder   = getPrefixFormat(rankName);
+    const auto& scoreTagPlaceholder = getScoreTagFormat(rankName);
+
     if (localeCode == "ALL") {
         for (auto& [configLocaleCode, configInfo] : configs) {
             configInfo.config.ranks[rankName].prefix   = prefix;
@@ -76,6 +103,13 @@ void RankFormatsManager::setRankFormat(
             configInfo.config.ranks[rankName].scoreTag = scoreTag;
 
             ll::config::saveConfig(configInfo.config, configInfo.pathToConfig);
+
+            translator::api::setPlaceholder(prefixPlaceholder, prefix, configLocaleCode);
+            translator::api::setPlaceholder(
+                scoreTagPlaceholder,
+                Utils::strReplace(scoreTag, "{prefix}", prefix),
+                configLocaleCode
+            );
         }
         return;
     }
@@ -87,6 +121,36 @@ void RankFormatsManager::setRankFormat(
     configInfo.config.ranks[rankName].scoreTag = scoreTag;
 
     ll::config::saveConfig(configInfo.config, configInfo.pathToConfig);
+
+    translator::api::setPlaceholder(prefixPlaceholder, prefix, std::string(localeCode));
+    translator::api::setPlaceholder(
+        scoreTagPlaceholder,
+        Utils::strReplace(scoreTag, "{prefix}", prefix),
+        std::string(localeCode)
+    );
+}
+
+void RankFormatsManager::removeRankFormat(const std::string& rankName) {
+    for (auto& [localeCode, configInfo] : configs) {
+        configInfo.config.ranks.erase(rankName);
+        ll::config::saveConfig(configInfo.config, configInfo.pathToConfig);
+    }
+}
+
+void RankFormatsManager::generatePlaceholders() {
+    for (const auto& [localeCode, configInfo] : configs) {
+        for (const auto& [rankName, rankFormat] : configInfo.config.ranks) {
+            const auto& prefixPlaceholder   = getPrefixFormat(rankName);
+            const auto& scoreTagPlaceholder = getScoreTagFormat(rankName);
+
+            translator::api::setPlaceholder(prefixPlaceholder, rankFormat.prefix, localeCode);
+            translator::api::setPlaceholder(
+                scoreTagPlaceholder,
+                Utils::strReplace(rankFormat.scoreTag, "{prefix}", rankFormat.prefix),
+                localeCode
+            );
+        }
+    }
 }
 
 RankFormatsManager::ConfigInfo& RankFormatsManager::getConfig(std::string_view localeCode) {

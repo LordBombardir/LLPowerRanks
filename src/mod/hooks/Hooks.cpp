@@ -2,21 +2,16 @@
 #include "../manager/MainManager.h"
 #include "../manager/command/CommandManager.h"
 #include "../manager/config/ConfigManager.h"
-#include "../types/ChatFormattingEvent.h"
+#include "../manager/rankFormats/RankFormatsManager.h"
 #include "../utils/Utils.h"
-#include <ll/api/event/Emitter.h>
-#include <ll/api/event/EventBus.h>
 #include <ll/api/memory/Hook.h>
-#include <mc/deps/ecs/WeakEntityRef.h>
-#include <mc/deps/ecs/gamerefs_entity/EntityContext.h>
-#include <mc/deps/game_refs/GameRefs.h>
-#include <mc/deps/game_refs/WeakRef.h>
 #include <mc/network/ServerNetworkHandler.h>
 #include <mc/network/packet/SetLocalPlayerAsInitializedPacket.h>
 #include <mc/network/packet/TextPacket.h>
 #include <mc/server/ServerPlayer.h>
 #include <mc/server/commands/Command.h>
 #include <mc/server/commands/CommandOutput.h>
+#include <mc/world/events/ChatEvent.h>
 
 namespace power_ranks::hooks {
 
@@ -81,10 +76,6 @@ LL_TYPE_INSTANCE_HOOK(
     Player& player = const_cast<Player&>(sender);
 
     const types::Rank& rank = manager::MainManager::getPlayerRankOrSetDefault(player);
-
-    std::string chatFormat = rank.getChatFormat();
-    ll::event::EventBus::getInstance().publish(types::ChatFormattingEvent{player, rank, chatFormat, chatEvent});
-
     if (!manager::ConfigManager::getConfig().ranksWithColoredMessages.contains(rank.getName())) {
         chatEvent.mMessage = Utils::strTrim(Utils::clean(chatEvent.mMessage));
     }
@@ -93,12 +84,8 @@ LL_TYPE_INSTANCE_HOOK(
         return;
     }
 
-    chatEvent.mMessage = Utils::strReplace(
-        chatFormat,
-        {"{prefix}", "{playerName}", "{message}"},
-        {rank.getPrefix(), player.getRealName(), chatEvent.mMessage}
-    );
-
+    chatEvent.mMessage =
+        manager::RankFormatsManager::getChatFormat(rank.getName(), sender.getRealName(), chatEvent.mMessage);
     return origin(sender, chatEvent);
 }
 
@@ -123,15 +110,6 @@ void setupHooks() {
 
     DisplayGameMessageHook::hook();
     TextPacketCreateChatHook::hook();
-}
-
-static std::unique_ptr<ll::event::EmitterBase> emitterFactory();
-class DisplayGameMessageHookEmitter : public ll::event::Emitter<emitterFactory, types::ChatFormattingEvent> {
-    ll::memory::HookRegistrar<DisplayGameMessageHook> hook;
-};
-
-static std::unique_ptr<ll::event::EmitterBase> emitterFactory() {
-    return std::make_unique<DisplayGameMessageHookEmitter>();
 }
 
 } // namespace power_ranks::hooks

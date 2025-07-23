@@ -31,7 +31,7 @@ bool MainManager::initManagers(ll::mod::NativeMod& mod) {
     LanguageManager::init(mod);
     LanguageManager::addTranslations();
     bool rankFormatsInit = RankFormatsManager::init(mod);
-    bool ranksInit = RanksManager::init(mod);
+    bool ranksInit       = RanksManager::init(mod);
 
     return configInit && rankFormatsInit && ranksInit;
 }
@@ -103,7 +103,7 @@ void MainManager::setPlayerRankByXuid(const std::string& xuid, const types::Rank
 void MainManager::updatePlayerRank(Player& player) {
     const types::Rank& rank = getPlayerRankOrSetDefault(player);
 
-    setScoreTag(player, Utils::strReplace(rank.getScoreTagFormat(), "{prefix}", rank.getPrefix()));
+    setScoreTag(player, RankFormatsManager::getScoreTagFormat(rank.getName()));
 
     extraActions(rank, player);
     extraVanillaActions(player, rank);
@@ -114,7 +114,12 @@ void MainManager::setScoreTag(Player& player, const std::string& scoreTag) {
 }
 
 void MainManager::extraActions(const types::Rank& rank, const Player& player) {
-    AvailableCommandsPacket packet = translator::api::getAvailableCommandsPacket(player);
+    optional_ref<CommandRegistry> commandRegistry = ll::service::getCommandRegistry();
+    if (!commandRegistry) {
+        return;
+    }
+
+    AvailableCommandsPacket packet = std::move(commandRegistry->serializeAvailableCommands());
     for (AvailableCommandsPacket::CommandData& command : *packet.mCommands) {
         const auto& commandName = *command.name;
         if (rank.isCommandAvailable(commandName)) {

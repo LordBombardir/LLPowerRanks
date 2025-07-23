@@ -6,8 +6,8 @@ add_repositories("lordbombardir-repo https://github.com/LordBombardir/xmake-repo
 -- add_requires("levilamina x.x.x") for a specific version
 -- add_requires("levilamina develop") to use develop version
 -- please note that you should add bdslibrary yourself if using dev version
-add_requires("levilamina 1.4.0")
-add_requires("translatorapi 1.2.1")
+add_requires("levilamina 1.4.2")
+add_requires("translatorapi 1.2.2")
 add_requires("playerdb 1.0.1")
 add_requires("sqlitecpp")
 add_requires("nlohmann_json")
@@ -54,6 +54,5 @@ target("PowerRanks") -- Change this to your mod name.
         os.cp(path.join(os.projectdir(), "src", "mod", "Api.h"), includeDirectory)
         os.cp(path.join(os.projectdir(), "src", "mod", "types", "Rank.h"), typesDirectory)
         os.cp(path.join(os.projectdir(), "src", "mod", "types", "HiddenCommandOverloads.h"), typesDirectory)
-        os.cp(path.join(os.projectdir(), "src", "mod", "types", "ChatFormattingEvent.h"), typesDirectory)
         os.cp(path.join(os.projectdir(), "assets", "data"), path.join(path.join(binDirectory, target:name()), "data"))
     end)

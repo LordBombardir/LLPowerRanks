@@ -15,17 +15,19 @@ class EditRankCommand {
 public:
     struct FirstParameter {
         ll::command::SoftEnum<manager::CommandManager::RankNames> rankName;
+        std::string                                               localeCode;
+    };
+    
+    struct SecondParameter {
+        ll::command::SoftEnum<manager::CommandManager::RankNames> rankName;
         std::string                                               prefix;
-        std::string                                               chatFormat;
-        std::string                                               scoreTagFormat;
+        std::string                                               chat;
+        std::string                                               scoreTag;
+        std::string                                               localeCode;
         ll::command::SoftEnum<manager::CommandManager::RankNames> inheritanceRank;
         std::string                                               availableCommands;
         std::string                                               hiddenCommandOverloads;
         std::string                                               additionalInformation;
-    };
-
-    struct SecondParameter {
-        ll::command::SoftEnum<manager::CommandManager::RankNames> rankName;
     };
 
     static std::string getName() { return "editrank"; };

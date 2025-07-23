@@ -11,6 +11,31 @@ namespace power_ranks::manager {
 
 class RankFormatsManager final {
 public:
+    static bool init(ll::mod::NativeMod& mod);
+
+    static bool isKnownLocaleCode(std::string_view localeCode, bool supportAll = false);
+
+    static std::string getRawPrefixFormat(const std::string& rankName, const std::string& localeCode);
+    static std::string getRawChatFormat(const std::string& rankName, const std::string& localeCode);
+    static std::string getRawScoreTagFormat(const std::string& rankName, const std::string& localeCode);
+
+    static std::string getPrefixFormat(const std::string& rankName);
+    static std::string getScoreTagFormat(const std::string& rankName);
+
+    static std::string
+    getChatFormat(const std::string& rankName, const std::string& playerName, const std::string& message);
+
+    static void setRankFormat(
+        const std::string& rankName,
+        const std::string& prefix,
+        const std::string& chat,
+        const std::string& scoreTag,
+        std::string_view   localeCode = ConfigManager::getConfig().defaultLocaleCode
+    );
+
+    static void removeRankFormat(const std::string& rankName);
+
+private:
     struct RankFormat {
         std::string prefix;
         std::string chat;
@@ -30,36 +55,14 @@ public:
     };
     // clang-format on
 
-    static bool init(ll::mod::NativeMod& mod);
-
-    static std::string getPrefixFormat(
-        const std::string& rankName,
-        std::string_view   localeCode = ConfigManager::getConfig().defaultLocaleCode
-    );
-    static std::string getChatFormat(
-        const std::string& rankName,
-        std::string_view   localeCode = ConfigManager::getConfig().defaultLocaleCode
-    );
-    static std::string getScoreTagFormat(
-        const std::string& rankName,
-        std::string_view   localeCode = ConfigManager::getConfig().defaultLocaleCode
-    );
-
-    static void setRankFormat(
-        const std::string& rankName,
-        const std::string& prefix,
-        const std::string& chat,
-        const std::string& scoreTag,
-        std::string_view   localeCode = ConfigManager::getConfig().defaultLocaleCode
-    );
-
-private:
     struct ConfigInfo {
         std::filesystem::path pathToConfig;
         Config                config;
     };
 
     static std::unordered_map<std::string, ConfigInfo> configs;
+
+    static void generatePlaceholders();
 
     static ConfigInfo& getConfig(std::string_view localeCode = ConfigManager::getConfig().defaultLocaleCode);
 };

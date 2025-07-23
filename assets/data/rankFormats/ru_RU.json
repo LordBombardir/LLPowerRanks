@@ -2,27 +2,27 @@
     "version": 1,
     "ranks": {
         "Default": {
-            "prefix": "Player",
+            "prefix": "Игрок",
             "chat": "{prefix} {playerName}: {message}",
             "scoreTag": "{prefix}"
         },
         "Vip": {
-            "prefix": "V.I.P.",
+            "prefix": "ВИП",
             "chat": "{prefix} {playerName}: §b{message}",
             "scoreTag": "{prefix}"
         },
         "Creative": {
-            "prefix": "Creator",
+            "prefix": "Творец",
             "chat": "{prefix} {playerName}: §a{message}",
             "scoreTag": "{prefix}"
         },
         "Helper": {
-            "prefix": "Mini-boss",
+            "prefix": "Зам. босса",
             "chat": "{prefix} {playerName}: §l{message}",
             "scoreTag": "{prefix}"
         },
         "Administrator": {
-            "prefix": "BOSS",
+            "prefix": "Босс",
             "chat": "{prefix} {playerName}: §c§l{message}",
             "scoreTag": "{prefix}"
         }

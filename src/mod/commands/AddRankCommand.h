@@ -16,8 +16,8 @@ public:
     struct Parameter {
         std::string                                               rankName;
         std::string                                               prefix;
-        std::string                                               chatFormat;
-        std::string                                               scoreTagFormat;
+        std::string                                               chat;
+        std::string                                               scoreTag;
         ll::command::SoftEnum<manager::CommandManager::RankNames> inheritanceRank = "null";
     };
 

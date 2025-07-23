@@ -21,7 +21,7 @@ public:
 
     // clang-format off
     struct Config {
-        int version = 2;
+        int version = 3;
         nlohmann::ordered_map<std::string, Rank> ranks = {
             {ConfigManager::getConfig().defaultRankName, {}},
             {"Vip", {ConfigManager::getConfig().defaultRankName, {"home", "warp"}}},
@@ -34,6 +34,8 @@ public:
 
     static bool init(ll::mod::NativeMod& mod);
     static void dispose();
+
+    static nlohmann::ordered_map<std::string, types::Rank*> getOrderedRanks();
 
     static std::unordered_map<std::string, types::Rank*> getRanks();
     static std::optional<types::Rank*>                   getRank(const std::string& name);

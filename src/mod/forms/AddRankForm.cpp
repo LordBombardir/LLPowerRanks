@@ -1,8 +1,9 @@
 #include "AddRankForm.h"
-#include "../utils/Utils.h"
 #include "../manager/lang/LanguageManager.h"
+#include "../manager/rankFormats/RankFormatsManager.h"
 #include "../manager/ranks/RanksManager.h"
-#include <ll/api/form/CustomForm.h>
+#include "../utils/Utils.h"
+#include <nlohmann/json.hpp>
 
 namespace power_ranks::forms {
 
@@ -32,11 +33,16 @@ void AddRankForm::init(Player& player) {
         "{prefix}"
     );
 
-    std::vector<std::string> rankNames = {
-        manager::LanguageManager::getTranslate("dropdownDontPoint", player.getLocaleCode())
+    nlohmann::ordered_map<std::string, std::optional<const types::Rank*>> ranks = {
+        {manager::LanguageManager::getTranslate("dropdownDontPoint", player.getLocaleCode()), std::nullopt}
     };
-    for (const auto& [name, rank] : manager::RanksManager::getRanks()) {
-        rankNames.push_back(name + " - " + rank->getPrefix());
+    for (const auto& [name, rank] : manager::RanksManager::getOrderedRanks()) {
+        ranks[std::format("{} - {}", name, manager::RankFormatsManager::getPrefixFormat(rank->getName()))] = rank;
+    }
+
+    std::vector<std::string> rankNames = {};
+    for (const auto& rankName : ranks | std::views::keys) {
+        rankNames.push_back(rankName);
     }
 
     form.appendDropdown(
@@ -45,54 +51,54 @@ void AddRankForm::init(Player& player) {
         rankNames
     );
 
-    form.sendTo(player, &handle);
-}
+    form.sendTo(
+        player,
+        [ranks = std::move(
+             ranks
+         )](Player& player, const ll::form::CustomFormResult& result, ll::form::FormCancelReason reason) -> void {
+            if (reason.has_value()) {
+                return;
+            }
 
-void AddRankForm::handle(Player& player, const ll::form::CustomFormResult& result, ll::form::FormCancelReason reason) {
-    if (reason.has_value()) {
-        return;
-    }
+            std::string                       rankName;
+            std::string                       prefix;
+            std::string                       chatFormat;
+            std::string                       scoreTagFormat;
+            std::optional<const types::Rank*> inheritanceRank;
 
-    std::unordered_map<std::string, std::optional<types::Rank*>> availableRanks = {
-        {manager::LanguageManager::getTranslate("dropdownDontPoint", player.getLocaleCode()), std::nullopt}
-    };
-    for (const auto& [name, otherRank] : manager::RanksManager::getRanks()) {
-        availableRanks[(name + " - " + otherRank->getPrefix())] = otherRank;
-    }
+            try {
+                rankName        = std::get_if<std::string>(&result->at("rankName"))->data();
+                prefix          = std::get_if<std::string>(&result->at("prefix"))->data();
+                chatFormat      = std::get_if<std::string>(&result->at("chatFormat"))->data();
+                scoreTagFormat  = std::get_if<std::string>(&result->at("scoreTagFormat"))->data();
+                inheritanceRank = ranks[std::get_if<std::string>(&result->at("inheritanceRankName"))->data()];
+            } catch (...) {
+                player.sendMessage(manager::LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
+                return;
+            }
 
-    std::string                 rankName;
-    std::string                 prefix;
-    std::string                 chatFormat;
-    std::string                 scoreTagFormat;
-    std::optional<types::Rank*> inheritanceRank;
+            if (rankName.empty() || prefix.empty() || chatFormat.empty()) {
+                player.sendMessage(manager::LanguageManager::getTranslate("formIncorrectData", player.getLocaleCode()));
+                return;
+            }
 
-    try {
-        rankName        = std::get_if<std::string>(&result->at("rankName"))->data();
-        prefix          = std::get_if<std::string>(&result->at("prefix"))->data();
-        chatFormat      = std::get_if<std::string>(&result->at("chatFormat"))->data();
-        scoreTagFormat  = std::get_if<std::string>(&result->at("scoreTagFormat"))->data();
-        inheritanceRank = availableRanks[std::get_if<std::string>(&result->at("inheritanceRankName"))->data()];
-    } catch (...) {
-        player.sendMessage(manager::LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
-        return;
-    }
+            if (manager::RanksManager::getRank(rankName).has_value()) {
+                player.sendMessage(
+                    manager::LanguageManager::getTranslate("addRankAlreadyExists", player.getLocaleCode())
+                );
+                return;
+            }
 
-    if (rankName.empty() || prefix.empty() || chatFormat.empty()) {
-        player.sendMessage(manager::LanguageManager::getTranslate("formIncorrectData", player.getLocaleCode()));
-        return;
-    }
-
-    if (manager::RanksManager::getRank(rankName).has_value()) {
-        player.sendMessage(manager::LanguageManager::getTranslate("addRankAlreadyExists", player.getLocaleCode()));
-        return;
-    }
-
-    manager::RanksManager::addRank(rankName, prefix, chatFormat, scoreTagFormat, inheritanceRank);
-    player.sendMessage(Utils::strReplace(
-        manager::LanguageManager::getTranslate("addRankSuccess", player.getLocaleCode()),
-        "{rankName}",
-        rankName
-    ));
+            manager::RanksManager::addRank(rankName, prefix, chatFormat, scoreTagFormat, inheritanceRank);
+            player.sendMessage(
+                Utils::strReplace(
+                    manager::LanguageManager::getTranslate("addRankSuccess", player.getLocaleCode()),
+                    "{rankName}",
+                    rankName
+                )
+            );
+        }
+    );
 }
 
 } // namespace power_ranks::forms
