@@ -17,7 +17,7 @@
             "platform": "win-x64",
             "dependencies": {
                 "github.com/LiteLDev/LeviLamina": ">=1.4.2",
-                "github.com/LordBombardir/LLTranslatorApi": ">=1.2.2",
+                "github.com/LordBombardir/LLTranslatorApi": ">=1.2.3",
                 "github.com/LordBombardir/LLPlayerDB-Release": ">=1.0.1"
             },
             "assets": [
