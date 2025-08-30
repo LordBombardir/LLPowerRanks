@@ -110,8 +110,7 @@ void MainManager::updatePlayerRank(Player& player) {
 }
 
 void MainManager::setScoreTag(Player& player, const std::string& scoreTag) {
-    // https://github.com/LordBombardir/LLTranslatorApi/issues/2
-    // player.mEntityData->set(static_cast<ushort>(ActorDataIDs::Score), scoreTag);
+    player.mEntityData->set(static_cast<ushort>(ActorDataIDs::Score), scoreTag);
 }
 
 void MainManager::extraActions(const types::Rank& rank, const Player& player) {
