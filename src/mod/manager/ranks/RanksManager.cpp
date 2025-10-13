@@ -19,14 +19,17 @@ bool RanksManager::init(ll::mod::NativeMod& mod) {
         parseRanks();
 
         return result;
-    } catch (...) {}
+    } catch (const std::exception& e) {
+        mod.getLogger().error("Failed to load rank config: {}", e.what());
+    }
 
     try {
         bool result = ll::config::saveConfig(config, pathToConfig);
         parseRanks();
 
         return result;
-    } catch (...) {
+    } catch (const std::exception& e) {
+        mod.getLogger().error("Failed to save rank config: {}", e.what());
         return false;
     }
 }

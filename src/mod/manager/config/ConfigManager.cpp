@@ -6,15 +6,18 @@ namespace power_ranks::manager {
 ConfigManager::MainConfig ConfigManager::config;
 
 bool ConfigManager::init(ll::mod::NativeMod& mod) {
-    std::filesystem::path pathToConfig = mod.getDataDir() / "config.json";
+    const auto& pathToConfig = mod.getDataDir() / "config.json";
 
     try {
         return ll::config::loadConfig(config, pathToConfig);
-    } catch (...) {}
+    } catch (const std::exception& e) {
+        mod.getLogger().error("Failed to load config: {}", e.what());
+    }
 
     try {
         return ll::config::saveConfig(config, pathToConfig);
-    } catch (...) {
+    } catch (const std::exception& e) {
+        mod.getLogger().error("Failed to save config: {}", e.what());
         return false;
     }
 }

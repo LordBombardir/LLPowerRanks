@@ -22,7 +22,8 @@ bool RankFormatsManager::init(ll::mod::NativeMod& mod) {
 
         try {
             result = ll::config::loadConfig(config, entry.path());
-        } catch (...) {
+        } catch (const std::exception& e) {
+            mod.getLogger().error("Failed to load rank format config from {}: {}", entry.path(), e.what());
             return false;
         }
 
@@ -30,6 +31,7 @@ bool RankFormatsManager::init(ll::mod::NativeMod& mod) {
     }
 
     if (!configs.contains(ConfigManager::getConfig().defaultLocaleCode)) {
+        mod.getLogger().error("Failed to find default locale config: {}", ConfigManager::getConfig().defaultLocaleCode);
         return false;
     }
 

@@ -16,24 +16,33 @@
 #include <translator_api/Api.h>
 
 // wth mojang?
-AvailableCommandsPacket::EnumData::EnumData(const EnumData&)                                     = default;
-AvailableCommandsPacket::SoftEnumData::SoftEnumData(const SoftEnumData&)                         = default;
-AvailableCommandsPacket::ConstrainedValueData::ConstrainedValueData(const ConstrainedValueData&) = default;
-AvailableCommandsPacket::ParamData::ParamData(const ParamData&)                                  = default;
-AvailableCommandsPacket::OverloadData::OverloadData(const OverloadData&)                         = default;
-AvailableCommandsPacket::CommandData::CommandData(const CommandData&)                            = default;
+AvailableCommandsPacket::CommandData::CommandData(const CommandData&) = default;
 
 namespace power_ranks::manager {
 
 bool MainManager::initManagers(ll::mod::NativeMod& mod) {
     BaseManager::init(mod);
+
     bool configInit = ConfigManager::init(mod);
+    if (!configInit) {
+        mod.getLogger().error("Failed to init ConfigManager!");
+        return false;
+    }
+
     LanguageManager::init(mod);
     LanguageManager::addTranslations();
-    bool rankFormatsInit = RankFormatsManager::init(mod);
-    bool ranksInit       = RanksManager::init(mod);
 
-    return configInit && rankFormatsInit && ranksInit;
+    if (!RankFormatsManager::init(mod)) {
+        mod.getLogger().error("Failed to init RankFormatsManager!");
+        return false;
+    }
+
+    if (!RanksManager::init(mod)) {
+        mod.getLogger().error("Failed to init RanksManager!");
+        return false;
+    }
+
+    return true;
 }
 
 void MainManager::disposeManagers() { RanksManager::dispose(); }
@@ -56,7 +65,7 @@ const types::Rank& MainManager::getPlayerRankOrSetDefault(Player& player) {
 const types::Rank& MainManager::getPlayerRankOrSetDefault(const std::string& playerName) {
     auto entry = player_db::api::getPlayerEntryByName(playerName);
     if (!entry.has_value()) {
-        entry = player_db::api::addTemporaryPlayerEntry(playerName);
+        entry = player_db::api::addUnknownPlayerEntry(playerName);
     }
 
     if (const auto& rankName = BaseManager::getPlayerRank(entry->uuid); rankName.has_value()) {
@@ -79,7 +88,7 @@ void MainManager::setPlayerRank(Player& player, const types::Rank& rank) {
 void MainManager::setPlayerRankByName(const std::string& playerName, const types::Rank& rank) {
     auto entry = player_db::api::getPlayerEntryByName(playerName);
     if (!entry.has_value()) {
-        entry = player_db::api::addTemporaryPlayerEntry(playerName);
+        entry = player_db::api::addUnknownPlayerEntry(playerName);
     }
 
     BaseManager::setPlayerRank(entry->uuid, rank.getName());
@@ -91,7 +100,7 @@ void MainManager::setPlayerRankByName(const std::string& playerName, const types
 void MainManager::setPlayerRankByXuid(const std::string& xuid, const types::Rank& rank) {
     auto entry = player_db::api::getPlayerEntryByXuid(xuid);
     if (!entry.has_value()) {
-        entry = player_db::api::addTemporaryPlayerEntry("", xuid);
+        entry = player_db::api::addUnknownPlayerEntry("", xuid);
     }
 
     BaseManager::setPlayerRank(entry->uuid, rank.getName());
