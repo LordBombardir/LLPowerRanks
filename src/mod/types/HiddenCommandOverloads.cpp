@@ -4,16 +4,18 @@
 namespace power_ranks::types {
 
 std::string HiddenCommandOverloads::toString() const {
-    std::unordered_set<std::string> commandEntries;
+    std::vector<std::string> commandEntries;
+    commandEntries.reserve(data.size());
 
     for (const auto& [command, overloads] : data) {
-        std::unordered_set<std::string> overloadStrs;
+        std::vector<std::string> overloadStrs;
+        overloadStrs.reserve(overloads.size());
         for (int overload : overloads) {
-            overloadStrs.insert(std::to_string(overload));
+            overloadStrs.push_back(std::to_string(overload));
         }
 
         const auto& joinedOverloads = Utils::separateContainer(overloadStrs, ",");
-        commandEntries.insert(command + ":" + joinedOverloads);
+        commandEntries.push_back(command + ":" + joinedOverloads);
     }
 
     return Utils::separateContainer(commandEntries, ";");

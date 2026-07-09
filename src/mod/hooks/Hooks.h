@@ -1,7 +1,10 @@
 #pragma once
 
-namespace power_ranks::hooks {
+namespace power_ranks {
 
-void setupHooks();
+class Hooks final {
+public:
+    static void setup();
+};
 
-} // namespace power_ranks::hooks
+} // namespace power_ranks

@@ -1,4 +1,5 @@
 #include "Utils.h"
+
 #include <algorithm>
 #include <regex>
 #include <stdexcept>
@@ -12,17 +13,15 @@ std::string Utils::clean(const std::string& input, bool removeFormat) {
     string = removePrivateUseUnicode(string);
 
     if (removeFormat) {
-        static constexpr std::string_view MC_ESCAPE_CODE = "§";
-
-        std::regex formatCodeRegex(std::string(MC_ESCAPE_CODE) + "[0-9a-v]", std::regex::icase);
+        static const std::regex formatCodeRegex("§[0-9a-v]", std::regex::icase);
         string = std::regex_replace(string, formatCodeRegex, "");
 
-        std::regex loneEscapeRegex((std::string(MC_ESCAPE_CODE)));
+        static const std::regex loneEscapeRegex("§");
         string = std::regex_replace(string, loneEscapeRegex, "");
     }
 
     // Remove ANSI escape sequences like \x1b[31m
-    std::regex ansiRegex(R"(\x1b[\(\)\[\]0-9;]*[Bm])", std::regex::icase);
+    static const std::regex ansiRegex(R"(\x1b[\(\)\[\]0-9;]*[Bm])", std::regex::icase);
     string = std::regex_replace(string, ansiRegex, "");
 
     // Remove stray \x1b bytes
@@ -34,13 +33,16 @@ std::string
 Utils::strReplace(const std::string& originalStr, std::string_view whatNeedToReplace, std::string_view whatForReplace) {
     std::string result = originalStr;
 
+    strReplaceInPlace(result, whatNeedToReplace, whatForReplace);
+    return result;
+}
+
+void Utils::strReplaceInPlace(std::string& str, std::string_view whatNeedToReplace, std::string_view whatForReplace) {
     size_t pos = 0;
-    while ((pos = result.find(whatNeedToReplace, pos)) != std::string::npos) {
-        result.replace(pos, whatNeedToReplace.size(), whatForReplace);
+    while ((pos = str.find(whatNeedToReplace, pos)) != std::string::npos) {
+        str.replace(pos, whatNeedToReplace.size(), whatForReplace);
         pos += whatForReplace.size();
     }
-
-    return result;
 }
 
 std::string Utils::strReplace(
@@ -48,16 +50,13 @@ std::string Utils::strReplace(
     const std::vector<std::string>& whatNeedToReplace,
     const std::vector<std::string>& whatForReplace
 ) {
-    std::string result = originalStr;
     if (whatNeedToReplace.size() != whatForReplace.size()) {
         throw std::invalid_argument("Vectors «whatNeedToReplace» and «whatForReplace» must have the same size!");
     }
 
+    std::string result = originalStr;
     for (size_t i = 0; i < whatNeedToReplace.size(); ++i) {
-        const std::string& searchFor   = whatNeedToReplace[i];
-        const std::string& replaceWith = whatForReplace[i];
-
-        result = strReplace(result, searchFor, replaceWith);
+        strReplaceInPlace(result, whatNeedToReplace[i], whatForReplace[i]);
     }
 
     return result;
@@ -93,8 +92,9 @@ std::string Utils::strTrim(std::string_view str) {
 
 std::string Utils::removePrivateUseUnicode(std::string_view input) {
     std::string output;
-    size_t      i = 0;
+    output.reserve(input.size());
 
+    size_t i = 0;
     while (i < input.size()) {
         unsigned char c         = input[i];
         uint32_t      codepoint = 0;
@@ -112,7 +112,7 @@ std::string Utils::removePrivateUseUnicode(std::string_view input) {
         } else if ((c & 0xF8) == 0xF0 && i + 3 < input.size()) {
             codepoint = ((c & 0x07) << 18) | ((input[i + 1] & 0x3F) << 12) | ((input[i + 2] & 0x3F) << 6)
                       | (input[i + 3] & 0x3F);
-            len = 4;
+            len       = 4;
         } else {
             // Invalid UTF-8 sequence
             ++i;

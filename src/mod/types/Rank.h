@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HiddenCommandOverloads.h"
+
 #include <optional>
 
 namespace power_ranks::types {
@@ -13,7 +14,7 @@ public:
         const std::optional<const Rank*>&      inheritanceRank        = std::nullopt,
         const std::unordered_set<std::string>& availableCommands      = {},
         const HiddenCommandOverloads&          hiddenCommandOverloads = {},
-        const std::vector<std::string>         additionalInformation  = {}
+        const std::vector<std::string>&        additionalInformation  = {}
     )
     : priority(priority),
       name(name),
@@ -23,7 +24,7 @@ public:
       additionalInformation(additionalInformation) {}
     ~Rank() = default;
 
-    std::string                            getName() const { return name; }
+    const std::string&                     getName() const { return name; }
     const std::optional<const Rank*>&      getInheritanceRank() const { return inheritanceRank; }
     const std::unordered_set<std::string>& getAvailableCommands() const { return availableCommands; }
     const HiddenCommandOverloads&          getHiddenCommandOverloads() const { return hiddenCommandOverloads; }

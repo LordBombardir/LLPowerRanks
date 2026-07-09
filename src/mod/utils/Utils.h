@@ -11,6 +11,9 @@ public:
     static std::string
     strReplace(const std::string& originalStr, std::string_view whatNeedToReplace, std::string_view whatForReplace);
 
+    static void
+    strReplaceInPlace(std::string& str, std::string_view whatNeedToReplace, std::string_view whatForReplace);
+
     static std::string strReplace(
         const std::string&              originalStr,
         const std::vector<std::string>& whatNeedToReplace,
@@ -27,12 +30,22 @@ public:
             return "";
         }
 
+        size_t total_size = 0;
+        for (const auto& str : container) {
+            total_size += std::string_view(str).size();
+        }
+        total_size += separator.size() * (container.size() - 1);
+
         std::string result;
-        for (auto [index, str] : std::views::enumerate(container)) {
+        result.reserve(total_size);
+
+        size_t index = 0;
+        for (const auto& str : container) {
             result += str;
-            if (static_cast<size_t>(index) + 1 < container.size()) {
+            if (index + 1 < container.size()) {
                 result += separator;
             }
+            index++;
         }
 
         return result;

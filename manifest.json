@@ -3,9 +3,11 @@
     "entry": "${modFile}",
     "version": "${modVersion}",
     "type": "native",
+    "author": "LordBombardir",
+    "platform": "${modPlatform}",
     "dependencies": [
         {
-            "name": "TranslatorApi"
+            "name": "PlaceholderApi"
         },
         {
             "name": "PlayerDB"

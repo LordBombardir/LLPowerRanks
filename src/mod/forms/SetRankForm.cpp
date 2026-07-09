@@ -1,16 +1,17 @@
 #include "SetRankForm.h"
-#include "../manager/MainManager.h"
-#include "../manager/lang/LanguageManager.h"
-#include "../manager/rankFormats/RankFormatsManager.h"
-#include "../manager/ranks/RanksManager.h"
+#include "../config/ConfigManager.h"
+#include "../core/MainManager.h"
+#include "../lang/LanguageManager.h"
+#include "../rankFormats/RankFormatsManager.h"
+#include "../ranks/RanksManager.h"
 #include "../utils/Utils.h"
+
 #include <mc/world/level/Level.h>
-#include <variant>
 
 namespace power_ranks::forms {
 
 void SetRankForm::init(Player& player) {
-    ll::form::CustomForm form(manager::LanguageManager::getTranslate("formSetRankTitle", player.getLocaleCode()));
+    ll::form::CustomForm form(LanguageManager::getTranslate("formSetRankTitle", player.getLocaleCode()));
 
     std::vector<std::string> playerNames = {};
     player.getLevel().forEachPlayer([&playerNames](Player& otherPlayer) -> bool {
@@ -20,13 +21,13 @@ void SetRankForm::init(Player& player) {
 
     form.appendDropdown(
         "playerName",
-        manager::LanguageManager::getTranslate("formSetRankDropdownPlayers", player.getLocaleCode()),
+        LanguageManager::getTranslate("formSetRankDropdownPlayers", player.getLocaleCode()),
         playerNames
     );
 
     nlohmann::ordered_map<std::string, const types::Rank*> ranks = {};
-    for (const auto& [name, rank] : manager::RanksManager::getOrderedRanks()) {
-        ranks[std::format("{} - {}", name, manager::RankFormatsManager::getPrefixFormat(rank->getName()))] = rank;
+    for (const auto& [name, rank] : RanksManager::getOrderedRanks()) {
+        ranks[std::format("{} - {}", name, RankFormatsManager::getPrefixFormat(rank->getName()))] = rank;
     }
 
     std::vector<std::string> rankNames = {};
@@ -36,7 +37,7 @@ void SetRankForm::init(Player& player) {
 
     form.appendDropdown(
         "rankName",
-        manager::LanguageManager::getTranslate("formSetRankDropdownRanks", player.getLocaleCode()),
+        LanguageManager::getTranslate("formSetRankDropdownRanks", player.getLocaleCode()),
         rankNames
     );
 
@@ -53,17 +54,17 @@ void SetRankForm::init(Player& player) {
             const types::Rank* rank;
 
             try {
-                playerName = std::get_if<std::string>(&result->at("playerName"))->data();
-                rank       = ranks[std::get_if<std::string>(&result->at("rankName"))->data()];
+                playerName = std::get<std::string>(result->at("playerName"));
+                rank       = ranks[std::get<std::string>(result->at("rankName"))];
             } catch (...) {
-                player.sendMessage(manager::LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
+                player.sendMessage(LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
                 return;
             }
 
-            if (manager::ConfigManager::getConfig().superPlayers.contains(playerName)) {
+            if (ConfigManager::getConfig().superPlayers.contains(playerName)) {
                 player.sendMessage(
                     Utils::strReplace(
-                        manager::LanguageManager::getTranslate("setRankSuperPlayer", player.getLocaleCode()),
+                        LanguageManager::getTranslate("setRankSuperPlayer", player.getLocaleCode()),
                         "{playerName}",
                         playerName
                     )
@@ -71,20 +72,20 @@ void SetRankForm::init(Player& player) {
                 return;
             }
 
-            if (manager::ConfigManager::getConfig().superRanks.contains(rank->getName())) {
-                player.sendMessage(manager::LanguageManager::getTranslate("setRankSuperRank", player.getLocaleCode()));
+            if (ConfigManager::getConfig().superRanks.contains(rank->getName())) {
+                player.sendMessage(LanguageManager::getTranslate("setRankSuperRank", player.getLocaleCode()));
                 return;
             }
 
             if (Player* otherPlayer = player.getLevel().getPlayer(playerName); otherPlayer != nullptr) {
-                manager::MainManager::setPlayerRank(*otherPlayer, *rank);
+                MainManager::setPlayerRank(*otherPlayer, *rank);
             } else {
-                manager::MainManager::setPlayerRankByName(playerName, *rank);
+                MainManager::setPlayerRankByName(playerName, *rank);
             }
 
             player.sendMessage(
                 Utils::strReplace(
-                    manager::LanguageManager::getTranslate("setRankSuccess", player.getLocaleCode()),
+                    LanguageManager::getTranslate("setRankSuccess", player.getLocaleCode()),
                     {"{playerName}", "{rankName}"},
                     {playerName, rank->getName()}
                 )

@@ -2,10 +2,10 @@
     "format_version": 3,
     "format_uuid": "289f771f-2c9a-4d73-9f3f-8492495a924d",
     "tooth": "github.com/LordBombardir/LLPowerRanks",
-    "version": "1.1.4",
+    "version": "26.20.0",
     "info": {
         "name": "PowerRanks",
-        "description": "A mod that adds a rank (privilege) system to the game",
+        "description": "A mod that adds a rank (privilege) system to the game.",
         "tags": [
             "platform:levilamina",
             "type:mod"
@@ -16,21 +16,57 @@
             "label": "",
             "platform": "win-x64",
             "dependencies": {
-                "github.com/LiteLDev/LeviLamina": ">=1.6.0",
-                "github.com/LordBombardir/LLTranslatorApi": ">=1.2.8",
-                "github.com/LordBombardir/LLPlayerDB-Release": ">=1.1.0"
+                "github.com/LiteLDev/LeviLamina": ">=26.20.*",
+                "github.com/LordBombardir/LLPlaceholderApi": ">=26.20.*",
+                "github.com/LordBombardir/LLPlayerDB-Release": ">=26.20.*"
             },
             "assets": [
                 {
                     "type": "zip",
                     "urls": [
-                        "https://{{tooth}}/releases/download/v{{version}}/LLPowerRanks-windows-x64.zip"
+                        "https://{{tooth}}/releases/download/v{{version}}/LLPowerRanks-v{{version}}-server-release-windows-x64.zip"
                     ],
                     "placements": [
                         {
                             "type": "dir",
                             "src": "PowerRanks/",
                             "dest": "plugins/PowerRanks/"
+                        }
+                    ]
+                }
+            ],
+            "preserve_files": [],
+            "remove_files": [],
+            "scripts": {
+                "pre_install": [],
+                "install": [],
+                "post_install": [],
+                "pre_pack": [],
+                "post_pack": [],
+                "pre_uninstall": [],
+                "uninstall": [],
+                "post_uninstall": []
+            }
+        },
+        {
+            "label": "client",
+            "platform": "win-x64",
+            "dependencies": {
+                "github.com/LiteLDev/LeviLamina#client": ">=26.20.*",
+                "github.com/LordBombardir/LLPlaceholderApi#client": ">=26.20.*",
+                "github.com/LordBombardir/LLPlayerDB-Release#client": ">=26.20.*"
+            },
+            "assets": [
+                {
+                    "type": "zip",
+                    "urls": [
+                        "https://{{tooth}}/releases/download/v{{version}}/LLPowerRanks-v{{version}}-client-release-windows-x64.zip"
+                    ],
+                    "placements": [
+                        {
+                            "type": "dir",
+                            "src": "PowerRanks/",
+                            "dest": "mods/PowerRanks/"
                         }
                     ]
                 }

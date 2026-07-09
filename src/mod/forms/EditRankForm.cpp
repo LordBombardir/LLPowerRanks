@@ -1,8 +1,9 @@
 #include "EditRankForm.h"
-#include "../manager/lang/LanguageManager.h"
-#include "../manager/rankFormats/RankFormatsManager.h"
-#include "../manager/ranks/RanksManager.h"
+#include "../lang/LanguageManager.h"
+#include "../rankFormats/RankFormatsManager.h"
+#include "../ranks/RanksManager.h"
 #include "../utils/Utils.h"
+
 #include <nlohmann/json.hpp>
 
 namespace power_ranks::forms {
@@ -10,7 +11,7 @@ namespace power_ranks::forms {
 void EditRankForm::init(Player& player, types::Rank* rank, const std::string& localeCode) {
     ll::form::CustomForm form(
         Utils::strReplace(
-            manager::LanguageManager::getTranslate("formEditRankTitle", player.getLocaleCode()),
+            LanguageManager::getTranslate("formEditRankTitle", player.getLocaleCode()),
             "{rankName}",
             rank->getName()
         )
@@ -18,7 +19,7 @@ void EditRankForm::init(Player& player, types::Rank* rank, const std::string& lo
 
     form.appendLabel(
         Utils::strReplace(
-            manager::LanguageManager::getTranslate("formEditRankLabel", player.getLocaleCode()),
+            LanguageManager::getTranslate("formEditRankLabel", player.getLocaleCode()),
             "{localeCode}",
             localeCode
         )
@@ -26,28 +27,28 @@ void EditRankForm::init(Player& player, types::Rank* rank, const std::string& lo
 
     form.appendInput(
         "prefix",
-        manager::LanguageManager::getTranslate("formEditRankInputPrefix", player.getLocaleCode()),
-        manager::LanguageManager::getTranslate("formEditRankInputPrefixPlaceholder", player.getLocaleCode()),
-        manager::RankFormatsManager::getRawPrefixFormat(rank->getName(), localeCode)
+        LanguageManager::getTranslate("formEditRankInputPrefix", player.getLocaleCode()),
+        LanguageManager::getTranslate("formEditRankInputPrefixPlaceholder", player.getLocaleCode()),
+        RankFormatsManager::getRawPrefixFormat(rank->getName(), localeCode)
     );
     form.appendInput(
         "chatFormat",
-        manager::LanguageManager::getTranslate("formEditRankInputChatFormat", player.getLocaleCode()),
-        manager::LanguageManager::getTranslate("formEditRankInputChatFormatPlaceholder", player.getLocaleCode()),
-        manager::RankFormatsManager::getRawChatFormat(rank->getName(), localeCode)
+        LanguageManager::getTranslate("formEditRankInputChatFormat", player.getLocaleCode()),
+        LanguageManager::getTranslate("formEditRankInputChatFormatPlaceholder", player.getLocaleCode()),
+        RankFormatsManager::getRawChatFormat(rank->getName(), localeCode)
     );
     form.appendInput(
         "scoreTagFormat",
-        manager::LanguageManager::getTranslate("formEditRankInputScoreTagFormat", player.getLocaleCode()),
-        manager::LanguageManager::getTranslate("formEditRankInputScoreTagFormatPlaceholder", player.getLocaleCode()),
-        manager::RankFormatsManager::getRawScoreTagFormat(rank->getName(), localeCode)
+        LanguageManager::getTranslate("formEditRankInputScoreTagFormat", player.getLocaleCode()),
+        LanguageManager::getTranslate("formEditRankInputScoreTagFormatPlaceholder", player.getLocaleCode()),
+        RankFormatsManager::getRawScoreTagFormat(rank->getName(), localeCode)
     );
 
     nlohmann::ordered_map<std::string, std::optional<const types::Rank*>> ranks = {
-        {manager::LanguageManager::getTranslate("dropdownDontPoint", player.getLocaleCode()), std::nullopt}
+        {LanguageManager::getTranslate("dropdownDontPoint", player.getLocaleCode()), std::nullopt}
     };
-    for (const auto& [name, rank] : manager::RanksManager::getOrderedRanks()) {
-        ranks[std::format("{} - {}", name, manager::RankFormatsManager::getPrefixFormat(rank->getName()))] = rank;
+    for (const auto& [name, r] : RanksManager::getOrderedRanks()) {
+        ranks[std::format("{} - {}", name, RankFormatsManager::getPrefixFormat(r->getName()))] = r;
     }
 
     const auto& inheritanceRank = rank->getInheritanceRank();
@@ -56,8 +57,8 @@ void EditRankForm::init(Player& player, types::Rank* rank, const std::string& lo
     std::vector<std::string> rankNames = {};
 
     size_t currentIndex = 0;
-    for (const auto& [rankName, rank] : ranks) {
-        if (inheritanceRank.has_value() && rank.has_value() && *inheritanceRank == *rank) {
+    for (const auto& [rankName, r] : ranks) {
+        if (inheritanceRank.has_value() && r.has_value() && *inheritanceRank == *r) {
             index = currentIndex;
         }
 
@@ -67,32 +68,26 @@ void EditRankForm::init(Player& player, types::Rank* rank, const std::string& lo
 
     form.appendDropdown(
         "inheritanceRankName",
-        manager::LanguageManager::getTranslate("formEditRankDropdownInheritanceRanks", player.getLocaleCode()),
+        LanguageManager::getTranslate("formEditRankDropdownInheritanceRanks", player.getLocaleCode()),
         rankNames,
         index
     );
     form.appendInput(
         "availableCommands",
-        manager::LanguageManager::getTranslate("formEditRankInputAvailableCommands", player.getLocaleCode()),
-        manager::LanguageManager::getTranslate("formEditRankInputAvailableCommandsPlaceholder", player.getLocaleCode()),
+        LanguageManager::getTranslate("formEditRankInputAvailableCommands", player.getLocaleCode()),
+        LanguageManager::getTranslate("formEditRankInputAvailableCommandsPlaceholder", player.getLocaleCode()),
         Utils::separateContainer(rank->getAvailableCommands(), ";")
     );
     form.appendInput(
         "hiddenCommandOverloads",
-        manager::LanguageManager::getTranslate("formEditRankInputHiddenCommandOverloads", player.getLocaleCode()),
-        manager::LanguageManager::getTranslate(
-            "formEditRankInputHiddenCommandOverloadsPlaceholder",
-            player.getLocaleCode()
-        ),
+        LanguageManager::getTranslate("formEditRankInputHiddenCommandOverloads", player.getLocaleCode()),
+        LanguageManager::getTranslate("formEditRankInputHiddenCommandOverloadsPlaceholder", player.getLocaleCode()),
         rank->getHiddenCommandOverloads().toString()
     );
     form.appendInput(
         "additionalInformation",
-        manager::LanguageManager::getTranslate("formEditRankInputAdditionalInformation", player.getLocaleCode()),
-        manager::LanguageManager::getTranslate(
-            "formEditRankInputAdditionalInformationPlaceholder",
-            player.getLocaleCode()
-        ),
+        LanguageManager::getTranslate("formEditRankInputAdditionalInformation", player.getLocaleCode()),
+        LanguageManager::getTranslate("formEditRankInputAdditionalInformationPlaceholder", player.getLocaleCode()),
         Utils::separateContainer(rank->getAdditionalInformation(), ";")
     );
 
@@ -116,20 +111,20 @@ void EditRankForm::init(Player& player, types::Rank* rank, const std::string& lo
             std::string                       additionalInformation;
 
             try {
-                prefix                 = std::get_if<std::string>(&result->at("prefix"))->data();
-                chatFormat             = std::get_if<std::string>(&result->at("chatFormat"))->data();
-                scoreTagFormat         = std::get_if<std::string>(&result->at("scoreTagFormat"))->data();
-                inheritanceRank        = ranks[std::get_if<std::string>(&result->at("inheritanceRankName"))->data()];
-                availableCommands      = std::get_if<std::string>(&result->at("availableCommands"))->data();
-                hiddenCommandOverloads = std::get_if<std::string>(&result->at("hiddenCommandOverloads"))->data();
-                additionalInformation  = std::get_if<std::string>(&result->at("additionalInformation"))->data();
+                prefix                 = std::get<std::string>(result->at("prefix"));
+                chatFormat             = std::get<std::string>(result->at("chatFormat"));
+                scoreTagFormat         = std::get<std::string>(result->at("scoreTagFormat"));
+                inheritanceRank        = ranks[std::get<std::string>(result->at("inheritanceRankName"))];
+                availableCommands      = std::get<std::string>(result->at("availableCommands"));
+                hiddenCommandOverloads = std::get<std::string>(result->at("hiddenCommandOverloads"));
+                additionalInformation  = std::get<std::string>(result->at("additionalInformation"));
             } catch (...) {
-                player.sendMessage(manager::LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
+                player.sendMessage(LanguageManager::getTranslate("undefinedError", player.getLocaleCode()));
                 return;
             }
 
             if (prefix.empty() || chatFormat.empty()) {
-                player.sendMessage(manager::LanguageManager::getTranslate("formIncorrectData", player.getLocaleCode()));
+                player.sendMessage(LanguageManager::getTranslate("formIncorrectData", player.getLocaleCode()));
                 return;
             }
 
@@ -137,10 +132,7 @@ void EditRankForm::init(Player& player, types::Rank* rank, const std::string& lo
             if (availableCommands != "null"
                 && (availableCommandsVector.empty() || availableCommandsVector.front().empty())) {
                 player.sendMessage(
-                    manager::LanguageManager::getTranslate(
-                        "editRankInvalidFormatAvailableCommands",
-                        player.getLocaleCode()
-                    )
+                    LanguageManager::getTranslate("editRankInvalidFormatAvailableCommands", player.getLocaleCode())
                 );
                 return;
             }
@@ -149,10 +141,7 @@ void EditRankForm::init(Player& player, types::Rank* rank, const std::string& lo
             if (additionalInformation != "null"
                 && (additionalInformationVector.empty() || additionalInformationVector.front().empty())) {
                 player.sendMessage(
-                    manager::LanguageManager::getTranslate(
-                        "editRankInvalidFormatAdditionalInformation",
-                        player.getLocaleCode()
-                    )
+                    LanguageManager::getTranslate("editRankInvalidFormatAdditionalInformation", player.getLocaleCode())
                 );
                 return;
             }
@@ -174,15 +163,15 @@ void EditRankForm::init(Player& player, types::Rank* rank, const std::string& lo
             if (additionalInformation != "null") {
                 rank->setAdditionalInformation(additionalInformationVector);
             } else {
-                rank->setAvailableCommands({});
+                rank->setAdditionalInformation({});
             }
 
-            manager::RankFormatsManager::setRankFormat(rank->getName(), prefix, chatFormat, scoreTagFormat, localeCode);
-            manager::RanksManager::saveChangesRank(*rank);
+            RankFormatsManager::setRankFormat(rank->getName(), prefix, chatFormat, scoreTagFormat, localeCode);
+            RanksManager::saveChangesRank(*rank);
 
             player.sendMessage(
                 Utils::strReplace(
-                    manager::LanguageManager::getTranslate("editRankSuccess", player.getLocaleCode()),
+                    LanguageManager::getTranslate("editRankSuccess", player.getLocaleCode()),
                     "{rankName}",
                     rank->getName()
                 )

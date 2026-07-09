@@ -1,35 +1,20 @@
 #include "Hooks.h"
-#include "../manager/MainManager.h"
-#include "../manager/command/CommandManager.h"
-#include "../manager/config/ConfigManager.h"
-#include "../manager/rankFormats/RankFormatsManager.h"
+#include "../commands/CommandManager.h"
+#include "../config/ConfigManager.h"
+#include "../core/MainManager.h"
+#include "../rankFormats/RankFormatsManager.h"
 #include "../utils/Utils.h"
+
+#include "../Main.h"
+
 #include <ll/api/memory/Hook.h>
-#include <mc/network/ServerNetworkHandler.h>
-#include <mc/network/packet/SetLocalPlayerAsInitializedPacket.h>
 #include <mc/network/packet/TextPacket.h>
+#include <mc/network/packet/TextPacketPayload.h>
 #include <mc/server/ServerPlayer.h>
 #include <mc/server/commands/Command.h>
 #include <mc/server/commands/CommandOutput.h>
-#include <mc/world/events/ChatEvent.h>
 
-namespace power_ranks::hooks {
-
-LL_TYPE_INSTANCE_HOOK(
-    PlayerJoinHook,
-    HookPriority::Normal,
-    ServerNetworkHandler,
-    &ServerNetworkHandler::$handle,
-    void,
-    const NetworkIdentifier&                 identifier,
-    const SetLocalPlayerAsInitializedPacket& packet
-) {
-    if (ServerPlayer* player = thisFor<NetEventCallback>()->_getServerPlayer(identifier, packet.mSenderSubId); player) {
-        manager::MainManager::updatePlayerRank(*player);
-    }
-
-    origin(identifier, packet);
-}
+namespace power_ranks {
 
 LL_TYPE_INSTANCE_HOOK(
     CommandRunHook,
@@ -46,8 +31,8 @@ LL_TYPE_INSTANCE_HOOK(
 
     ServerPlayer& player = static_cast<ServerPlayer&>(*commandOrigin.getEntity());
 
-    if (!manager::CommandManager::isCommandAvailable(commandOrigin, mFlags, mPermissionLevel)) {
-        const types::Rank& rank = manager::MainManager::getPlayerRankOrSetDefault(player);
+    if (!CommandManager::isCommandAvailable(commandOrigin, mFlags, mPermissionLevel)) {
+        const types::Rank& rank = MainManager::getPlayerRankOrSetDefault(player);
         if (!rank.isCommandAvailable(getCommandName())) {
             output.addMessage(
                 "commands.generic.unknown",
@@ -58,58 +43,51 @@ LL_TYPE_INSTANCE_HOOK(
         }
     }
 
-    // TODO: implement CommandRunStats...
-
     execute(commandOrigin, output);
     return sendTelemetry(commandOrigin, output);
 }
 
-LL_TYPE_INSTANCE_HOOK(
-    DisplayGameMessageHook,
-    HookPriority::Normal,
-    ServerNetworkHandler,
-    &ServerNetworkHandler::_displayGameMessage,
-    void,
-    const Player& sender,
-    ChatEvent&    chatEvent
-) {
-    Player& player = const_cast<Player&>(sender);
-
-    const types::Rank& rank = manager::MainManager::getPlayerRankOrSetDefault(player);
-    if (!manager::ConfigManager::getConfig().ranksWithColoredMessages.contains(rank.getName())) {
-        chatEvent.mMessage = Utils::strTrim(Utils::clean(chatEvent.mMessage));
-    }
-
-    if (chatEvent.mMessage->empty()) {
-        return;
-    }
-
-    chatEvent.mMessage =
-        manager::RankFormatsManager::getChatFormat(rank.getName(), sender.getRealName(), chatEvent.mMessage);
-    return origin(sender, chatEvent);
-}
-
 LL_TYPE_STATIC_HOOK(
-    TextPacketCreateChatHook,
-    HookPriority::Normal,
+    CreateChatHook,
+    static_cast<HookPriority>(50),
     TextPacket,
     &TextPacket::createChat,
     TextPacket,
-    [[maybe_unused]] const std::string& author,
-    const std::string&                  message,
-    std::optional<std::string>          filteredMessage,
-    const std::string&                  xuid,
-    const std::string&                  platformId
+    const std::string&         author,
+    const std::string&         message,
+    std::optional<std::string> filteredMessage,
+    const std::string&         xuid,
+    const std::string&         platformId
 ) {
-    return origin("", message, filteredMessage, xuid, platformId);
+    Main::getInstance().getSelf().getLogger().info("Author: {}, message: \"{}\"", author, message);
+
+    if (author.empty()) {
+        return origin(author, message, filteredMessage, xuid, platformId);
+    }
+
+    if (author.find("§") != std::string::npos) {
+        return origin("", message, filteredMessage, xuid, platformId);
+    }
+
+    const types::Rank& rank = MainManager::getPlayerRankOrSetDefault(author);
+
+    std::string cleanMessage = message;
+    if (!ConfigManager::getConfig().ranksWithColoredMessages.contains(rank.getName())) {
+        cleanMessage = Utils::strTrim(Utils::clean(cleanMessage));
+    }
+
+    if (cleanMessage.empty()) {
+        return {};
+    }
+
+    cleanMessage = RankFormatsManager::getChatFormat(rank.getName(), author, cleanMessage);
+    return origin("", cleanMessage, filteredMessage, xuid, platformId);
 }
 
-void setupHooks() {
-    PlayerJoinHook::hook();
+void Hooks::setup() {
     CommandRunHook::hook();
 
-    DisplayGameMessageHook::hook();
-    TextPacketCreateChatHook::hook();
+    CreateChatHook::hook();
 }
 
-} // namespace power_ranks::hooks
+} // namespace power_ranks
