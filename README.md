@@ -14,9 +14,8 @@ For each rank, you can make your own player's *scoretag* format. To do this, you
 # What's under the hood?
 And under the hood we have:
 * Optimized and high-speed code in *C++*
-* Language Configuration Manager (used by [i18n](https://github.com/LiteLDev/LeviLamina/blob/develop/src/ll/api/i18n)). Folder with languages - *languages*
+* Language Configuration Manager (used by [i18n](https://github.com/LiteLDev/LeviLamina/tree/main/src/ll/api/i18n/)). Folder with languages - *languages*
 * *JSON* type rank configuration manager. The name of the configuration file is *ranks.json*
 * Manager of the main configuration of the *JSON* type mod. The name of the configuration file is *config.json*
 * Database management manager of the *LevelDB* type. It stores player data, namely, the player's UUID, provided by [PlayerDB](https://github.com/LordBombardir/LLPlayerDB-Release), and his rank
 * The main manager of the mod, registering the `addrank` and `setrank` commands, as well as managing the issue of rank to the player
-* Hooks, one of which modifies the contents of the `AvailableCommandsPacket` when it is sent

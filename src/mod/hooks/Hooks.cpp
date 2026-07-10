@@ -5,8 +5,6 @@
 #include "../rankFormats/RankFormatsManager.h"
 #include "../utils/Utils.h"
 
-#include "../Main.h"
-
 #include <ll/api/memory/Hook.h>
 #include <mc/network/packet/TextPacket.h>
 #include <mc/network/packet/TextPacketPayload.h>
@@ -59,8 +57,6 @@ LL_TYPE_STATIC_HOOK(
     const std::string&         xuid,
     const std::string&         platformId
 ) {
-    Main::getInstance().getSelf().getLogger().info("Author: {}, message: \"{}\"", author, message);
-
     if (author.empty()) {
         return origin(author, message, filteredMessage, xuid, platformId);
     }
