@@ -1,5 +1,5 @@
 #include "HiddenCommandOverloads.h"
-#include "../utils/Utils.h"
+#include "utils/Utils.h"
 
 namespace power_ranks::types {
 

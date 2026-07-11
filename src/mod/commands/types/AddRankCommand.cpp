@@ -1,8 +1,8 @@
 #include "AddRankCommand.h"
-#include "../../config/ConfigManager.h"
-#include "../../forms/AddRankForm.h"
-#include "../../ranks/RanksManager.h"
-#include "../../utils/Utils.h"
+#include "config/ConfigManager.h"
+#include "forms/AddRankForm.h"
+#include "ranks/RanksManager.h"
+#include "utils/Utils.h"
 
 #include <mc/server/ServerPlayer.h>
 

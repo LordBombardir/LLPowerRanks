@@ -1,6 +1,6 @@
 #include "RankFormatsManager.h"
-#include "../config/types/Config.h"
-#include "../utils/Utils.h"
+#include "config/types/Config.h"
+#include "utils/Utils.h"
 
 #include <ll/api/Config.h>
 #include <mc/deps/crypto/hash/Hash.h>

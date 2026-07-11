@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../types/Rank.h"
+#include "types/Rank.h"
+
 #include <ll/api/form/CustomForm.h>
 
 namespace power_ranks::forms {

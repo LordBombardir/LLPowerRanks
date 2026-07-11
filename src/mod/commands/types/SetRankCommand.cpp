@@ -1,9 +1,9 @@
 #include "SetRankCommand.h"
-#include "../../config/ConfigManager.h"
-#include "../../core/MainManager.h"
-#include "../../forms/SetRankForm.h"
-#include "../../ranks/RanksManager.h"
-#include "../../utils/Utils.h"
+#include "config/ConfigManager.h"
+#include "core/MainManager.h"
+#include "forms/SetRankForm.h"
+#include "ranks/RanksManager.h"
+#include "utils/Utils.h"
 
 #include <ll/api/memory/Memory.h>
 #include <mc/server/ServerPlayer.h>

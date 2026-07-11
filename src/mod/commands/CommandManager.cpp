@@ -1,10 +1,10 @@
 #include "CommandManager.h"
-#include "../ranks/RanksManager.h"
-#include "../utils/Utils.h"
+#include "ranks/RanksManager.h"
 #include "types/AddRankCommand.h"
 #include "types/EditRankCommand.h"
 #include "types/RemoveRankCommand.h"
 #include "types/SetRankCommand.h"
+#include "utils/Utils.h"
 
 #include <ll/api/command/CommandHandle.h>
 #include <ll/api/command/CommandRegistrar.h>

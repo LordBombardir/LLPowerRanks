@@ -1,8 +1,8 @@
 #include "EditRankForm.h"
-#include "../lang/LanguageManager.h"
-#include "../rankFormats/RankFormatsManager.h"
-#include "../ranks/RanksManager.h"
-#include "../utils/Utils.h"
+#include "lang/LanguageManager.h"
+#include "rankFormats/RankFormatsManager.h"
+#include "ranks/RanksManager.h"
+#include "utils/Utils.h"
 
 #include <nlohmann/json.hpp>
 

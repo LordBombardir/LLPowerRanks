@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../types/Rank.h"
+#include "types/Rank.h"
 
 #include <mc/world/actor/player/Player.h>
 #include <optional>

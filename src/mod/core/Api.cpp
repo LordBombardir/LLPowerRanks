@@ -1,6 +1,6 @@
 #include "Api.h"
 #include "MainManager.h"
-#include "../ranks/RanksManager.h"
+#include "ranks/RanksManager.h"
 
 #include <stdexcept>
 

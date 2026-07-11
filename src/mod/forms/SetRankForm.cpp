@@ -1,10 +1,10 @@
 #include "SetRankForm.h"
-#include "../config/ConfigManager.h"
-#include "../core/MainManager.h"
-#include "../lang/LanguageManager.h"
-#include "../rankFormats/RankFormatsManager.h"
-#include "../ranks/RanksManager.h"
-#include "../utils/Utils.h"
+#include "config/ConfigManager.h"
+#include "core/MainManager.h"
+#include "lang/LanguageManager.h"
+#include "rankFormats/RankFormatsManager.h"
+#include "ranks/RanksManager.h"
+#include "utils/Utils.h"
 
 #include <mc/world/level/Level.h>
 

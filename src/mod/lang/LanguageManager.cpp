@@ -1,9 +1,9 @@
 #include "LanguageManager.h"
-#include "../commands/types/AddRankCommand.h"
-#include "../commands/types/EditRankCommand.h"
-#include "../commands/types/RemoveRankCommand.h"
-#include "../commands/types/SetRankCommand.h"
-#include "../config/types/Config.h"
+#include "commands/types/AddRankCommand.h"
+#include "commands/types/EditRankCommand.h"
+#include "commands/types/RemoveRankCommand.h"
+#include "commands/types/SetRankCommand.h"
+#include "config/types/Config.h"
 
 #include <memory>
 #include <placeholder_api/Api.h>

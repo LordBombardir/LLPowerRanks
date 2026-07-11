@@ -1,9 +1,9 @@
 #include "Hooks.h"
-#include "../commands/CommandManager.h"
-#include "../config/ConfigManager.h"
-#include "../core/MainManager.h"
-#include "../rankFormats/RankFormatsManager.h"
-#include "../utils/Utils.h"
+#include "commands/CommandManager.h"
+#include "config/ConfigManager.h"
+#include "core/MainManager.h"
+#include "rankFormats/RankFormatsManager.h"
+#include "utils/Utils.h"
 
 #include <ll/api/memory/Hook.h>
 #include <mc/network/packet/TextPacket.h>

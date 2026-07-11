@@ -1,6 +1,6 @@
 #include "RanksManager.h"
-#include "../commands/CommandManager.h"
-#include "../rankFormats/RankFormatsManager.h"
+#include "commands/CommandManager.h"
+#include "rankFormats/RankFormatsManager.h"
 
 #include <ll/api/Config.h>
 #include <stdexcept>

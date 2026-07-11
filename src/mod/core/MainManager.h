@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../types/Rank.h"
+#include "types/Rank.h"
 
 #include <ll/api/event/Listener.h>
 #include <ll/api/mod/NativeMod.h>

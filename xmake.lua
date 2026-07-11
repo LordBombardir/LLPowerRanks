@@ -69,7 +69,7 @@ target("PowerRanks") -- Change this to your mod name.
 
     add_headerfiles("src/**.h")
     add_files("src/**.cpp")
-    add_includedirs("src")
+    add_includedirs("src", "src/mod")
 
     if is_config("target_type", "server") then
         add_defines("LL_PLAT_S")

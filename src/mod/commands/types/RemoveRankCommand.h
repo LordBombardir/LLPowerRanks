@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../lang/LanguageManager.h"
-#include "../CommandManager.h"
+#include "commands/CommandManager.h"
+#include "lang/LanguageManager.h"
 
 #include <ll/api/command/SoftEnum.h>
 #include <mc/server/commands/Command.h>

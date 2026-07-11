@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../config/ConfigManager.h"
+#include "config/ConfigManager.h"
 
 #include <ll/api/mod/NativeMod.h>
 #include <ll/api/reflection/Deserialization.h>

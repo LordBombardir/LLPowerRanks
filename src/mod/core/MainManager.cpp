@@ -1,13 +1,13 @@
 #include "MainManager.h"
-#include "../commands/CommandManager.h"
-#include "../config/ConfigManager.h"
-#include "../config/types/Config.h"
-#include "../database/BaseManager.h"
-#include "../hooks/Hooks.h"
-#include "../lang/LanguageManager.h"
-#include "../rankFormats/RankFormatsManager.h"
-#include "../ranks/RanksManager.h"
-#include "../utils/Utils.h"
+#include "commands/CommandManager.h"
+#include "config/ConfigManager.h"
+#include "config/types/Config.h"
+#include "database/BaseManager.h"
+#include "hooks/Hooks.h"
+#include "lang/LanguageManager.h"
+#include "rankFormats/RankFormatsManager.h"
+#include "ranks/RanksManager.h"
+#include "utils/Utils.h"
 
 #include <ll/api/event/EventBus.h>
 #include <ll/api/event/command/ServerCommandRegisterEvent.h>

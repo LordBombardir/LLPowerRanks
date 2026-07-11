@@ -1,7 +1,7 @@
 #include "RemoveRankCommand.h"
-#include "../../config/ConfigManager.h"
-#include "../../ranks/RanksManager.h"
-#include "../../utils/Utils.h"
+#include "config/ConfigManager.h"
+#include "ranks/RanksManager.h"
+#include "utils/Utils.h"
 
 #include <mc/server/ServerPlayer.h>
 
